@@ -291,11 +291,11 @@ def process_file(input_filename):
 
                 # Set CSS file based on language
                 if language == "japanese" or language == "chinese":
-                    css_file = "/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/styles-ch-jp.css"
+                    css_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/styles-ch-jp.css"
                 elif language == "arabic":
-                    css_file = "/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/styles-ar.css"
+                    css_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/styles-ar.css"
                 else:
-                    css_file = "/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/styles.css"
+                    css_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/styles.css"
 
                 # Generate random cover image path
                 random_number = random.randint(1, 211)

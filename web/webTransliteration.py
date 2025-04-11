@@ -63,7 +63,7 @@ def process_file(input_file):
     start_live_server()
     
 # Example usage
-input_file = "/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/web/test.json"  # Replace with your input file
+input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/test.json"  # Replace with your input file
 process_file(input_file)
 
 # kakasi = pykakasi.kakasi()

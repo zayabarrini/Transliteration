@@ -27,7 +27,7 @@ def get_css_file(language, epub_folder):
     
     # Get the source CSS path
     css_filename = css_mapping.get(language, css_mapping["default"])
-    source_path = f"/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/{css_filename}"
+    source_path = f"/home/zaya/Downloads/Zayas/ZayasTransliteration/{css_filename}"
     
     # Determine destination folder
     styles_path, structure = ensure_styles_folder(epub_folder)

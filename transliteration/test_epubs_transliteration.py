@@ -71,7 +71,7 @@ class TestEpubsTransliteration(unittest.TestCase):
         """Test if CSS styles are applied based on the language."""
         language = get_language_from_filename("japanese-test-book.epub")
         css_file = get_css_file(language)
-        self.assertEqual(css_file, "/home/zaya/Documents/Gitrepos/Linktrees/Business/Dev/Py/Transliteration/styles-ch-jp.css")
+        self.assertEqual(css_file, "/home/zaya/Downloads/Zayas/ZayasTransliteration/styles-ch-jp.css")
 
     def test_metadata(self):
         """Test if metadata is properly applied."""
