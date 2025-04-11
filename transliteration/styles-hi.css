@@ -1,0 +1,18 @@
+ruby {
+    display: inline-block;
+    position: relative;
+    line-height: 1.5;
+    margin-right: 0.5em;
+    vertical-align: top;
+    font-size: 3em;
+}
+
+rt {
+    display: block;
+    font-size: 50%;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+    margin-top: -0.2em;
+    margin-right: 0.5em !important;
+}
