@@ -7,7 +7,8 @@ from epubManagement import (
     find_text_folder,
     get_xhtml_files)
 
-SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
+SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic"]
+# SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
 
 from html2transliteration import process_folder
 from add_metadata_and_cover import add_metadata_and_cover

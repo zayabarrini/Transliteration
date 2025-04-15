@@ -29,9 +29,7 @@ def remove_original_text(file_path: str) -> None:
             if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
                 # This is likely a translation (has dir attribute or different lang from previous)
                 if (prev is not None and 
-                    prev.tag not in ['head', 'meta', 'title', 'link'] and
-                    prev.get('lang') and 
-                    prev.get('lang') != elem.get('lang')):
+                    prev.tag not in ['head', 'meta', 'title', 'link']):
                     parent = prev.getparent()
                     if parent is not None:
                         parent.remove(prev)
