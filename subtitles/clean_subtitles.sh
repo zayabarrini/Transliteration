@@ -1,38 +1,38 @@
 #!/bin/bash
 
 # Directory where the files are located
-# directory="${1:-.}"
-directory="/home/zaya/Downloads/Workspace/Subtitles/Glee"
+directory="/home/zaya/Downloads/Workspace/Subtitles/TVSeries2"
 
 # Loop over each file in the directory
 for file in "$directory"/*; do
-  # Skip if not a regular file
-  if [[ ! -f "$file" ]]; then
-    continue
-  fi
+    # Skip if not a regular file
+    if [[ ! -f "$file" ]]; then
+        continue
+    fi
 
-  echo "Processing file: $file"
+    echo "Processing file: $file"
 
-  # Run NeoVim in headless mode and apply the necessary regex commands
-  nvim -es "$file" <<EOF
-    " Step 1: Remove timestamps in the format of '00:01:30,556 --> 00:01:33,524'
+    # Run NeoVim in headless mode and apply the necessary regex commands
+    nvim -es "$file" <<EOF
+    " Step 1: Remove SRT timestamps and line numbers
     g/^\d\+\n\d\{2\}:\d\{2\}:\d\{2\},\d\{3\} --> \d\{2\}:\d\{2\}:\d\{2\},\d\{3\}/d2
-    
-    " Remove weird Characters: 
+
+    " Remove HTML italic tags
     %s/<\/\?i>//g
 
-    " Step 3: Delete all empty lines
+    " Delete all remaining empty lines (leaving only paragraph separators)
     g/^$/d
-    
-    " Remove unwanted space at the begining:
+
+    " Remove unwanted space at beginning of lines
     %s/^\s\+//
 
-    " Step 2: Join lines if the next line starts with a lowercase letter    
+    " Join lines if the next line starts with a lowercase letter
     %s/\n\(\l\)/ \1/g
+
+    " Convert single newlines into double newlines (paragraph breaks)
+    %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g
 
     " Save the changes and exit
     wq
 EOF
-
 done
-

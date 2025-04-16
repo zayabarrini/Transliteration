@@ -46,7 +46,7 @@ def combine_files(directory, output_filename="combined_notes.md"):
 
 if __name__ == "__main__":
     # target_directory = input("Enter directory path to scan for .md/.srt files: ").strip()
-    target_directory = "/home/zaya/Downloads/Workspace/Subtitles/Glee"
+    target_directory = "/home/zaya/Downloads/Workspace/Subtitles/Horror/Final-Destination"
 
     if os.path.isdir(target_directory):
         combine_files(target_directory)
