@@ -1,27 +1,22 @@
 import re
-import csv
 import os
+import tempfile
+from pathlib import Path
 import time
 import zipfile
-import tempfile
 from itertools import combinations
-from concurrent.futures import ThreadPoolExecutor
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from concurrent.futures import ThreadPoolExecutor
-from transliteration.translationFunctions import translate_text, translate_parallel, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
-from transliteration.filter_language_characters import filter_language_characters
-from transliteration.transliteration import transliterate
-
 # from translationFunctions import (
 #     translate_text, 
-#     translate_parallel, 
 #     transliterate, 
-#     TARGET_PATTERNS, 
 #     LANGUAGE_CODE_MAP,
 #     LANGUAGE_STYLES
 # )
 # from filter_language_characters import filter_language_characters
+from transliteration.translationFunctions import translate_text, translate_parallel, transliterate, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
+from transliteration.filter_language_characters import filter_language_characters
+from functools import lru_cache
 
 # Function to read an SRT file
 def read_srt(file_path):
@@ -33,12 +28,19 @@ def write_srt(file_path, lines):
     with open(file_path, 'w', encoding='utf-8') as f:
         f.writelines(lines)
 
-def create_zip(input_file, output_files):
-    zip_name = input_file.replace('.srt', '.zip')
-    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+def create_zip(input_file, output_files, output_dir=None):
+    base_name = Path(input_file).stem
+    zip_name = f"{base_name}.zip"
+    if output_dir:
+        zip_path = os.path.join(output_dir, zip_name)
+    else:
+        zip_path = zip_name
+    
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in output_files:
-            zipf.write(file, arcname=file.split('/')[-1])
-    return zip_name
+            arcname = os.path.basename(file)
+            zipf.write(file, arcname=arcname)
+    return zip_path
 
 def apply_subtitle_style(text, language_code, enable_styling=True):
     """Applies language-specific styling to subtitles"""
@@ -230,26 +232,16 @@ def process_single_language(input_file, target_language, output_file, enable_tra
     with open(input_file, 'r', encoding='utf-8-sig') as f:
         lines = [line.rstrip('\n') for line in f.readlines()]
     
-    # Apply the line joining transformation
-    transformed_lines = join_lines_if_starts_with_letter(lines)
-    
-    # Write the transformed file to a temporary location
-    # temp_dir = tempfile.mkdtemp()
-    # base_name = os.path.basename(input_file)
-    # temp_srt_path = os.path.join(temp_dir, base_name)
-    # with open(temp_srt_path, 'w', encoding='utf-8') as f:
-    #     f.writelines(transformed_lines)
-    
     # Translate all text content (excluding timestamps and numbers)
-    transformed_lines = [line for line in lines if line.strip() and 
+    text_lines = [line for line in lines if line.strip() and 
                  not re.match(r'^\d+$', line.strip()) and 
                  not re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', line.strip())]
     
     # Translate all text lines at once
-    translated_texts = [apply_subtitle_style(translate_text(line, target_language), target_language, enable_styling) for line in transformed_lines]
+    translated_texts = [apply_subtitle_style(translate_text(line, target_language), target_language, enable_styling) for line in text_lines]
     
     # Create translation mapping
-    translation_map = dict(zip(transformed_lines, translated_texts))
+    translation_map = dict(zip(text_lines, translated_texts))
     
     output_lines = []
     i = 0
@@ -309,6 +301,49 @@ def should_transliterate(lang, enable_transliteration):
     
     return enable_transliteration and lang in transliteratable_languages
 
+def process_multilingual_srt(input_file, target_languages, enable_transliteration=False, enable_styling=False):
+    start_time = time.time()
+    output_files = []
+    base_name = input_file.replace('.srt', '')
+    
+    # 1. Generate single language files
+    for lang in target_languages:
+        # Generate standard translation
+        output_file = f"{base_name}_{lang}.srt"
+        process_single_language(input_file, lang, output_file, enable_transliteration, enable_styling)
+        output_files.append(output_file)
+        
+        # Generate transliterated version if enabled
+        # if should_transliterate(lang, enable_transliteration):
+        #     print(f"Transliterating {lang}...")
+        #     transliterated_file = transliterate_srt(input_file, lang)
+        #     output_files.append(transliterated_file)
+    
+    # 2. Generate all combinations (2 by 2, 3 by 3, etc.)
+    for r in range(2, len(target_languages)+1):
+        for combo in combinations(target_languages, r):
+            combo_file = generate_combination_srt(input_file, target_languages, combo, enable_transliteration, enable_styling)
+            output_files.append(combo_file)
+    
+    # 3. Create a zip file with all outputs
+    zip_file = create_zip(input_file, output_files)
+    
+    # 4. Clean up individual SRT files
+    # for srt_file in output_files:
+    #     try:
+    #         os.remove(srt_file)
+    #         print(f"Removed temporary file: {srt_file}")
+    #     except OSError as e:
+    #         print(f"Error removing {srt_file}: {e}")
+    
+    end_time = time.time()
+    processing_time = end_time - start_time
+    print(f"Time to process {input_file}: {processing_time:.2f} seconds")
+    print(f"Created zip file: {zip_file}")
+    
+    return zip_file
+
+
 def join_lines_if_starts_with_letter(lines):
     """Apply regex to join lines if next line starts with a letter"""
     joined_lines = []
@@ -335,48 +370,230 @@ def join_lines_if_starts_with_letter(lines):
     
     return joined_lines
 
-def process_multilingual_srt(input_file, target_languages, enable_transliteration=False, enable_styling=False):
-    start_time = time.time()
+def process_single_srt_file(srt_path, target_languages, enable_transliteration, enable_styling):
+    """Process a single SRT file with the given parameters"""
+    # Read the SRT file
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    
+    # Apply the line joining transformation
+    transformed_lines = join_lines_if_starts_with_letter(lines)
+    
+    # Write the transformed file to a temporary location
+    temp_dir = tempfile.mkdtemp()
+    base_name = os.path.basename(srt_path)
+    temp_srt_path = os.path.join(temp_dir, base_name)
+    with open(temp_srt_path, 'w', encoding='utf-8') as f:
+        f.writelines(transformed_lines)
+    
+    # Process the transformed file
+    zip_path = process_multilingual_srt(
+        temp_srt_path, 
+        target_languages, 
+        enable_transliteration=enable_transliteration, 
+        enable_styling=enable_styling
+    )
+    
+    # Clean up temporary files
+    try:
+        os.remove(temp_srt_path)
+        os.rmdir(temp_dir)
+    except OSError:
+        pass
+    
+    return zip_path
+# Cache translations to avoid repeating the same work
+@lru_cache(maxsize=1000)
+def cached_translate_text(text, lang):
+    return translate_text(text, lang)
+
+@lru_cache(maxsize=1000)
+def cached_transliterate(text, lang):
+    filtered = filter_language_characters(text, target_language=LANGUAGE_CODE_MAP[lang])
+    return transliterate(filtered, lang) if filtered else ""
+
+def generate_combination_output(lines, translation_maps, transliteration_maps, output_file):
+    """Generate output for a combination of languages"""
+    with open(output_file, 'w', encoding='utf-8') as f:
+        i = 0
+        total_lines = len(lines)
+        while i < total_lines:
+            line = lines[i]
+            stripped = line.strip()
+            
+            if stripped.isdigit():  # Line number
+                f.write(line)
+                i += 1
+                if i < total_lines and re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', lines[i].strip()):
+                    f.write(lines[i])
+                    i += 1
+                    while i < total_lines and lines[i].strip():
+                        original = lines[i].strip()
+                        f.write(lines[i])
+                        
+                        # Add translations and transliterations for each language in the combination
+                        for lang in translation_maps:
+                            if original in translation_maps[lang]:
+                                f.write(translation_maps[lang][original] + '\n')
+                                if lang in transliteration_maps and original in transliteration_maps[lang] and transliteration_maps[lang][original]:
+                                    f.write(transliteration_maps[lang][original] + '\n')
+                        i += 1
+                    
+                    if i < total_lines and not lines[i].strip():
+                        f.write('\n')
+                        i += 1
+                continue
+            
+            f.write(line)
+            i += 1
+
+def optimized_process_single_srt_file(srt_path, target_languages, enable_transliteration, enable_styling):
+    """Optimized version that caches translations and transliterations"""
+    # Read and transform the SRT file
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    
+    # Create translation and transliteration mappings
+    translation_maps = {lang: {} for lang in target_languages}
+    transliteration_maps = {lang: {} for lang in target_languages}
+    
+    # First pass: identify all unique text segments that need translation
+    text_segments = set()
+    for line in lines:
+        stripped = line.strip()
+        if stripped and not re.match(r'^\d+$', stripped) and \
+           not re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', stripped):
+            text_segments.add(stripped)
+    
+    # Pre-translate all unique segments for each language
+    for lang in target_languages:
+        for segment in text_segments:
+            translated = apply_subtitle_style(
+                cached_translate_text(segment, lang), 
+                lang, 
+                enable_styling
+            )
+            translation_maps[lang][segment] = translated
+            
+            if should_transliterate(lang, enable_transliteration):
+                transliteration_maps[lang][segment] = cached_transliterate(translated, lang)
+    
+    # Process all output files in one pass
+    base_name = os.path.splitext(os.path.basename(srt_path))[0]
+    temp_dir = tempfile.mkdtemp()
     output_files = []
-    base_name = input_file.replace('.srt', '')
+    
+    # 1. Generate single language files
+    for lang in target_languages:
+        output_file = os.path.join(temp_dir, f"{base_name}_{lang}.srt")
+        generate_single_language_output(
+            lines, 
+            translation_maps[lang], 
+            transliteration_maps[lang] if should_transliterate(lang, enable_transliteration) else None,
+            output_file
+        )
+        output_files.append(output_file)
+    
+    # 2. Generate combinations (limit to practical combinations)
+    practical_combinations = []
+    if len(target_languages) > 1:
+        # Only generate 2-language combinations if we have many languages
+        practical_combinations = list(combinations(target_languages, 2))
+        if len(target_languages) <= 3:  # For 3 languages, also include the 3-way combination
+            practical_combinations.append(tuple(target_languages))
+    
+    for combo in practical_combinations:
+        combo_name = '_'.join(combo)
+        output_file = os.path.join(temp_dir, f"{base_name}_{combo_name}.srt")
+        generate_combination_output(
+            lines,
+            {lang: translation_maps[lang] for lang in combo},
+            {lang: transliteration_maps[lang] for lang in combo if should_transliterate(lang, enable_transliteration)},
+            output_file
+        )
+        output_files.append(output_file)
+    
+    # Create zip file
+    zip_path = os.path.join(temp_dir, f"{base_name}.zip")
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for file in output_files:
+            zipf.write(file, arcname=os.path.basename(file))
+    
+    # Clean up
+    for file in output_files:
+        try:
+            os.remove(file)
+        except OSError:
+            pass
+    
+    return zip_path
+
+def generate_single_language_output(lines, translation_map, transliteration_map, output_file):
+    """Generate output for a single language"""
+    with open(output_file, 'w', encoding='utf-8') as f:
+        i = 0
+        total_lines = len(lines)
+        while i < total_lines:
+            line = lines[i]
+            stripped = line.strip()
+            
+            if stripped.isdigit():  # Line number
+                f.write(line)
+                i += 1
+                if i < total_lines and re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', lines[i].strip()):
+                    f.write(lines[i])
+                    i += 1
+                    while i < total_lines and lines[i].strip():
+                        original = lines[i].strip()
+                        f.write(lines[i])
+                        if original in translation_map:
+                            f.write(translation_map[original] + '\n')
+                            if transliteration_map and original in transliteration_map and transliteration_map[original]:
+                                f.write(transliteration_map[original] + '\n')
+                        i += 1
+                    if i < total_lines and not lines[i].strip():
+                        f.write('\n')
+                        i += 1
+                continue
+            
+            f.write(line)
+            i += 1
+
+def process_single_srt(input_srt, target_languages, enable_transliteration=False, enable_styling=False):
+    """Process a single SRT file and return the paths of generated files"""
+    output_files = []
+    base_name = Path(input_srt).stem
     
     # 1. Generate single language files
     for lang in target_languages:
         # Generate standard translation
         output_file = f"{base_name}_{lang}.srt"
-        process_single_language(input_file, lang, output_file, enable_transliteration, enable_styling)
+        process_single_language(input_srt, lang, output_file, enable_transliteration, enable_styling)
         output_files.append(output_file)
         
         # Generate transliterated version if enabled
-        # if should_transliterate(lang, enable_transliteration):
-        #     print(f"Transliterating {lang}...")
-        #     transliterated_file = transliterate_srt(input_file, lang)
-        #     output_files.append(transliterated_file)
+        if should_transliterate(lang, enable_transliteration):
+            transliterated_file = transliterate_srt(input_srt, lang)
+            output_files.append(transliterated_file)
     
     # 2. Generate all combinations (2 by 2, 3 by 3, etc.)
     for r in range(2, len(target_languages)+1):
         for combo in combinations(target_languages, r):
-            combo_file = generate_combination_srt(input_file, target_languages, combo, enable_transliteration, enable_styling)
+            combo_file = generate_combination_srt(input_srt, target_languages, combo, enable_transliteration, enable_styling)
             output_files.append(combo_file)
     
     # 3. Create a zip file with all outputs
-    # zip_file = create_zip(input_file, output_files)
+    temp_dir = tempfile.mkdtemp()
+    zip_file = create_zip(input_srt, output_files, temp_dir)
     
     # 4. Clean up individual SRT files
-    # for srt_file in output_files:
-    #     try:
-    #         os.remove(srt_file)
-    #         print(f"Removed temporary file: {srt_file}")
-    #     except OSError as e:
-    #         print(f"Error removing {srt_file}: {e}")
+    for srt_file in output_files:
+        try:
+            os.remove(srt_file)
+        except OSError:
+            pass
     
-    # end_time = time.time()
-    # processing_time = end_time - start_time
-    # print(f"Time to process {input_file}: {processing_time:.2f} seconds")
-    # print(f"Created zip file: {zip_file}")
-    
-    # return zip_file
-
+    return zip_file
 
 def merge_subtitle_lines(input_file, output_file=None):
     # Read the SRT file
@@ -415,41 +632,55 @@ def merge_subtitle_lines(input_file, output_file=None):
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(merged_content)
 
+def process_zip_of_srts(input_zip_path, target_languages, enable_transliteration=False, enable_styling=False):
+    """Process a zip file containing multiple SRT files"""
+    temp_dir = tempfile.mkdtemp()
+    output_zips = []
+    
+    # Extract all SRT files from the input zip
+    with zipfile.ZipFile(input_zip_path, 'r') as zip_ref:
+        zip_ref.extractall(temp_dir)
+    
+    # Process each SRT file
+    for root, _, files in os.walk(temp_dir):
+        for file in files:
+            if file.lower().endswith('.srt'):
+                srt_path = os.path.join(root, file)
+                # Pre-process: merge lines
+                merge_subtitle_lines(srt_path)
+                # Process the SRT
+                output_zip = process_single_srt(
+                    srt_path, 
+                    target_languages, 
+                    enable_transliteration, 
+                    enable_styling
+                )
+                output_zips.append(output_zip)
+    
+    # Create final zip containing all individual zips
+    final_zip_path = os.path.join(os.path.dirname(input_zip_path), "all_translations.zip")
+    with zipfile.ZipFile(final_zip_path, 'w', zipfile.ZIP_DEFLATED) as final_zip:
+        for zip_file in output_zips:
+            final_zip.write(zip_file, arcname=os.path.basename(zip_file))
+    
+    # Clean up temporary files
+    for zip_file in output_zips:
+        try:
+            os.remove(zip_file)
+        except OSError:
+            pass
+    
+    return final_zip_path
+
 # Main function
 if __name__ == "__main__":
-    input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/test/test.srt"
-    # target_languages = ["de", "ru", "zh-ch"]
-    target_languages = ["de", "zh-ch"]
-    # target_languages = ["zh-ch"]
-
-    merge_subtitle_lines(input_file, None)
-    process_multilingual_srt(input_file, target_languages, enable_transliteration=True, enable_styling=False)
+    # Example usage:
+    input_zip_path = "/home/zaya/Downloads/Zayas/zayascinema/trans/subs.zip"  # Replace with your input zip path
+    target_languages = ["de", "zh-ch"]  # Your target languages
     
-# if __name__ == "__main__":
-#     # Directory containing SRT files
-#     input_dir = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/"
-#     target_languages = ["de", "zh-ch", "ar"]  # Added Arabic for testing font size
-    
-#     # Get all SRT files in directory
-#     srt_files = [f for f in os.listdir(input_dir) if f.lower().endswith('.srt')]
-    
-#     if not srt_files:
-#         print(f"No SRT files found in {input_dir}")
-#     else:
-#         print(f"Processing {len(srt_files)} SRT files...")
-        
-#         for srt_file in srt_files:
-#             input_path = os.path.join(input_dir, srt_file)
-#             print(f"\nProcessing: {srt_file}")
-            
-#             try:
-#                 process_multilingual_srt(
-#                     input_path,
-#                     target_languages,
-#                     enable_transliteration=True
-#                 )
-#                 print(f"Completed: {srt_file}")
-#             except Exception as e:
-#                 print(f"Error processing {srt_file}: {str(e)}")
-        
-#         print("\nAll files processed!")
+    final_zip = process_zip_of_srts(
+        input_zip_path,
+        target_languages,
+        enable_transliteration=True,
+        enable_styling=False
+    )

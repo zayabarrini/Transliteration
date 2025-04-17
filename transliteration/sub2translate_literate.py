@@ -1,16 +1,22 @@
 import re
 import csv
 import time
-from concurrent.futures import ThreadPoolExecutor
+import sys
+import os
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# from transliteration.translationFunctions import translate_text, translate_parallel, TARGET_PATTERNS, LANGUAGE_CODE_MAP
+# from transliteration.filter_language_characters import filter_language_characters
+# from transliteration.transliteration import transliterate
 from translationFunctions import (
     translate_text, 
-    translate_parallel, 
-    transliterate, 
-    TARGET_PATTERNS, 
-    LANGUAGE_CODE_MAP
+    # transliterate, 
+    translate_parallel,
+    LANGUAGE_CODE_MAP,
+    LANGUAGE_STYLES, 
+    TARGET_PATTERNS
 )
-
 from filter_language_characters import filter_language_characters
+from transliteration import transliterate
 
 # Function to read an SRT file
 def read_srt(file_path):
@@ -82,22 +88,23 @@ def transliterate_srt(input_file: str, target_language: str) -> str:
     return output_file
 
 
-# Function to process an SRT file
-def process_srt(input_file, target_language, enable_transliteration=False):
+def process_srt(input_file, target_language, enable_translation=True, enable_transliteration=False):
     start_time = time.time()
 
     # Read the SRT file
     lines = read_srt(input_file)
 
-    # Translate lines in parallel
-    translated_lines = translate_parallel(lines, target_language)
+    # Translate lines if translation is enabled
+    translated_lines = lines  # Default to original lines if not translating
+    if enable_translation:
+        translated_lines = translate_parallel(lines, target_language)
 
     # Prepare output lines
     output_lines_v1 = []
     output_lines_v2 = []
     output_lines_v3 = []
 
-    for line, translated_line in zip(lines, translated_lines):
+    for line, processed_line in zip(lines, translated_lines):
         # Skip SRT timestamps and line numbers
         if re.match(r'^\d+$', line.strip()) or re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', line.strip()):
             output_lines_v1.append(line)
@@ -106,16 +113,20 @@ def process_srt(input_file, target_language, enable_transliteration=False):
             continue
 
         # Add original and translated lines to Version 1
-        output_lines_v1.append(line)
-        output_lines_v1.append(translated_line + '\n')
+        if enable_translation:
+            output_lines_v1.append(line)
+            output_lines_v1.append(processed_line + '\n')
+        else:
+            output_lines_v1.append(line)
 
         # Add original, translated, and transliterated lines to Version 2
         output_lines_v2.append(line)
-        output_lines_v2.append(translated_line + '\n')
+        if enable_translation:
+            output_lines_v2.append(processed_line + '\n')
         if enable_transliteration:
-            line_without_headers = re.sub(r'^#+\s*', '', translated_line)
+            line_to_transliterate = processed_line if enable_translation else line
+            line_without_headers = re.sub(r'^#+\s*', '', line_to_transliterate)
             transliterated_line = transliterate(line_without_headers, target_language)
-            # transliterated_line = transliterate(translated_line, target_language)
             output_lines_v2.append(transliterated_line + '\n')
 
         # Add only target language lines to Version 3
@@ -124,7 +135,8 @@ def process_srt(input_file, target_language, enable_transliteration=False):
 
     # Write output files
     base_name = input_file.replace('.srt', '')
-    write_srt(f"{base_name}_{target_language}_v1.md", output_lines_v1)
+    if enable_translation:
+        write_srt(f"{base_name}_{target_language}_v1.md", output_lines_v1)
     if enable_transliteration:
         write_srt(f"{base_name}_{target_language}_transliterated.md", output_lines_v2)
     write_srt(f"{base_name}_{target_language}_no_latin.md", output_lines_v3)
@@ -134,13 +146,41 @@ def process_srt(input_file, target_language, enable_transliteration=False):
     processing_time = end_time - start_time
     print(f"Time to process {input_file}: {processing_time:.2f} seconds")
 
+def process_zip(zip_file):
+    # Determine processing mode based on zip filename
+    if "translate.zip" in zip_file:
+        enable_translation = True
+        enable_transliteration = False
+    elif "transliterate.zip" in zip_file:
+        enable_translation = False
+        enable_transliteration = True
+    else:
+        enable_translation = True
+        enable_transliteration = False
+    
+    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        for file_info in zip_ref.infolist():
+            if file_info.filename.endswith('.srt'):
+                # Extract target_language from filename pattern "target_language"-filename.srt
+                match = re.match(r'^([a-z]{2})-.+\.srt$', file_info.filename)
+                if match:
+                    target_language = match.group(1)
+                    # Extract the file
+                    zip_ref.extract(file_info)
+                    # Process the file
+                    process_srt(file_info.filename, target_language, 
+                              enable_translation=enable_translation, 
+                              enable_transliteration=enable_transliteration)
+
 # Function to process all SRT files listed in a CSV
 def process_csv(csv_file):
     with open(csv_file, 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
         for row in reader:
-            input_file, target_language = row
-            process_srt(input_file, target_language, enable_transliteration=True)
+            input_file, target_language, enable_translation, enable_transliteration = row
+            process_srt(input_file, target_language, 
+                       enable_translation, 
+                       enable_transliteration)
 
 # Main function
 if __name__ == "__main__":
@@ -155,11 +195,17 @@ if __name__ == "__main__":
         Total subtitles should be: Cn,1 + Cn,2 + ... + Cn,n
         All the subtitles should be zipped together into Input_filename.zip
     """
-    # csv_file = "/home/zaya/Downloads/transliteration_files.csv"
-    # process_csv(csv_file)
-    input_file = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/Chinese-A-brighter-summer-day.srt"
-    target_language = "chinese"
-    
+    csv_file = "/home/zaya/Downloads/trans.csv"
+    process_csv(csv_file)
+    input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Gosford-de-(ja).srt"
+    target_language = "japanese"
+    # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Fargo-de-(ch).srt"
+    # target_language = "chinese"
+    # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Ghandi-ru-(ar).srt"
+    # target_language = "arabic"
+    # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Little-hi.srt"
+    # target_language = "hindi"    
+
     # process_srt(input_file, target_language, enable_transliteration=True)
     transliterate_srt(input_file, target_language)
     

@@ -272,6 +272,56 @@ def process_webpage_versions():
 
 def main():
     """Main program loop."""
+    # Test everything
+    # --------------------- Subtitles
+    
+    ## Only Transliteration
+    input_dir = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/subtitles"
+    target_languages = ["de", "zh-ch"]  
+
+    # input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/Gosford-de-(ja).srt"
+    # target_language = "japanese"
+    # input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/Fargo-de-(ch).srt"
+    # target_language = "chinese"
+    # input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/Ghandi-ru-(ar).srt"
+    # target_language = "arabic"
+    # input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/Little-hi.srt"
+    # target_language = "hindi"   
+    from sub2translate_literate import process_csv
+    csv_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/subtitles/trans.csv"
+    process_csv(csv_file)
+    
+    # from subMultilingualVersions import process_multilingual_srt
+    # for filename in os.listdir(input_dir):
+    #     if filename.lower().endswith('.srt'):
+    #         filepath = os.path.join(input_dir, filename)
+    #         process_multilingual_srt(filepath, target_languages, True)
+    
+    ## Zip File
+    input_zip_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/subtitles/subtitles.zip"
+    target_languages = ["de", "zh-ch"]  # Your target languages
+    from subtitles.zip2zip import process_zip_of_srts
+    process_zip_of_srts(input_zip_path, target_languages)
+    
+    
+    # --------------------- Ebook: Transliteration
+    input_folder_ebooks = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks"
+    from epubVersions import process_folder
+    process_folder(input_folder_ebooks)
+    
+    # --------------------- Ebook: Split Sentences
+    input_folder = '/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks/ebook.epub'  # Update this path to your folder containing EPUB files
+    output_folder = '/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks/Output' 
+    
+    from epubSplitProcessor import process_epub_folder
+    process_epub_folder(input_folder, output_folder)
+    
+    # --------------------- Webpage: Transliteration
+    from web.webflask import _main_
+    # run main.py, which is a Flask app
+    # pass some initial string = "I'm just testing"
+    _main_()
+    
     while True:
         display_menu()
         choice = get_choice("Select an option (0-4): ", ["0", "1", "2", "3", "4"])

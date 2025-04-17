@@ -99,9 +99,8 @@ def transliterate(input_text, language):
         return input_text
     
     language = normalize_language(language)
-
     if language == "zh-CN":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.NORMAL))
+        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
     elif language == "ja":
         kakasi = pykakasi.kakasi()
         kakasi.setMode("H", "a")  # Hiragana to Romaji

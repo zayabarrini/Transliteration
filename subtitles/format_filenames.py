@@ -9,8 +9,7 @@ def format_filename(name):
     # Replace dots or underscores with spaces
     name = re.sub(r'[._]', ' ', name)
     
-    # Remove extra spaces
-    name = re.sub(r'\s+', ' ', name).strip()
+    
     
     # Keep only the name and the year (if available)
     match = re.match(r'(.*?)(\s\d{4})', name)
@@ -19,7 +18,9 @@ def format_filename(name):
     else:
         # Remove everything after the first non-alphabetic group
         name = re.sub(r'[^a-zA-Z0-9\s]+.*$', '', name)
-    
+        
+    # Remove extra spaces
+    name = re.sub(r'\s+', '-', name).strip()
     # Add the extension back
     return f"{name.strip()}{ext.lower()}"
 
@@ -44,7 +45,7 @@ def clean_filenames(directory):
 
 if __name__ == "__main__":
     # directory = input("Enter the directory containing files: ").strip()
-    directory = "/home/zaya/Downloads/Workspace/Subtitles/Favorites4"
+    directory = "/home/zaya/Downloads/Zayas/zayascinema/trans"
     if os.path.isdir(directory):
         clean_filenames(directory)
     else:

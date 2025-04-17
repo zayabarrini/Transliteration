@@ -136,7 +136,7 @@ def get_pinyin_annotations(text):
     # Get pinyin with word grouping
     pinyin_list = lazy_pinyin(
         text,
-        style=Style.TONE,
+        style=Style.NORMAL,
         neutral_tone_with_five=True,
         errors=lambda x: [x] if x in exclude_chars else [''],
         strict=False
@@ -161,7 +161,7 @@ def get_pinyin_annotations(text):
             # Get pinyin for the entire word
             word_pinyin = lazy_pinyin(
                 word,
-                style=Style.TONE,
+                style=Style.NORMAL,
                 neutral_tone_with_five=True
             )
             
@@ -213,7 +213,9 @@ def add_furigana(text, transliteration, language):
             else:
                 furigana_text.append(f"<ruby>{char}<rt>{trans}</rt></ruby>")
     elif language == "chinese":
-        return get_pinyin_annotations(text)
+        pinyin = get_pinyin_annotations(text)
+        print(pinyin)
+        return pinyin
         # tokens = tokenize_text(text)
         # for token in tokens:
         #     if is_latin(token):
@@ -248,8 +250,10 @@ def transliterate(input_text, language):
     if not input_text:
         return ""
     if language == "chinese":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
+        # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.NORMAL))
+        return get_pinyin_annotations(input_text)
     elif language == "japanese":
+        print("It's Japanese")
         kakasi = original_pykakasi.kakasi()  # Will use patched version
         return kakasi.convert(input_text)
         # kakasi = original_pykakasi.kakasi()

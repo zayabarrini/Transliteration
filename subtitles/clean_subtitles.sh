@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Directory where the files are located
-directory="/home/zaya/Downloads/Workspace/Subtitles/TVSeries2"
+directory="/home/zaya/Downloads/Zayas/zayascinema/trans/test"
+
+# " First pass: Combine multiline subtitles under the same timestamp
+#     " This matches timestamp lines followed by text lines until next timestamp or empty line
+#     " Format: [number]\n[timestamp]\n[text lines...] and combines the text lines into one line per subtitle
+#     g/^\d\+$\n\d\{2\}:\d\{2\}:\d\{2\},\d\{3\} --> \d\{2\}:\d\{2\}:\d\{2\},\d\{3\}/norm Vj:s/\n/ /ge
 
 # Loop over each file in the directory
 for file in "$directory"/*; do
