@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from epubSplit import process_epub  # Assuming your processing script is in epubSplit.py
+from transliteration.epubSplit import process_epub  # Assuming your processing script is in epubSplit.py
 
 def process_epub_folder(input_folder, output_folder=None):
     """Process all EPUBs in a folder, adding 's-' prefix to output files"""
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     
     # input_folder = sys.argv[1]
     # output_folder = sys.argv[2] if len(sys.argv) > 2 else None
-    input_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test'  # Update this path to your folder containing EPUB files
-    output_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test/Output'  # Update this path to your desired output folder
+    # /home/zaya/Documents/Ebooks/Flow/Transliteration/Process
+    input_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Process'
+    output_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Process/Output'  # Update this path to your desired output folder
     process_epub_folder(input_folder, output_folder)

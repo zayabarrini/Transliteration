@@ -1,9 +1,9 @@
 
 from bs4 import BeautifulSoup, NavigableString  # For HTML parsing
 import shutil
-from add_css import get_css_file, add_css_link  # Import from our new module
+from transliteration.add_css import get_css_file, add_css_link  # Import from our new module
 import os
-from transliteration import transliterate, add_furigana, is_latin
+from transliteration.transliteration import transliterate, add_furigana, is_latin
 
 def process_html_content(soup, language):
     """Recursively process all text nodes in the HTML and add transliteration."""

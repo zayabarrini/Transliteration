@@ -1,9 +1,9 @@
 import os
 import shutil
 from lxml import etree
-from epubManagement import extract_epub, create_epub, find_text_folder, get_xhtml_files
-from epubTransliteration import get_language_from_filename
-from add_metadata_and_cover import add_metadata_and_cover
+from transliteration.epubManagement import extract_epub, create_epub, find_text_folder, get_xhtml_files
+from transliteration.epubTransliteration import get_language_from_filename
+from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
 def remove_original_text(file_path: str) -> None:
     """

@@ -2,8 +2,8 @@ import os
 import unittest
 import zipfile
 from bs4 import BeautifulSoup
-from epubsTransliteration import process_epub, get_language_from_filename, get_css_file
-from add_metadata_and_cover import add_metadata_and_cover
+from transliteration.epubsTransliteration import process_epub, get_language_from_filename, get_css_file
+from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
 class TestEpubsTransliteration(unittest.TestCase):
     @classmethod

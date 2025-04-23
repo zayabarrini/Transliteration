@@ -2,8 +2,8 @@ import os
 import zipfile
 import random
 import shutil
-from html2transliteration import process_folder
-from add_metadata_and_cover import add_metadata_and_cover
+from transliteration.html2transliteration import process_folder
+from transliteration.add_metadata_and_cover import add_metadata_and_cover
 import sys  # For exiting the script
 
 # List of supported languages

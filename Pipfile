@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-deep-translator = "*"
 googletrans = "*"
 markdown-it-py = "*"
 pypandoc = "*"
@@ -25,6 +24,8 @@ pypinyin = "*"
 pykakasi = "*"
 transliteration-tools = {file = ".", editable = true}
 livereload = "*"
+deep-translator = "*"
+lxml = "*"
 
 [dev-packages]
 

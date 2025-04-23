@@ -20,4 +20,4 @@ I had to modify each one of them
 - Live reload
 - Fix Transliteration function on webflask: copy, modify, save my own transliteration project
 - languages: chinese, hindi, russian, arabic, korean, japanese
-- transliterate Freudiana Ebooks
+- split + Calibre db translation + Epub Versions: transliterate Freudiana Ebooks

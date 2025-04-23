@@ -2,7 +2,7 @@ import re
 import shutil
 import sys
 from bs4 import BeautifulSoup
-from epubManagementNew import extract_epub, create_epub, find_content_folder, get_content_files
+from transliteration.epubManagementNew import extract_epub, create_epub, find_content_folder, get_content_files
 import os
 
 # Enhanced multilingual sentence splitting regex

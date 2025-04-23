@@ -3,8 +3,11 @@ setup.py
 modified/__init__.py
 modified/kanji.py
 modified/modified_hangul.py
+modified/modified_hindi.py
+modified/modified_japanese.py
 modified/modified_kakasi.py
 modified/modified_pyarabic.py
+modified/modified_russian.py
 subtitles/__init__.py
 subtitles/add_metadata.py
 subtitles/combine_add_metadata.py

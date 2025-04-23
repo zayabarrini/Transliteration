@@ -1,7 +1,7 @@
 import os
 import shutil
 import sys
-from epubManagement import (
+from transliteration.epubManagement import (
     extract_epub,
     create_epub,
     find_text_folder,
@@ -10,8 +10,8 @@ from epubManagement import (
 SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic"]
 # SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
 
-from html2transliteration import process_folder
-from add_metadata_and_cover import add_metadata_and_cover
+from transliteration.html2transliteration import process_folder
+from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
 def get_language_from_filename(filename: str) -> str:
     """Extracts language from filename (e.g., 'hindi-book.epub' -> 'hindi')."""
