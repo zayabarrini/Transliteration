@@ -1,0 +1,32 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+deep-translator = "*"
+googletrans = "*"
+markdown-it-py = "*"
+pypandoc = "*"
+arabic-reshaper = "*"
+python-bidi = "*"
+arabic-to-roman = "*"
+watchdog = "*"
+pyyaml = "*"
+pydub = "*"
+hangul-romanize = "*"
+indic-transliteration = "*"
+pyarabic = "*"
+jieba = "*"
+transliterate = "*"
+flask = "*"
+setuptools = "*"
+pypinyin = "*"
+pykakasi = "*"
+transliteration-tools = {file = ".", editable = true}
+livereload = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

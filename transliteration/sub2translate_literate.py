@@ -3,20 +3,20 @@ import csv
 import time
 import sys
 import os
+import zipfile
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from transliteration.translationFunctions import translate_text, translate_parallel, TARGET_PATTERNS, LANGUAGE_CODE_MAP
 # from transliteration.filter_language_characters import filter_language_characters
 # from transliteration.transliteration import transliterate
-from translationFunctions import (
-    translate_text, 
-    # transliterate, 
+from transliteration import (
     translate_parallel,
     LANGUAGE_CODE_MAP,
-    LANGUAGE_STYLES, 
-    TARGET_PATTERNS
+    TARGET_PATTERNS,
+    filter_language_characters,
+    transliterate, 
+    add_furigana,
+    transliterate_for_subtitles
 )
-from filter_language_characters import filter_language_characters
-from transliteration import transliterate
 
 # Function to read an SRT file
 def read_srt(file_path):
@@ -66,7 +66,21 @@ def transliterate_srt(input_file: str, target_language: str) -> str:
                     
                     if filtered_text:  # Only process if target language text exists
                         output_lines.append(original_line + '\n')
-                        transliterated_line = transliterate(filtered_text, target_language)
+                        print(f"Transliterating: {filtered_text}")  # Debug
+                        transliterated_line = transliterate_for_subtitles(filtered_text, target_language)
+                        # transliterated_line = add_furigana(filtered_text, transliterated_line, target_language)
+
+                        if isinstance(transliterated_line, list):
+                            # For Japanese: list of dictionaries
+                            if target_language.lower() in ['ja', 'jp', 'japanese'] and transliterated_line and isinstance(transliterated_line[0], dict):
+                                # Extract the 'hepburn' romanization
+                                transliterated_line = ' '.join([item.get('hepburn', '') for item in transliterated_line])
+                            else:
+                                # For other cases where it might be a list of strings
+                                transliterated_line = ' '.join(str(item) for item in transliterated_line)
+                        elif not isinstance(transliterated_line, str):
+                            # Convert other non-string types to string
+                            transliterated_line = str(transliterated_line)
                         output_lines.append(transliterated_line + '\n')
                     else:
                         output_lines.append(original_line + '\n')
@@ -99,52 +113,59 @@ def process_srt(input_file, target_language, enable_translation=True, enable_tra
     if enable_translation:
         translated_lines = translate_parallel(lines, target_language)
 
+    transliterate_srt(input_file, target_language)
+    
     # Prepare output lines
-    output_lines_v1 = []
-    output_lines_v2 = []
-    output_lines_v3 = []
+    # output_lines_v1 = []
+    # output_lines_v2 = []
+    # output_lines_v3 = []
 
-    for line, processed_line in zip(lines, translated_lines):
-        # Skip SRT timestamps and line numbers
-        if re.match(r'^\d+$', line.strip()) or re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', line.strip()):
-            output_lines_v1.append(line)
-            output_lines_v2.append(line)
-            output_lines_v3.append(line)
-            continue
+    # for line, processed_line in zip(lines, translated_lines):
+    #     # Skip SRT timestamps and line numbers
+    #     if re.match(r'^\d+$', line.strip()) or re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', line.strip()):
+    #         output_lines_v1.append(line)
+    #         output_lines_v2.append(line)
+    #         output_lines_v3.append(line)
+    #         continue
 
-        # Add original and translated lines to Version 1
-        if enable_translation:
-            output_lines_v1.append(line)
-            output_lines_v1.append(processed_line + '\n')
-        else:
-            output_lines_v1.append(line)
+    #     # Add original and translated lines to Version 1
+    #     if enable_translation:
+    #         output_lines_v1.append(line)
+    #         output_lines_v1.append(processed_line + '\n')
+    #     else:
+    #         output_lines_v1.append(line)
 
-        # Add original, translated, and transliterated lines to Version 2
-        output_lines_v2.append(line)
-        if enable_translation:
-            output_lines_v2.append(processed_line + '\n')
-        if enable_transliteration:
-            line_to_transliterate = processed_line if enable_translation else line
-            line_without_headers = re.sub(r'^#+\s*', '', line_to_transliterate)
-            transliterated_line = transliterate(line_without_headers, target_language)
-            output_lines_v2.append(transliterated_line + '\n')
+    #     # Add original, translated, and transliterated lines to Version 2
+    #     output_lines_v2.append(line)
+    #     if enable_translation:
+    #         output_lines_v2.append(processed_line + '\n')
+    #     if enable_transliteration:
+    #         line_to_transliterate = processed_line if enable_translation else line
+    #         line_without_headers = re.sub(r'^#+\s*', '', line_to_transliterate)
+    #         transliterated_line = transliterate(line_without_headers, target_language)
+    #         output_lines_v2.append(transliterated_line + '\n')
 
-        # Add only target language lines to Version 3
-        if TARGET_PATTERNS.get(target_language).search(line):
-            output_lines_v3.append(line)
+    #     # Add only target language lines to Version 3
+    #     pattern = TARGET_PATTERNS.get(target_language.lower())  # Handle case insensitivity
+    #     if not pattern:  # Fallback: try to find by mapped code
+    #         mapped_code = LANGUAGE_CODE_MAP.get(target_language.lower())
+    #         pattern = TARGET_PATTERNS.get(mapped_code) if mapped_code else None
+            
+    #     if pattern and pattern.search(line):
+    #         output_lines_v3.append(line)
 
-    # Write output files
-    base_name = input_file.replace('.srt', '')
-    if enable_translation:
-        write_srt(f"{base_name}_{target_language}_v1.md", output_lines_v1)
-    if enable_transliteration:
-        write_srt(f"{base_name}_{target_language}_transliterated.md", output_lines_v2)
-    write_srt(f"{base_name}_{target_language}_no_latin.md", output_lines_v3)
+    # # Write output files
+    # base_name = input_file.replace('.srt', '')
+    # if enable_translation:
+    #     write_srt(f"{base_name}_{target_language}_v1.srt", output_lines_v1)
+    # if enable_transliteration:
+    #     write_srt(f"{base_name}_{target_language}_trans.srt", output_lines_v2)
+    # # write_srt(f"{base_name}_{target_language}_no_latin.srt", output_lines_v3)
 
-    # Print processing time
-    end_time = time.time()
-    processing_time = end_time - start_time
-    print(f"Time to process {input_file}: {processing_time:.2f} seconds")
+    # # Print processing time
+    # end_time = time.time()
+    # processing_time = end_time - start_time
+    # print(f"Time to process {input_file}: {processing_time:.2f} seconds")
 
 def process_zip(zip_file):
     # Determine processing mode based on zip filename
@@ -157,21 +178,33 @@ def process_zip(zip_file):
     else:
         enable_translation = True
         enable_transliteration = False
-    
+    print(f"Mode: translation={enable_translation}, transliteration={enable_transliteration}")  # Debug
+
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         for file_info in zip_ref.infolist():
             if file_info.filename.endswith('.srt'):
                 # Extract target_language from filename pattern "target_language"-filename.srt
-                match = re.match(r'^([a-z]{2})-.+\.srt$', file_info.filename)
-                if match:
-                    target_language = match.group(1)
-                    # Extract the file
-                    zip_ref.extract(file_info)
-                    # Process the file
-                    process_srt(file_info.filename, target_language, 
-                              enable_translation=enable_translation, 
-                              enable_transliteration=enable_transliteration)
+                print(f"Found file in zip: {file_info.filename}")  # Debug
 
+                match = re.match(r'^([a-zA-Z-]+?)-.+\.srt$', file_info.filename)
+                if match:
+                    language_key = match.group(1).lower()  # Normalize to lowercase
+                    target_language = LANGUAGE_CODE_MAP.get(language_key)
+                    
+                    if target_language:
+                        print(f"Processing: {file_info.filename} (detected language: {target_language})")
+                        zip_ref.extract(file_info)
+                        process_srt(
+                            file_info.orig_filename, 
+                            target_language, 
+                            enable_translation=enable_translation, 
+                            enable_transliteration=enable_transliteration
+                        )
+                    else:
+                        print(f"SKIPPED: Unsupported language '{language_key}' in filename '{file_info.filename}'")
+                else:
+                    print(f"SKIPPED: Filename '{file_info.filename}' doesn't match expected pattern.")
+                    
 # Function to process all SRT files listed in a CSV
 def process_csv(csv_file):
     with open(csv_file, 'r', encoding='utf-8') as f:
@@ -195,10 +228,12 @@ if __name__ == "__main__":
         Total subtitles should be: Cn,1 + Cn,2 + ... + Cn,n
         All the subtitles should be zipped together into Input_filename.zip
     """
-    csv_file = "/home/zaya/Downloads/trans.csv"
-    process_csv(csv_file)
-    input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Gosford-de-(ja).srt"
-    target_language = "japanese"
+    zip_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/subtitles/transliterate.zip"
+    process_zip(zip_file)
+    # csv_file = "/home/zaya/Downloads/trans.csv"
+    # process_csv(csv_file)
+    # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Gosford-de-(ja).srt"
+    # target_language = "japanese"
     # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Fargo-de-(ch).srt"
     # target_language = "chinese"
     # input_file = "/home/zaya/Downloads/Zayas/zayascinema/trans/Ghandi-ru-(ar).srt"
@@ -207,7 +242,7 @@ if __name__ == "__main__":
     # target_language = "hindi"    
 
     # process_srt(input_file, target_language, enable_transliteration=True)
-    transliterate_srt(input_file, target_language)
+    # transliterate_srt(input_file, target_language)
     
     # 'de', 'it', 'fr', 'ru', 'zh-CN', 'ja', 'hi', 'ar', 'ko', 'en', 'es'
     # target_language = ["de", "ru", "zh-cn"]

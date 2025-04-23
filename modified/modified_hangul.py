@@ -10,7 +10,6 @@ except NameError:
 
 class Syllable(object):
     """Hangul syllable interface"""
-
     MIN = ord(u'가')
     MAX = ord(u'힣')
 
@@ -53,127 +52,66 @@ class Syllable(object):
             self.code, self.char, self.initial, u'', self.vowel, u'', self.final, u'')
 
 
-# class Transliter(object):
-#     """General transliting interface"""
-
-#     def __init__(self, rule):
-#         self.rule = rule
-
-#     def translit(self, text):
-#         """Translit text to romanized text
-
-#         :param text: Unicode string or unicode character iterator
-#         """
-#         result = []
-#         pre = None, None
-#         now = None, None
-#         for c in text:
-#             try:
-#                 post = c, Syllable(c)
-#             except TypeError:
-#                 post = c, None
-
-#             if now[0] is not None:
-#                 out = self.rule(now, pre=pre, post=post)
-#                 if out is not None:
-#                     result.append(out)
-
-#             pre = now
-#             now = post
-
-#         if now is not None:
-#             out = self.rule(now, pre=pre, post=(None, None))
-#             if out is not None:
-#                 result.append(out)
-
-#         # return u''.join(result)
-#         return result
-
-# Return a list of (char, transliteration) tuples
-# class Transliter(object):
-#     """General transliting interface"""
-
-#     def __init__(self, rule):
-#         self.rule = rule
-
-#     def translit(self, text):
-#         """Translit text to romanized text and return a list of (char, transliteration) tuples.
-
-#         :param text: Unicode string or unicode character iterator
-#         :return: List of tuples (original_char, transliteration)
-#         """
-#         result = []
-#         pre = None, None
-#         now = None, None
-#         for c in text:
-#             try:
-#                 post = c, Syllable(c)
-#             except TypeError:
-#                 post = c, None
-
-#             if now[0] is not None:
-#                 out = self.rule(now, pre=pre, post=post)
-#                 if out is not None:
-#                     # Append a tuple of (original_char, transliteration)
-#                     result.append((now[0], out))
-
-#             pre = now
-#             now = post
-
-#         if now is not None:
-#             out = self.rule(now, pre=pre, post=(None, None))
-#             if out is not None:
-#                 # Append a tuple of (original_char, transliteration)
-#                 result.append((now[0], out))
-
-#         return result
-
-# Return a list of (word, transliteration) tuples
 class Transliter(object):
-    """General transliting interface"""
+    """General transliteration interface with enhanced Korean support"""
 
     def __init__(self, rule):
-        print("USING MODIFIED TRANSLITER!")
+        print("USING ENHANCED KOREAN TRANSLITERATION")
         self.rule = rule
+        # Define Korean punctuation and symbols that should remain unchanged
+        self.korean_punctuation = [' ', '.', ',', '!', '?', '。', '，', '！', '？', '、', 
+                                 '「', '」', '『', '』', '（', '）', '《', '》']
 
     def translit(self, text):
-        """Translit text to romanized text and return a list of (word, transliteration) tuples.
-
-        :param text: Unicode string or unicode character iterator
-        :return: List of tuples (original_word, transliteration)
+        """Translit Korean text to romanized text and return a list of (char, transliteration) pairs.
+        
+        Args:
+            text: Unicode string containing Korean text
+            
+        Returns:
+            List of tuples where each tuple is (original_char, transliteration)
         """
         result = []
-        pre = None, None
-        now = None, None
-        current_word = ""
-        current_trans = ""
-
+        pre = (None, None)
+        now = (None, None)
+        
         for c in text:
+            # Handle punctuation and spaces
+            if c in self.korean_punctuation:
+                if now[0] is not None:
+                    # Process the current character before handling punctuation
+                    out = self.rule(now, pre=pre, post=(c, None))
+                    if out is not None:
+                        result.append((now[0], out))
+                # Add the punctuation as-is
+                result.append((c, c))
+                pre = (None, None)
+                now = (None, None)
+                continue
+            
             try:
-                post = c, Syllable(c)
+                post = (c, Syllable(c))
             except TypeError:
-                post = c, None
+                # Not a Korean syllable
+                post = (c, None)
+                out = c  # Keep non-Korean characters as-is
+                result.append((c, out))
+                pre = now
+                now = post
+                continue
 
             if now[0] is not None:
                 out = self.rule(now, pre=pre, post=post)
                 if out is not None:
-                    # Append to current word and transliteration
-                    current_word += now[0]
-                    current_trans += out
+                    result.append((now[0], out))
 
-            # Handle spaces or delimiters to split into words
-            if c == ' ' or c in ['。', '，', '！', '？', '、', '「', '」', '『', '』', '（', '）', '《', '》']:
-                if current_word:
-                    result.append((current_word, current_trans))
-                    current_word = ""
-                    current_trans = ""
-                result.append((c, c))  # Append the delimiter as a separate tuple
-            else:
-                pre = now
-                now = post
+            pre = now
+            now = post
 
-        # Append the last word if it exists
-        if current_word:
-            result.append((current_word, current_trans))
+        # Process the last character if it exists
+        if now[0] is not None:
+            out = self.rule(now, pre=pre, post=(None, None))
+            if out is not None:
+                result.append((now[0], out))
 
         return result

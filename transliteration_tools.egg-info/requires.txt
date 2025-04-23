@@ -1,0 +1,7 @@
+pypinyin
+hangul-romanize
+indic-transliteration
+pykakasi
+pyarabic
+jieba
+transliterate

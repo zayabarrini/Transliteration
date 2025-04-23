@@ -2,4 +2,12 @@ Metadata-Version: 2.4
 Name: transliteration-tools
 Version: 0.1
 Requires-Python: >=3.6
+Requires-Dist: pypinyin
+Requires-Dist: hangul-romanize
+Requires-Dist: indic-transliteration
+Requires-Dist: pykakasi
+Requires-Dist: pyarabic
+Requires-Dist: jieba
+Requires-Dist: transliterate
+Dynamic: requires-dist
 Dynamic: requires-python

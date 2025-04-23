@@ -18,7 +18,9 @@ LANGUAGE_CODE_MAP = {
     'fr': 'fr',        # French
     'ru': 'ru',        # Russian
     'zh-ch': 'zh-CN',  # Chinese (Simplified)
+    'zh-CN': 'zh-CN',  # Chinese (Simplified)
     'jp': 'ja',        # Japanese
+    'ja': 'ja',        # Japanese
     'hi': 'hi',        # Hindi
     'ar': 'ar',        # Arabic
     'ko': 'ko',        # Korean
@@ -56,12 +58,21 @@ LANGUAGE_STYLES = {
 
 # Precompile regex patterns
 TARGET_PATTERNS = {
+    # Full names
     'chinese': re.compile(r'[\u4e00-\u9fff]'),
     'russian': re.compile(r'[\u0400-\u04FF]'),
     'hindi': re.compile(r'[\u0900-\u097F]'),
     'japanese': re.compile(r'[\u3040-\u30FF\u4E00-\u9FFF]'),
     'korean': re.compile(r'[\uAC00-\uD7AF]'),
     'arabic': re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]'),
+    
+    # Short codes (point to the same patterns as full names)
+    'zh-CN': re.compile(r'[\u4e00-\u9fff]'),  # Chinese
+    'ru': re.compile(r'[\u0400-\u04FF]'),     # Russian
+    'hi': re.compile(r'[\u0900-\u097F]'),     # Hindi
+    'ja': re.compile(r'[\u3040-\u30FF\u4E00-\u9FFF]'),  # Japanese
+    'ko': re.compile(r'[\uAC00-\uD7AF]'),     # Korean
+    'ar': re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]'),  # Arabic
 }
 
 @lru_cache(maxsize=1000)

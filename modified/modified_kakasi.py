@@ -4,13 +4,21 @@
 # Copyright 2011-2021 Hiroshi Miura <miurahr@linux.com>
 #
 import enum
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+import re
 
 import jaconv
 
-from .kanji import JConv
-from .properties import Ch
-from .scripts import A2, H2, IConv, K2, Sym2
+try:
+    # First try relative import (if this module is part of a package)
+    from .kanji import JConv
+    from .properties import Ch
+    from .scripts import A2, H2, IConv, K2, Sym2
+except ImportError:
+    # Fallback to direct import from pykakasi
+    from pykakasi.kanji import JConv
+    from pykakasi.properties import Ch
+    from pykakasi.scripts import A2, H2, IConv, K2, Sym2
 
 
 class PyKakasiException(Exception):
@@ -21,234 +29,93 @@ class UnknownCharacterException(PyKakasiException):
     pass
 
 
-class _TYPE(enum.Enum):
-    KANJI = 1
-    KANA = 2
-    HIRAGANA = 3
-    SYMBOL = 4
-    ALPHA = 5
-
-
-class _ACTION(enum.Enum):
-    NOBUFOUT_AND_OUTPUT_CURRENT_AND_NEXT = 1
-    BUFOUT_AND_SKIP_CURRENT = 2
-    BUFOUT_AND_OUTPUT_CURRENT_AND_NEXT = 3
-    PUT_AND_NEXT = 4
-    BUFOUT_AND_NEXT = 5
-    DO_NOTHING = 6
-
-
-# class Kakasi:
-#     """Kakasi is a conversion class for Japanese text."""
-
-#     def __init__(self):
-#         self._jconv = JConv()
-#         self._iconv = IConv()
-
-#     @classmethod
-#     def normalize(cls, text):
-#         return jaconv.normalize(text)
-
-#     def convert(self, text: str) -> List[Dict[str, str]]:
-#         """Convert input text to dictionary contains KANA, HIRA and romaji results."""
-
-#         if len(text) == 0:
-#             return [
-#                 {
-#                     "orig": "",
-#                     "kana": "",
-#                     "hira": "",
-#                     "hepburn": "",
-#                     "passport": "",
-#                     "kunrei": "",
-#                 }
-#             ]
-
-#         original_text = ""
-#         kana_text = ""
-#         _result = []
-#         i = 0
-#         prev_type = _TYPE.KANJI
-#         action_flag: _ACTION
-
-#         while i < len(text):
-#             if text[i] in Ch.endmark:
-#                 prev_type = _TYPE.SYMBOL
-#                 action_flag = _ACTION.BUFOUT_AND_NEXT
-#             elif text[i] in Ch.long_symbols:
-#                 # Just follow previous character type
-#                 # we don't change prev_type
-#                 action_flag = _ACTION.PUT_AND_NEXT
-#             elif K2.isRegion(text[i]):
-#                 if prev_type == _TYPE.KANA:
-#                     action_flag = _ACTION.PUT_AND_NEXT
-#                 else:
-#                     action_flag = _ACTION.BUFOUT_AND_NEXT
-#                 prev_type = _TYPE.KANA
-#             elif H2.isRegion(text[i]):
-#                 if prev_type == _TYPE.HIRAGANA:
-#                     action_flag = _ACTION.PUT_AND_NEXT
-#                 else:
-#                     action_flag = _ACTION.BUFOUT_AND_NEXT
-#                 prev_type = _TYPE.HIRAGANA
-#             elif A2.isRegion(text[i]):
-#                 if prev_type == _TYPE.ALPHA:
-#                     action_flag = _ACTION.PUT_AND_NEXT
-#                 else:
-#                     action_flag = _ACTION.BUFOUT_AND_NEXT
-#                 prev_type = _TYPE.ALPHA
-#             elif Sym2.isRegion(text[i]):
-#                 if prev_type != _TYPE.SYMBOL:
-#                     action_flag = _ACTION.BUFOUT_AND_NEXT
-#                 else:
-#                     action_flag = _ACTION.NOBUFOUT_AND_OUTPUT_CURRENT_AND_NEXT
-#                 prev_type = _TYPE.SYMBOL
-#             elif self._jconv.isRegion(text[i]):
-#                 # flush first
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 t, ln = self._jconv.convert(text[i:], original_text)
-#                 prev_type = _TYPE.KANJI
-#                 if ln > 0:
-#                     original_text = text[i : i + ln]
-#                     kana_text = t
-#                     i += ln
-#                     action_flag = _ACTION.DO_NOTHING
-#                 else:  # unknown kanji
-#                     original_text = text[i]
-#                     kana_text = ""
-#                     i += 1
-#                     action_flag = _ACTION.BUFOUT_AND_SKIP_CURRENT
-#             elif 0xF000 <= ord(text[i]) <= 0xFFFD or 0x10000 <= ord(text[i]) <= 0x10FFFD:
-#                 # PUA: ignore and drop
-#                 prev_type = _TYPE.SYMBOL
-#                 # flush first
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 i += 1
-#                 action_flag = _ACTION.DO_NOTHING
-#             else:
-#                 # flush first
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 _result.append(self._iconv.convert(text[i], ""))
-#                 i += 1
-#                 action_flag = _ACTION.DO_NOTHING
-
-#             # Convert to kana and Output based on flag
-#             if action_flag == _ACTION.BUFOUT_AND_OUTPUT_CURRENT_AND_NEXT:
-#                 original_text += text[i]
-#                 kana_text += text[i]
-#                 _result.append(self._iconv.convert(original_text, kana_text))
-#                 original_text = ""
-#                 kana_text = ""
-#                 i += 1
-#             elif action_flag == _ACTION.BUFOUT_AND_NEXT:
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 original_text = text[i]
-#                 kana_text = text[i]
-#                 i += 1
-#             elif action_flag == _ACTION.PUT_AND_NEXT:
-#                 original_text += text[i]
-#                 kana_text += text[i]
-#                 i += 1
-#             elif  action_flag == _ACTION.NOBUFOUT_AND_OUTPUT_CURRENT_AND_NEXT:
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 _result.append(self._iconv.convert(text[i], text[i]))
-#                 original_text = ""
-#                 kana_text = ""
-#                 i += 1
-#             elif action_flag == _ACTION.BUFOUT_AND_SKIP_CURRENT:
-#                 if len(original_text) > 0:
-#                     _result.append(self._iconv.convert(original_text, kana_text))
-#                 original_text = ""
-#                 kana_text = ""
-#                 i += 1
-#             elif action_flag == _ACTION.DO_NOTHING:
-#                 pass
-#             else:
-#                 pass
-
-#         # last word
-#         if len(original_text) > 0:
-#             _result.append(self._iconv.convert(original_text, kana_text))
-
-#         return _result
-
 class Kakasi:
-    """Kakasi is a conversion class for Japanese text."""
+    """Enhanced Kakasi conversion class for Japanese text with better furigana support."""
 
     def __init__(self):
         self._jconv = JConv()
         self._iconv = IConv()
+        # Define Japanese punctuation that should be handled specially
+        self.japanese_punctuation = [' ', '。', '、', '！', '？', '「', '」', '『', '』', '（', '）', '・']
 
     @classmethod
     def normalize(cls, text):
+        """Normalize Japanese text."""
         return jaconv.normalize(text)
 
     def convert(self, text: str) -> List[Dict[str, str]]:
-        """Convert input text to dictionary contains KANA, HIRA and romaji results."""
+        """Convert Japanese text to dictionary with detailed information for furigana.
+        
+        Returns:
+            List of dictionaries containing:
+            - orig: original character(s)
+            - kana: katakana representation
+            - hira: hiragana representation
+            - hepburn: Hepburn romanization
+            - passport: Passport romanization
+            - kunrei: Kunrei-shiki romanization
+        """
+        if not text:
+            return [{
+                "orig": "",
+                "kana": "",
+                "hira": "",
+                "hepburn": "",
+                "passport": "",
+                "kunrei": "",
+            }]
 
-        if len(text) == 0:
-            return [
-                {
-                    "orig": "",
-                    "kana": "",
-                    "hira": "",
-                    "hepburn": "",
-                    "passport": "",
-                    "kunrei": "",
-                }
-            ]
-
-        _result = []
+        result = []
         i = 0
+        length = len(text)
 
-        while i < len(text):
+        while i < length:
             char = text[i]
-            if char in Ch.endmark:
-                # Handle end marks
-                _result.append(self._iconv.convert(char, char))
+            
+            # Check for punctuation first
+            if char in self.japanese_punctuation:
+                result.append({
+                    "orig": char,
+                    "kana": char,
+                    "hira": char,
+                    "hepburn": char,
+                    "passport": char,
+                    "kunrei": char,
+                })
                 i += 1
-            elif char in Ch.long_symbols:
-                # Handle long symbols
-                _result.append(self._iconv.convert(char, char))
-                i += 1
-            elif K2.isRegion(char):
-                # Handle katakana
-                _result.append(self._iconv.convert(char, char))
-                i += 1
-            elif H2.isRegion(char):
-                # Handle hiragana
-                _result.append(self._iconv.convert(char, char))
-                i += 1
-            elif A2.isRegion(char):
-                # Handle alphanumeric characters
-                _result.append(self._iconv.convert(char, char))
-                i += 1
-            elif Sym2.isRegion(char):
-                # Handle symbols
-                _result.append(self._iconv.convert(char, char))
-                i += 1
-            elif self._jconv.isRegion(char):
-                # Handle kanji
-                t, ln = self._jconv.convert(text[i:], char)
-                if ln > 0:
-                    _result.append(self._iconv.convert(text[i:i+ln], t))
-                    i += ln
+                continue
+            
+            # Handle kanji (may be multi-character compounds)
+            if self._jconv.isRegion(char):
+                # Try to find the longest matching kanji compound
+                max_len = min(4, length - i)  # Max 4-character kanji compounds
+                for l in range(max_len, 0, -1):
+                    substring = text[i:i+l]
+                    reading, matched_len = self._jconv.convert(substring, substring)
+                    if matched_len > 0:
+                        converted = self._iconv.convert(substring, reading)
+                        result.append(converted)
+                        i += matched_len
+                        break
                 else:
-                    # Unknown kanji
-                    _result.append(self._iconv.convert(char, ""))
+                    # No match found, treat as unknown kanji
+                    result.append(self._iconv.convert(char, ""))
                     i += 1
-            elif 0xF000 <= ord(char) <= 0xFFFD or 0x10000 <= ord(char) <= 0x10FFFD:
-                # Handle PUA (Private Use Area) characters
-                _result.append(self._iconv.convert(char, ""))
-                i += 1
-            else:
-                # Handle other characters
-                _result.append(self._iconv.convert(char, ""))
-                i += 1
+                continue
+            
+            # Handle kana and other characters
+            if K2.isRegion(char):  # Katakana
+                converted = self._iconv.convert(char, char)
+            elif H2.isRegion(char):  # Hiragana
+                converted = self._iconv.convert(char, char)
+            elif A2.isRegion(char):  # Alphanumeric
+                converted = self._iconv.convert(char, char)
+            elif Sym2.isRegion(char):  # Symbols
+                converted = self._iconv.convert(char, char)
+            else:  # Unknown characters
+                converted = self._iconv.convert(char, "")
 
-        return _result
+            result.append(converted)
+            i += 1
+
+        return result
