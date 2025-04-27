@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Text Analyzer</title>
+    <link rel="stylesheet" href="/static/styles-jp.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Japanese Text Analyzer</h1>
+        <form method="POST">
+            <div class="form-group">
+                <textarea name="text" rows="5" placeholder="Enter Japanese text here..." required>{{ original_text or '' }}</textarea>
+            </div>
+            <button type="submit">Analyze</button>
+        </form>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+        <div class="results">
+            <h2>Analysis Results</h2>
+            <div class="original-text">
+                <h3>Original Text:</h3>
+                <p>{{ original_text }}</p>
+            </div>
+            
+            <div class="ruby-container">
+                {% for item in result %}
+                <ruby>
+                    {{ item.word }}
+                    <rt>{{ item.reading }}</rt>
+                    <rt class="rt-translation">{{ item.translation }}</rt>
+                </ruby>
+                {% endfor %}
+            </div>
+            
+            <div class="detailed-results">
+                <h3>Detailed Breakdown:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Japanese</th>
+                            <th>Romaji</th>
+                            <th>English</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in result %}
+                        <tr>
+                            <td>{{ item.word }}</td>
+                            <td>{{ item.reading }}</td>
+                            <td>{{ item.translation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

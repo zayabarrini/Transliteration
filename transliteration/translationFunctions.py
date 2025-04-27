@@ -77,27 +77,38 @@ TARGET_PATTERNS = {
 
 @lru_cache(maxsize=1000)
 def translate_text(text, target_language):
-    """Translate text to target language using Google Translate with caching."""
+    """Translate complete sentences with caching."""
     if not text.strip():
         return text
     
     try:
-        translated = GoogleTranslator(source='auto', target=LANGUAGE_CODE_MAP[target_language]).translate(text)
-        # print(f"Translated '{text}' to '{translated}' in {target_language}")
-        return translated if translated else text
+        # Use a more robust translation approach
+        translator = GoogleTranslator(source='auto', target=LANGUAGE_CODE_MAP[target_language])
+        # Clean the text first
+        clean_text = ' '.join(text.strip().split())
+        translated = translator.translate(clean_text)
+        return translated if translated and translated != clean_text else text
     except Exception as e:
         print(f"Error translating text: {e}")
         return text
 
-def translate_parallel(lines, target_language):
-    """Translate lines in parallel using ThreadPoolExecutor."""
-    print(f"Translating lines to {target_language}...")
+def translate_parallel(tokens, target_language):
+    """Translate individual words without caching."""
+    print(f"Translating {len(tokens)} tokens to {target_language}...")
+    
+    def translate_token(token):
+        if not token.strip() or not token.isalpha():
+            return token
+        try:
+            translator = GoogleTranslator(source='auto', target=LANGUAGE_CODE_MAP[target_language])
+            translated = translator.translate(token)
+            return translated if translated else token
+        except Exception as e:
+            print(f"Error translating token '{token}': {e}")
+            return token
+    
     with ThreadPoolExecutor() as executor:
-        translated_lines = list(executor.map(
-            lambda line: translate_text(line.strip(), target_language) if line.strip() and not re.match(r'^\d+$', line.strip()) and not re.match(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$', line.strip()) else line,
-            lines
-        ))
-    return translated_lines
+        return list(executor.map(translate_token, tokens))
 
 def normalize_language(language):
     """Normalize language input to standard language code."""

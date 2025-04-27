@@ -57,5 +57,8 @@ transliteration_tools.egg-info/top_level.txt
 web/__init__.py
 web/live.py
 web/server.py
+web/webCJKTranslator.py
+web/webTranslator.py
 web/webTransliteration.py
 web/webflask.py
+web/webflaskTrans.py

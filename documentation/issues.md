@@ -21,3 +21,20 @@ I had to modify each one of them
 - Fix Transliteration function on webflask: copy, modify, save my own transliteration project
 - languages: chinese, hindi, russian, arabic, korean, japanese
 - split + Calibre db translation + Epub Versions: transliterate Freudiana Ebooks
+
+
+# remove libraries
+
+300 MB
+sudo apt-get install mecab mecab-ipadic-utf8 libmecab-dev   
+
+500 MB
+sudo apt install openjdk-17-jdk
+
+Ports:
+
+5000: Transliteration
+5001: Translator by word
+5002: Translator by word
+5003: Translator by word - Chinese
+5004: Translator by word - Japanese

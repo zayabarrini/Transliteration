@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles3.css') }}">
+</head>
+<body>
+    <div class="input-form">
+        <h1>Text Translator</h1>
+        <form method="POST">
+            <textarea name="text" placeholder="Enter text to translate" required>{{ input_text }}</textarea>
+            <button type="submit">Translate</button>
+        </form>
+    </div>
+    
+    {% if results %}
+    <div class="result">
+        <h2>Translation Results</h2>
+        {% for result in results %}
+        <div class="language-block">
+            <h3>{{ result.language }}</h3>
+            <div class="original">{{ result.translation|safe }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>

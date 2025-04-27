@@ -1,0 +1,134 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 100px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.results {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.original-text {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.word-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    font-size: 24px;
+}
+
+ruby {
+    display: inline-flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+rt {
+    font-size: 14px;
+}
+
+rt.translation {
+    color: #e74c3c;
+    font-weight: bold;
+    order: 1;
+}
+
+rt:not(.translation) {
+    color: #7f8c8d;
+    order: -1;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+        margin-top: 10px;
+    }
+    
+    .word-breakdown {
+        font-size: 20px;
+    }
+    
+    rt {
+        font-size: 12px;
+    }
+}

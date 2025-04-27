@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJK Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles4.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>CJK Language Translator</h1>
+        <p class="subtitle">Chinese, Japanese, and Korean Word-by-Word Translation</p>
+        
+        <form method="POST">
+            <div class="form-group">
+                <textarea name="text" id="text" placeholder="Enter text to translate..." required>{{ original_text if original_text }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <select name="language" id="language" required>
+                    <option value="" disabled selected>Select Language</option>
+                    <option value="chinese" {% if lang_name == "Chinese" %}selected{% endif %}>Chinese</option>
+                    <option value="japanese" {% if lang_name == "Japanese" %}selected{% endif %}>Japanese</option>
+                </select>
+            </div>
+            
+            <button type="submit">Translate</button>
+        </form>
+        
+        {% if result %}
+        <div class="results">
+            <h2>Translation Results ({{ lang_name }})</h2>
+            <div class="original-text">
+                <p>{{ original_text }}</p>
+            </div>
+            
+            <div class="word-breakdown">
+                {% for item in result %}
+                <ruby>
+                    {{ item.word }}
+                    <rt class="translation">{{ item.translation }}</rt>
+                    <rt>{{ item.transliteration }}</rt>
+                </ruby>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

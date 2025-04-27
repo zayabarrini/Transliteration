@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-googletrans = "*"
 markdown-it-py = "*"
 pypandoc = "*"
 arabic-reshaper = "*"
@@ -26,6 +25,11 @@ transliteration-tools = {file = ".", editable = true}
 livereload = "*"
 deep-translator = "*"
 lxml = "*"
+googletrans = "*"
+fugashi = "*"
+konlpy = "*"
+korean-romanizer = "*"
+pinyin = "*"
 
 [dev-packages]
 
