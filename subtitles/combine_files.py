@@ -1,6 +1,17 @@
 import os
 from pathlib import Path
 
+def try_read_file(filepath):
+    """Try reading a file with different encodings."""
+    encodings = ['utf-8', 'iso-8859-1', 'windows-1252']
+    for encoding in encodings:
+        try:
+            with open(filepath, 'r', encoding=encoding) as f:
+                return f.read()
+        except UnicodeDecodeError:
+            continue
+    raise UnicodeDecodeError(f"Could not decode {filepath} with any of the tried encodings")
+
 def combine_files(directory, output_filename="combined_notes.md"):
     """
     Combine all .md and .srt files in a directory into a single markdown file.
@@ -26,28 +37,32 @@ def combine_files(directory, output_filename="combined_notes.md"):
             header = f"# {file.stem}\n\n"
             outfile.write(header)
             
-            # Read and write file content
-            with open(file, 'r', encoding='utf-8') as infile:
-                content = infile.read()
+            try:
+                # Read file content with appropriate encoding
+                content = try_read_file(file)
                 
                 # For SRT files, add markdown code block formatting
                 if file.suffix == '.srt':
-                    # outfile.write("```srt\n")
                     outfile.write(content)
-                    # outfile.write("\n```\n\n")
                     outfile.write("\n\n")
                 else:  # MD files
                     outfile.write(content)
                     outfile.write("\n\n")
+                
+                print(f"Added: {file.name}")
             
-            print(f"Added: {file.name}")
+            except UnicodeDecodeError as e:
+                print(f"Error reading {file.name}: {str(e)}")
+                continue
+            except Exception as e:
+                print(f"Error processing {file.name}: {str(e)}")
+                continue
     
     print(f"\nSuccessfully created combined file at:\n{output_path}")
 
 if __name__ == "__main__":
-    # target_directory = input("Enter directory path to scan for .md/.srt files: ").strip()
-    target_directory = "/home/zaya/Downloads/Workspace/Subtitles/Horror/Final-Destination"
-
+    target_directory = "/home/zaya/Downloads/Workspace/Subtitles/Europa-The-last-Battle"
+    
     if os.path.isdir(target_directory):
         combine_files(target_directory)
     else:

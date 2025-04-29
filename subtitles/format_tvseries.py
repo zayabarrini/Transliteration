@@ -82,7 +82,7 @@ def combine_subtitles(directory):
 
 if __name__ == "__main__":
     # directory = input("Enter directory containing subtitle files: ").strip()
-    directory = "/home/zaya/Downloads/Workspace/Subtitles/The-Wire"
+    directory = "/home/zaya/Downloads/Workspace/Subtitles/Europa-The-last-Battle"
 
     if os.path.isdir(directory):
         combine_subtitles(directory)

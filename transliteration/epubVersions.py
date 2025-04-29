@@ -10,15 +10,15 @@ def process_folder(folder_path: str):
             language = filename.split('-')[0].lower()
             
             # Option 1: Remove original text
-            epub_path_no_original = remove_original(epub_path)
+            # epub_path_no_original = remove_original(epub_path)
 
-            # if language in SUPPORTED_LANGUAGES:
-            #     # Option 2: Transliterate
-            #     transliterate_epub(epub_path)
+            if language in SUPPORTED_LANGUAGES:
+                # Option 2: Transliterate
+                transliterate_epub(epub_path)
                 # Option : Transliterate no_original
                 # transliterate_epub(epub_path_no_original)
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Documents/Ebooks/Revistas/Freudiana/db/du")
+    process_folder("/home/zaya/Documents/Ebooks/Flow/Grammar/Dictionaries/trans")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")

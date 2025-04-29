@@ -149,7 +149,7 @@ def get_pinyin_annotations(text):
     # Get pinyin with word grouping
     pinyin_list = lazy_pinyin(
         text,
-        style=Style.NORMAL,
+        style=Style.TONE,
         neutral_tone_with_five=True,
         errors=lambda x: [x] if x in exclude_chars else [''],
         strict=False
@@ -174,7 +174,7 @@ def get_pinyin_annotations(text):
             # Get pinyin for the entire word
             word_pinyin = lazy_pinyin(
                 word,
-                style=Style.NORMAL,
+                style=Style.TONE,
                 neutral_tone_with_five=True
             )
             
@@ -202,7 +202,6 @@ def add_furigana(text, transliteration, language):
     exclude_chars = [' ', '.', ',', '!', '?', '。', '，', '-', '！', '？', '、', '「', '」', '『', '』', '（', '）', '《', '》']
     if language == "japanese":
         trans_words = [item['hepburn'] for item in transliteration]
-        print(trans_words)
     elif language == "korean":
         trans_words = transliteration  # Use the list of tuples directly
     else:
@@ -305,7 +304,7 @@ def transliterate(input_text, language):
     if not input_text:
         return ""
     if language == "chinese":
-        # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.NORMAL))
+        # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
         return get_pinyin_annotations(input_text)
     elif language == "japanese":
         try:
