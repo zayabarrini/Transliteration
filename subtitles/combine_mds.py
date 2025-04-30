@@ -27,46 +27,54 @@ def generate_metadata(title, file_type="subtitles"):
     return yaml.dump(metadata, sort_keys=False, allow_unicode=True)
 
 def process_folder(folder_path):
-    """Process a folder to create combined file with metadata"""
-    # Determine if it's a TV series or movie
-    is_tv_series = any(re.search(r'[Ss]\d+[Ee]\d+', f.name) for f in folder_path.iterdir())
+    """Process all text and markdown files in a folder, merging them into one file"""
+    # Get all text and markdown files
+    text_files = list(folder_path.glob('*.{srt,txt}'))
+    md_files = list(folder_path.glob('*.md'))
     
-    # Get all text files
-    text_files = list(folder_path.glob('*.{srt,md,txt}'))
-    
-    if not text_files:
-        print(f"No text files found in {folder_path.name}")
+    if not text_files and not md_files:
+        print(f"No text or markdown files found in {folder_path.name}")
         return
     
     # Create output filename
     output_file = folder_path / f"{folder_path.name}.md"
-    
-    # Generate metadata
-    metadata = generate_metadata(folder_path.name, 
-                               "TV Subtitles" if is_tv_series else "Movie Subtitles")
+    metadata = generate_metadata(folder_path.name)
     
     # Write to file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(f"---\n{metadata}---\n\n")
         
-        for file in sorted(text_files):
-            # Add section header
-            if is_tv_series:
-                ep_match = re.search(r'([Ss]\d+[Ee]\d+)', file.stem)
-                if ep_match:
-                    f.write(f"## {ep_match.group(1)}\n\n")
+        # Process markdown files first
+        for file in sorted(md_files):
+            # Add section header with filename (without extension)
+            section_title = file.stem.replace('_', ' ').title()
+            f.write(f"# {section_title}\n\n")
             
             # Add file content
             try:
                 content = file.read_text(encoding='utf-8')
-                if file.suffix == '.{srt,md,txt}':
-                    f.write(f"{content}\n\n")
-                else:
-                    f.write(f"{content}\n\n")
+                f.write(f"{content}\n\n")
             except UnicodeDecodeError:
                 try:
                     content = file.read_text(encoding='latin-1')
                     f.write(f"{content}\n\n")
+                except Exception as e:
+                    print(f"Error reading {file}: {e}")
+        
+        # Process other text files
+        for file in sorted(text_files):
+            # Add section header with filename (without extension)
+            section_title = file.stem.replace('_', ' ').title()
+            f.write(f"# {section_title}\n\n")
+            
+            # Add file content
+            try:
+                content = file.read_text(encoding='utf-8')
+                f.write(f"```text\n{content}\n```\n\n")
+            except UnicodeDecodeError:
+                try:
+                    content = file.read_text(encoding='latin-1')
+                    f.write(f"```text\n{content}\n```\n\n")
                 except Exception as e:
                     print(f"Error reading {file}: {e}")
     
