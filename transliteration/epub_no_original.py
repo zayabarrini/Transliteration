@@ -49,7 +49,7 @@ def process_epub(epub_path: str) -> str:
     base_name = os.path.basename(epub_path).replace('.epub', '')
     language = get_language_from_filename(base_name)
     extract_to = epub_path.replace('.epub', '_temp')
-    output_path = epub_path.replace('.epub', '_no_original.epub')
+    output_path = epub_path.replace('.epub', '_no.epub')
 
     try:
         extract_epub(epub_path, extract_to)
@@ -58,7 +58,7 @@ def process_epub(epub_path: str) -> str:
         for file_path in get_xhtml_files(text_folder):
             remove_original_text(file_path)
             
-        add_metadata_and_cover(extract_to, base_name + '_no_original', language)
+        add_metadata_and_cover(extract_to, base_name + '_no', language)
 
         create_epub(extract_to, output_path)
         return output_path
