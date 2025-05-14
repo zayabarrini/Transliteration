@@ -38,11 +38,14 @@ def filter_language_characters(text: str, target_language: str) -> str:
             r'[\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uAC00-\uD7AF\uD7B0-\uD7FF]',
             "Hangul"
         ),
-        # 'ru': (  # Russian (Cyrillic)
-        #     r'[\u0400-\u04FF\u0500-\u052F]',
-        #     "Cyrillic"
-        # )
+        'ru': (  # Russian (Cyrillic)
+            r'[\u0400-\u04FF\u0500-\u052F]',
+            "Cyrillic"
+        )
     }
+    
+                # r'[\u0400-\u04FF\u0500-\u052F]',
+
     
     if target_language not in script_ranges:
         raise ValueError(f"Unsupported target language: {target_language}")
@@ -50,9 +53,54 @@ def filter_language_characters(text: str, target_language: str) -> str:
     pattern, _ = script_ranges[target_language]
     # Find all characters from the target script
     matched_chars = re.findall(pattern, text)
-    filtered_text = ''.join(matched_chars)
+    filtered_text = ' '.join(matched_chars)
     
     return filtered_text.strip()
+
+def filter_language_characters_preserve_spaces(text: str, target_language: str) -> str:
+    """
+    Filters text to keep only characters from the target language's script while
+    preserving spaces between words.
+    
+    Args:
+        text: Input text to filter
+        target_language: Language code (e.g., 'ru' for Russian)
+    
+    Returns:
+        Text containing only characters from the target language's script with preserved spaces
+    """
+    script_ranges = {
+        'ru': (r'[\u0400-\u04FF\u0500-\u052F]', "Cyrillic"),  # Russian Cyrillic
+        'hi': (  # Hindi (Devanagari)
+            r'[\u0900-\u097F\uA8E0-\uA8FF\u1CD0-\u1CFF]',
+            "Devanagari"
+        ),
+        'ar': (  # Arabic
+            r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]',
+            "Arabic"
+        ),    
+    }
+    
+    if target_language not in script_ranges:
+        raise ValueError(f"Unsupported target language: {target_language}")
+    
+    pattern, _ = script_ranges[target_language]
+    
+    # Split the text into words while preserving spaces
+    words = text.split()
+    filtered_words = []
+    
+    for word in words:
+        # Find all characters from the target script in this word
+        matched_chars = re.findall(pattern, word)
+        filtered_word = ''.join(matched_chars)
+        
+        # Only keep the word if it contains target language characters
+        if filtered_word:
+            filtered_words.append(filtered_word)
+    
+    # Rejoin words with spaces
+    return ' '.join(filtered_words)
 
 def get_language_script_name(target_language: str) -> str:
     """

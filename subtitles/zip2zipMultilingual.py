@@ -10,7 +10,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from concurrent.futures import ThreadPoolExecutor
 from transliteration.translationFunctions import translate_text, translate_parallel, transliterate, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
-from transliteration.filter_language_characters import filter_language_characters
+from transliteration.filter_language_characters import filter_language_characters, filter_language_characters_preserve_spaces
 from functools import lru_cache
 
 # Function to read an SRT file
@@ -643,17 +643,59 @@ def process_zip_of_srts(input_zip_path, target_languages, enable_transliteration
     
     return combined_zip_path
 
+def filter_md_by_language(input_file: str, target_language: str) -> str:
+    """
+    Filters the text in a Markdown file based on the target language, keeping only text
+    that matches the specified language's character set.
+    
+    Args:
+        input_file: Path to the input Markdown file
+        target_language: Language code for filtering (e.g., 'hi' for Hindi)
+    
+    Returns:
+        Path to the output filtered Markdown file
+    """
+    # Read the Markdown file
+    with open(input_file, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    
+    # Prepare output lines
+    output_lines = []
+    
+    for line in lines:
+        # Skip Markdown syntax lines (headers, lists, etc.)
+        if re.match(r'^[#]', line.strip()):
+            output_lines.append(line)
+            continue
+        
+        # Process regular text lines
+        filtered_text = filter_language_characters_preserve_spaces(line, target_language=LANGUAGE_CODE_MAP[target_language])
+        # filtered_text = filter_language_characters(line, target_language=LANGUAGE_CODE_MAP[target_language])
+        if filtered_text:
+            output_lines.append(filtered_text + '\n')
+    
+    # Write output file
+    output_file = input_file.replace('.md', f'_{target_language}_filtered.md')
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.writelines(output_lines)
+    
+    return output_file
+
 # Main function
 if __name__ == "__main__":
     # Example usage:
-    input_zip_path = "/home/zaya/Downloads/Zayas/zayascinema/trans/subs.zip"  # Replace with your input zip path
-    target_languages = ["de", "zh-ch"]  # Your target languages
+    # input_zip_path = "/home/zaya/Downloads/Zayas/zayascinema/trans/subs.zip"  # Replace with your input zip path
+    # target_languages = ["de", "zh-ch"]  # Your target languages
     
-    combined_zip = process_zip_of_srts(
-        input_zip_path,
-        target_languages,
-        enable_transliteration=True,
-        enable_styling=False
-    )
+    # combined_zip = process_zip_of_srts(
+    #     input_zip_path,
+    #     target_languages,
+    #     enable_transliteration=True,
+    #     enable_styling=False
+    # )
     
-    print(f"Created combined zip file: {combined_zip}")
+    # print(f"Created combined zip file: {combined_zip}")
+    
+    input_file = "/home/zaya/Documents/Gitrepos/Linktrees/Languages/Grammar/Russo-pt.md"
+    target_language = "ru"
+    filter_md_by_language(input_file, target_language)
