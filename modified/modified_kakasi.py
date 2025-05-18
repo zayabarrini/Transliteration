@@ -37,15 +37,18 @@ class Kakasi:
         self._iconv = IConv()
         # Define Japanese punctuation that should be handled specially
         self.japanese_punctuation = [' ', '。', '、', '！', '？', '「', '」', '『', '』', '（', '）', '・']
+        
+           # Regex pattern to match non-Japanese characters (excluding whitespace)
+        self.non_japanese_pattern = re.compile(r'[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\s]')
+
+    def is_japanese(self, text: str) -> bool:
+        """Check if text contains Japanese characters (hiragana, katakana, kanji)."""
+        return not self.non_japanese_pattern.search(text)
 
     @classmethod
     def normalize(cls, text):
         """Normalize Japanese text."""
         return jaconv.normalize(text)
-        
-    def is_latin(self, token):  # as instance method
-        """Check if a token contains only Latin characters, numbers, or basic punctuation."""
-        return bool(re.fullmatch(r'^[\w\s.,;:!?\'"()\-–—\[\]{}@#$%^&*+=/\\|~<>]+$', token, re.UNICODE))
 
     def convert(self, text: str) -> List[Dict[str, str]]:
         """Convert Japanese text to dictionary with detailed information for furigana.
@@ -76,11 +79,10 @@ class Kakasi:
         while i < length:
             char = text[i]
             
-            # if self.is_latin(char):
-            #     # Skip Latin characters
-            #     # result.append({})
-            #     i += 1
-            #     continue
+            # Skip non-Japanese characters (except whitespace)
+            if self.non_japanese_pattern.match(char) and char not in self.japanese_punctuation:
+                i += 1
+                continue
             
             # Check for punctuation first
             if char in self.japanese_punctuation:

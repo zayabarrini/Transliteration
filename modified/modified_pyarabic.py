@@ -173,10 +173,10 @@ def custom_utf82latin(s):
     i = 0
     while i < len(s):
         mychar = s[i]
-        # if is_latin(mychar):
-        #     mystr += mychar
-        #     i += 1
-        #     continue
+        # Skip if not Arabic or whitespace
+        if not ('\u0600' <= mychar <= '\u06FF' or mychar.isspace()):
+            i += 1
+            continue
         
         if mychar == 'ّ':  # Shadda (doubled consonant)
             if i > 0 and len(mystr) > 0:
