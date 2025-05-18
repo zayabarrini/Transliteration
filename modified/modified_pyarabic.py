@@ -163,16 +163,23 @@ custom_a2en_table = {
     '"': '"', "'": "'", '«': '"', '»': '"', 'ـ': '-',  # Tatweel (elongation)
 }
 
+def is_latin(token):
+    """Check if a token contains only Latin characters, numbers, or basic punctuation."""
+    return bool(re.fullmatch(r'^[\w\s.,;:!?\'"()\-–—\[\]{}@#$%^&*+=/\\|~<>]+$', token, re.UNICODE))
+
 def custom_utf82latin(s):
     """Custom transliteration from UTF-8 to Latin with plain English."""
-    print("USING MODIFIED ARABIC!")
-
-    mystr = u''
+    mystr = ''
     i = 0
     while i < len(s):
         mychar = s[i]
+        # if is_latin(mychar):
+        #     mystr += mychar
+        #     i += 1
+        #     continue
+        
         if mychar == 'ّ':  # Shadda (doubled consonant)
-            if i > 0:
+            if i > 0 and len(mystr) > 0:
                 mystr += mystr[-1]  # Double the preceding consonant
         else:
             mystr += custom_a2en_table.get(mychar, mychar)

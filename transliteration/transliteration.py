@@ -84,8 +84,8 @@ def format_transliteration(text):
     return formatted_text
 
 def is_latin(token):
-    """Check if a token contains only Latin characters."""
-    return bool(re.match(r'^[A-Za-z0-9\s\W_]+$', token))
+    """Check if a token contains only Latin characters, numbers, or basic punctuation."""
+    return bool(re.fullmatch(r'^[\w\s.,;:!?\'"()\-–—\[\]{}@#$%^&*+=/\\|~<>]+$', token, re.UNICODE))
 
 # def tokenize_text(text):
 #     """Tokenize the text into words and symbols."""

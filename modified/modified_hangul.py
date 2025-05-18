@@ -56,7 +56,7 @@ class Transliter(object):
     """General transliteration interface with enhanced Korean support"""
 
     def __init__(self, rule):
-        print("USING ENHANCED KOREAN TRANSLITERATION")
+        # print("USING ENHANCED KOREAN TRANSLITERATION")
         self.rule = rule
         # Define Korean punctuation and symbols that should remain unchanged
         self.korean_punctuation = [' ', '.', ',', '!', '?', '。', '，', '！', '？', '、', 

@@ -5,22 +5,60 @@ from transliteration.add_css import get_css_file, add_css_link  # Import from ou
 import os
 from transliteration.transliteration import transliterate, add_furigana, is_latin
 
-def process_html_content(soup, language):
-    """Recursively process all text nodes in the HTML and add transliteration."""
+# def process_html_content(soup, language):
+#     """Recursively process all text nodes in the HTML and add transliteration."""
+#     for element in soup.descendants:
+#         if isinstance(element, NavigableString) and element.strip():
+#             # Skip text nodes that are inside script or style tags
+#             if element.parent.name in ['script', 'style', 'ruby', 'rt']:
+#                 continue
+            
+#             if(is_latin(element)):
+#                 continue
+            
+#             # Transliterate the text content
+#             transliterated_text = transliterate(element, language)
+            
+#             # Replace the text node with the transliterated text
+#             element.replace_with(add_furigana(element, transliterated_text, language))
+
+
+def process_html_content(soup, language, keep_translations=True):
     for element in soup.descendants:
-        if isinstance(element, NavigableString) and element.strip():
-            # Skip text nodes that are inside script or style tags
-            if element.parent.name in ['script', 'style', 'ruby', 'rt']:
-                continue
+        if not (isinstance(element, NavigableString) and element.strip()):
+            continue
             
-            if(is_latin(element)):
-                continue
+        parent = getattr(element, 'parent', None)
+        if not parent or not hasattr(parent, 'name') or parent.name in ['script', 'style', 'ruby', 'rt']:
+            continue
             
-            # Transliterate the text content
+        # Get previous element sibling
+        prev = getattr(parent, 'previous_sibling', None)
+        while prev and not (hasattr(prev, 'name') and isinstance(prev.name, str)):
+            prev = getattr(prev, 'previous_sibling', None)
+        
+        # Check conditions
+        should_transliterate = False
+        try:
+            if keep_translations:
+                if 'dir' in parent.attrs or (prev and prev.get('lang') != parent.get('lang')):
+                    should_transliterate = True
+            else:
+                if prev and ('dir' in prev.attrs or prev.get('lang') != parent.get('lang')):
+                    if getattr(prev, 'name', None) not in ['head', 'meta', 'title', 'link']:
+                        should_transliterate = True
+        except AttributeError:
+            continue
+            
+        if not should_transliterate or is_latin(element):
+            continue
+            
+        try:
             transliterated_text = transliterate(element, language)
-            
-            # Replace the text node with the transliterated text
             element.replace_with(add_furigana(element, transliterated_text, language))
+        except Exception as e:
+            print(f"Error processing element: {e}")
+            continue
         
 def process_file(input_file, language, enable_transliteration, epub_folder=None):
     """

@@ -42,6 +42,10 @@ class Kakasi:
     def normalize(cls, text):
         """Normalize Japanese text."""
         return jaconv.normalize(text)
+        
+    def is_latin(self, token):  # as instance method
+        """Check if a token contains only Latin characters, numbers, or basic punctuation."""
+        return bool(re.fullmatch(r'^[\w\s.,;:!?\'"()\-–—\[\]{}@#$%^&*+=/\\|~<>]+$', token, re.UNICODE))
 
     def convert(self, text: str) -> List[Dict[str, str]]:
         """Convert Japanese text to dictionary with detailed information for furigana.
@@ -71,6 +75,12 @@ class Kakasi:
 
         while i < length:
             char = text[i]
+            
+            # if self.is_latin(char):
+            #     # Skip Latin characters
+            #     # result.append({})
+            #     i += 1
+            #     continue
             
             # Check for punctuation first
             if char in self.japanese_punctuation:
@@ -112,8 +122,10 @@ class Kakasi:
                 converted = self._iconv.convert(char, char)
             elif Sym2.isRegion(char):  # Symbols
                 converted = self._iconv.convert(char, char)
-            else:  # Unknown characters
-                converted = self._iconv.convert(char, "")
+            else:  # Non-Japanese characters
+                result.append({})
+                i += 1
+                continue
 
             result.append(converted)
             i += 1
