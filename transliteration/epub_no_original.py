@@ -2,6 +2,8 @@ import os
 import shutil
 from lxml import etree
 from transliteration.epubManagement import extract_epub, create_epub, find_text_folder, get_xhtml_files
+# from transliteration.epubManagementNew import extract_epub, create_epub, find_text_folder, get_xhtml_files
+
 from transliteration.epubTransliteration import get_language_from_filename
 from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
@@ -40,6 +42,8 @@ def remove_original_text(file_path: str) -> None:
                 parent = elem.getparent()
                 if parent is not None:
                     parent.remove(elem) 
+ 
+
 
     # Save the modified file
     tree.write(file_path, encoding='utf-8', pretty_print=True, xml_declaration=True)
@@ -54,7 +58,7 @@ def process_epub(epub_path: str) -> str:
     try:
         extract_epub(epub_path, extract_to)
         text_folder = find_text_folder(extract_to)
-
+        print(f"Text folder found: {text_folder}")
         for file_path in get_xhtml_files(text_folder):
             remove_original_text(file_path)
             
