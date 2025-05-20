@@ -13,8 +13,8 @@ def process_html_content(soup, language):
             if element.parent.name in ['script', 'style', 'ruby', 'rt']:
                 continue
             
-            if(is_latin(element)):
-                continue
+            # if(is_latin(element)):
+            #     continue
             
             # Transliterate the text content
             transliterated_text = transliterate(element, language)

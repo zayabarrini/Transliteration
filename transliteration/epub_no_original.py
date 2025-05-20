@@ -58,7 +58,6 @@ def process_epub(epub_path: str) -> str:
     try:
         extract_epub(epub_path, extract_to)
         text_folder = find_text_folder(extract_to)
-        print(f"Text folder found: {text_folder}")
         for file_path in get_xhtml_files(text_folder):
             remove_original_text(file_path)
             

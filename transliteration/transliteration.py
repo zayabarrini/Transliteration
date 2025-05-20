@@ -307,6 +307,9 @@ def transliterate(input_text, language):
         # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
         return get_pinyin_annotations(input_text)
     elif language == "japanese":
+        import pykakasi as original_pykakasi
+        test_kakasi = original_pykakasi.kakasi()
+        return test_kakasi.convert(input_text)
         try:
             from modified.modified_kakasi import Kakasi
             kakasi = Kakasi()
@@ -427,3 +430,12 @@ def format_transliteration(text):
                    for sentence in sentences)
     
     return text
+
+
+# Main function to test transliterate
+if __name__ == "__main__":
+    # Example usage
+    input_text = "Testing Japanese"
+    language = "japanese"
+    result = transliterate(input_text, language)
+    print(result)

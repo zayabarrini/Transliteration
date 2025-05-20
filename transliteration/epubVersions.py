@@ -10,7 +10,7 @@ def process_folder(folder_path: str):
             language = filename.split('-')[0].lower()
             
             # Option 1: Remove original text
-            epub_path_no_original = remove_original(epub_path)
+            # epub_path_no_original = remove_original(epub_path)
 
             if language in SUPPORTED_LANGUAGES:
                 # Option 2: Transliterate
