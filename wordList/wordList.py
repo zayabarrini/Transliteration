@@ -17,14 +17,22 @@ def generate_epubs(csv_file_path, output_dir='output', date=None):
         rows = list(reader)
     
     # for language in ['de', 'ru', 'ar', 'hi', 'ch', 'ja']:
-    for language in ['ch', 'ja']:
+    for language in ['de', 'ru', 'ar', 'hi', 'ch', 'ja', 'ko', 'fr', 'it', 'es', 'po', 'gr', 'hb']:
         lang_names = {
-            # 'de': 'German',
-            # 'ru': 'Russian',
-            # 'ar': 'Arabic',
-            # 'hi': 'Hindi'
+            'de': 'German',
+            'ru': 'Russian',
+            'ar': 'Arabic',
+            'hi': 'Hindi',
             'ch': 'Chinese',
-            'ja': 'Japanese'
+            'ja': 'Japanese',
+            'ko': 'Korean',
+            'fr': 'French',
+            'pt': 'Portuguese',
+            'it': 'Italian',
+            'es': 'Spanish',
+            'po': 'Polish',
+            'gr': 'Greek',
+            'hb': 'Hebrew'
         }
         random_number = random.randint(1, 211)
         
@@ -60,8 +68,8 @@ ibooks:
             words = []
             
             for row in rows:
-                if not row.get('en', '').strip():
-                    continue
+                # if not row.get('en', '').strip():
+                #     continue
                     
                 if row[language].startswith('#'):
                     md_content.append(f"\n{row[language]}\n\n")
@@ -105,6 +113,6 @@ ibooks:
                 print(f"Error converting to EPUB: {e}")
 
 if __name__ == "__main__":
-    csv_file_path = '/home/zaya/Downloads/Table.csv'
+    csv_file_path = '/home/zaya/Downloads/Words.csv'
     output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries'
     generate_epubs(csv_file_path, output_dir)

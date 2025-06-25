@@ -36,12 +36,12 @@ def generate_epub(csv_file_path, output_dir='output', date=None):
     }
     
     random_number = random.randint(1, 211)
-    base_name = "All-Sentences-With-Translations"
+    base_name = "Milano-With-Translations"
     
     metadata = f"""---
 title:
   - type: main
-    text: Sentences with Translations
+    text: Milano with Translations
   - type: subtitle
     text: Multilingual Vocabulary Builder
 creator:
