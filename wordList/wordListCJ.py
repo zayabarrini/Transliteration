@@ -8,7 +8,16 @@ import uuid
 from pypinyin import pinyin, Style  # For Chinese transliteration
 import pykakasi  # For Japanese romanization
 
-def generate_epubs(csv_file_path, output_dir='output', date=None):
+def generate_epubs(csv_file_path, output_dir='output', date=None, dictionary_name="Dictionary"):
+    """
+    Generate EPUB dictionaries from a CSV file.
+    
+    Args:
+        csv_file_path (str): Path to the CSV file
+        output_dir (str): Output directory for EPUB files
+        date (str): Date string in YYYY-MM-DD format (optional)
+        dictionary_name (str): Name of the dictionary to use in titles
+    """
     os.makedirs(output_dir, exist_ok=True)
     
     if date is None:
@@ -50,12 +59,12 @@ def generate_epubs(csv_file_path, output_dir='output', date=None):
         # Generate both versions (translated and non-translated)
         for version in ['', '-en']:
             is_translated = version == '-en'
-            base_name = f"Dictionary-{language}{version}-trans"
+            base_name = f"{dictionary_name}-{language}{version}"
             
             metadata = f"""---
 title:
   - type: main
-    text: Practice {lang_names[language]}{' with English' if is_translated else ''}
+    text: {dictionary_name} {lang_names[language]}{' with English' if is_translated else ''}
   - type: subtitle
     text: Vocabulary Builder
 creator:
@@ -140,6 +149,7 @@ ibooks:
                 print(f"Error converting to EPUB: {e}")
 
 if __name__ == "__main__":
-    csv_file_path = '/home/zaya/Downloads/Words.csv'
-    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries'
-    generate_epubs(csv_file_path, output_dir)
+    csv_file_path = '/home/zaya/Downloads/LGBT.csv'
+    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries/LGBT'
+    dictionary_name = "LGBT-Dictionary"  # You can change this to whatever dictionary name you want
+    generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
