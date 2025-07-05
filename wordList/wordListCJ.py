@@ -59,12 +59,12 @@ def generate_epubs(csv_file_path, output_dir='output', date=None, dictionary_nam
         # Generate both versions (translated and non-translated)
         for version in ['', '-en']:
             is_translated = version == '-en'
-            base_name = f"{dictionary_name}-{language}{version}"
+            base_name = f"{dictionary_name}-{language}{version}-trans"
             
             metadata = f"""---
 title:
   - type: main
-    text: {dictionary_name} {lang_names[language]}{' with English' if is_translated else ''}
+    text: {dictionary_name} {lang_names[language]}{' with English-trans' if is_translated else ''}
   - type: subtitle
     text: Vocabulary Builder
 creator:
@@ -145,11 +145,13 @@ ibooks:
             try:
                 subprocess.run(pandoc_cmd, check=True)
                 print(f"Successfully created {epub_filename}")
+                os.remove(md_filename)
+                print(f"Removed temporary file: {md_filename}")
             except subprocess.CalledProcessError as e:
                 print(f"Error converting to EPUB: {e}")
 
 if __name__ == "__main__":
-    csv_file_path = '/home/zaya/Downloads/LGBT.csv'
-    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries/LGBT'
-    dictionary_name = "LGBT-Dictionary"  # You can change this to whatever dictionary name you want
+    csv_file_path = '/home/zaya/Downloads/Directors.csv'
+    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries/Cinema'
+    dictionary_name = "Cinema-Directors"  # You can change this to whatever dictionary name you want
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
