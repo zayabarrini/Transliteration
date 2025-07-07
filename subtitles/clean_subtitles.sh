@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory where the files are located
-directory="/home/zaya/Downloads/Workspace/Subtitles/duh"
+directory="/home/zaya/Downloads/Actresses/Aux"
 
 # " First pass: Combine multiline subtitles under the same timestamp
 #     " This matches timestamp lines followed by text lines until next timestamp or empty line

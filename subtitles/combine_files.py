@@ -61,7 +61,7 @@ def combine_files(directory, output_filename="combined_notes.md"):
     print(f"\nSuccessfully created combined file at:\n{output_path}")
 
 if __name__ == "__main__":
-    target_directory = "/home/zaya/Downloads/Workspace/Subtitles/Europa-The-last-Battle"
+    target_directory = "/home/zaya/Downloads/Actresses"
     
     if os.path.isdir(target_directory):
         combine_files(target_directory)
