@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Test"
+DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/TVSeries/HP"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
 OUTPUT_EPUB="${directory_name}.epub"

@@ -139,5 +139,5 @@ def process_all_folders(root_directory):
 
 if __name__ == "__main__":
     # directory = input("Enter root directory containing movie folders: ").strip()
-    directory = "/home/zaya/Downloads/Workspace/Subtitles/Horror"
+    directory = "/home/zaya/Downloads/Workspace/Subtitles/TVSeries/HP"
     process_all_folders(directory)
