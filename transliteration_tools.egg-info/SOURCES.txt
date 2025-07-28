@@ -6,14 +6,10 @@ modified/modified_hangul.py
 modified/modified_hindi.py
 modified/modified_japanese.py
 modified/modified_kakasi.py
+modified/modified_kakasi_every_char.py
 modified/modified_pyarabic.py
 modified/modified_russian.py
 subtitles/__init__.py
-subtitles/add_metadata.py
-subtitles/combine_add_metadata.py
-subtitles/combine_files.py
-subtitles/combine_files_folder.py
-subtitles/format_filenames.py
 subtitles/format_tvseries.py
 subtitles/format_tvseries_folders.py
 subtitles/zip2zip.py
@@ -57,7 +53,8 @@ transliteration_tools.egg-info/top_level.txt
 web/__init__.py
 web/live.py
 web/server.py
-web/webCJKTranslator.py
+web/webChineseTranslator.py
+web/webJapaneseTranslator.py
 web/webTranslator.py
 web/webTransliteration.py
 web/webflask.py

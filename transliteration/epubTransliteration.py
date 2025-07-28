@@ -24,7 +24,7 @@ def verify_language(language: str) -> None:
         print(f"Supported languages: {', '.join(SUPPORTED_LANGUAGES)}")
         sys.exit(1)
 
-def process_epub(epub_path: str) -> str:
+def process_epub(epub_path: str, language: str) -> str:
     """
     Processes an EPUB for transliteration:
     1. Extracts EPUB
@@ -34,7 +34,7 @@ def process_epub(epub_path: str) -> str:
     Returns path to the generated EPUB.
     """
     base_name = os.path.basename(epub_path).replace('.epub', '')
-    language = get_language_from_filename(base_name)
+    # language = get_language_from_filename(base_name)
     verify_language(language)
 
     extract_to = epub_path.replace('.epub', '_temp')

@@ -30,6 +30,8 @@ fugashi = "*"
 konlpy = "*"
 korean-romanizer = "*"
 pinyin = "*"
+ebooklib = "*"
+langdetect = "*"
 
 [dev-packages]
 

@@ -41,7 +41,9 @@ def find_text_folder(extract_to: str) -> str:
         ('text', []),
         ('Text', []),
         ('EPUB', []),
-        ('', ['*.xhtml', '*.html'])  # Root directory with xhtml/html files
+        ('', ['*.xhtml', '*.html']),  # Root directory with xhtml/html files
+        # It may need to comment the next line if the text folder is not in the root
+        ('*', ['*.xhtml', '*.html']),  # Any directory with xhtml/html files
     ]
     
     # Check each possible pattern

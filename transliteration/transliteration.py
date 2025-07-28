@@ -192,6 +192,30 @@ def get_pinyin_annotations(text):
     
     return ''.join(result)
 
+def process_japanese_segment(text, soup):
+    """Process a segment of Japanese text into ruby annotations"""
+    import pykakasi
+    kks = pykakasi.kakasi()
+    analyzed = kks.convert(text)
+    
+    container = soup.new_tag("span")
+    
+    for item in analyzed:
+        original = item.get('orig', '')
+        romaji = item['hepburn']  # Use Latin transliteration
+        
+        if not original.strip():
+            container.append(original)
+        else:
+            ruby_tag = soup.new_tag("ruby")
+            ruby_tag.append(original)
+            rt_tag = soup.new_tag("rt")
+            rt_tag.string = romaji
+            ruby_tag.append(rt_tag)
+            container.append(ruby_tag)
+    
+    return container
+    
 # Function to add furigana to text
 def add_furigana(text, transliteration, language):
     language = language.lower()
@@ -200,48 +224,58 @@ def add_furigana(text, transliteration, language):
         return ""
     # tokens = text
     exclude_chars = [' ', '.', ',', '!', '?', '。', '，', '-', '！', '？', '、', '「', '」', '『', '』', '（', '）', '《', '》']
-    if language == "japanese":
-        trans_words = [item['hepburn'] for item in transliteration]
-    elif language == "korean":
+    # if language == "japanese":
+    #     trans_words = [item['hepburn'] for item in transliteration]
+    # el
+    if language == "korean":
         trans_words = transliteration  # Use the list of tuples directly
-    else:
-       trans_words = transliteration.split()
+    # else:
+    #    trans_words = transliteration.split()
+    
+    # if language == "japanese" and is_english(text):
+    #     return text
     
     furigana_text = []
     trans_index = 0
     if language == "japanese":
-        # Ensure we have valid transliteration data
-        if not isinstance(transliteration, list):
-            transliteration = [{"orig": c, "hepburn": c} for c in text]
-            
-        # Get original characters and romaji readings
-        segmented_chars = []
-        trans_words = []
+        # Japanese character ranges: Hiragana, Katakana, Kanji, and whitespace
+        japanese_pattern = re.compile(r'([\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\s]+)')
         
-        for item in transliteration:
-            if isinstance(item, dict) and 'orig' in item and 'hepburn' in item:
-                segmented_chars.append(item['orig'])
-                trans_words.append(item['hepburn'])
+        # Split text into Japanese and non-Japanese segments
+        segments = japanese_pattern.split(text)
+        
+        # If no Japanese text found, return original
+        if len(segments) == 1:
+            return text
+        from bs4 import BeautifulSoup
+    
+        soup = BeautifulSoup("", "html.parser")
+        result = []
+        
+        for segment in segments:
+            if not segment:
+                continue
+                
+            # Check if this segment is Japanese
+            if japanese_pattern.fullmatch(segment):
+                # Process Japanese text
+                ruby_segment = process_japanese_segment(segment, soup)
+                result.append(ruby_segment)
             else:
-                # Fallback for invalid items
-                char = item.get('orig', '') if isinstance(item, dict) else str(item)
-                segmented_chars.append(char)
-                trans_words.append(char)
+                # Keep non-Japanese as-is
+                result.append(segment)
         
-        # Generate furigana
-        trans_index = 0
-        for char in segmented_chars:
-            if trans_index < len(trans_words):
-                romaji = trans_words[trans_index]
-                trans_index += 1
-                if char.strip() == '' or char in exclude_chars:
-                    furigana_text.append(char)
+        # Combine all segments
+        if len(result) == 1:
+            return result[0]
+        else:
+            combined = soup.new_tag("span")
+            for item in result:
+                if isinstance(item, str):
+                    combined.append(item)
                 else:
-                    # Clean up romaji (remove numbers representing pitch accents)
-                    clean_romaji = re.sub(r'\d', '', romaji).strip()
-                    if not clean_romaji:
-                        clean_romaji = char
-                    furigana_text.append(f"<ruby>{char}<rt>{clean_romaji}</rt></ruby>")
+                    combined.append(item)
+            return combined
     elif language == "korean":
         # trans_words should already be a list of (char, trans) tuples
         # Ensure we have valid data
@@ -309,7 +343,10 @@ def transliterate(input_text, language):
     elif language == "japanese":
         import pykakasi as original_pykakasi
         test_kakasi = original_pykakasi.kakasi()
-        return test_kakasi.convert(input_text)
+        result = test_kakasi.convert(input_text)
+        # print(f"Transliteration result: {[{'orig': item['orig'], 'trans': item['hira'] or item['hepburn']} for item in result]}")
+        return [{'orig': item['orig'], 'trans': item['hepburn']} for item in result]
+
         try:
             from modified.modified_kakasi import Kakasi
             kakasi = Kakasi()
