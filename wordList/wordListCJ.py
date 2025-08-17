@@ -38,6 +38,8 @@ def generate_epubs(csv_file_path, output_dir='output', date=None, dictionary_nam
         rows = list(reader)
     
     for language in ['ja', 'ch']:
+        if not any(row.get(language, '').strip() for row in rows):
+            continue
         lang_names = {
             'de': 'German',
             'ru': 'Russian',
@@ -88,8 +90,8 @@ ibooks:
             words = []
             
             for row in rows:
-                if row[language].startswith('#'):
-                    md_content.append(f"\n{row[language]}\n\n")
+                if row[language] is None or row[language] == '' or str(row[language]).startswith('#'):
+                    md_content.append(f"\n{row['en']}\n\n")
                     continue
                     
                 if language in row and row[language].strip():
@@ -151,7 +153,7 @@ ibooks:
                 print(f"Error converting to EPUB: {e}")
 
 if __name__ == "__main__":
-    csv_file_path = '/home/zaya/Downloads/Words.csv'
-    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries/Base'
-    dictionary_name = "Dictionary"  # You can change this to whatever dictionary name you want
+    csv_file_path = '/home/zaya/Downloads/ch.csv'
+    output_dir = '/home/zaya/Documents/Ebooks/Flow/Dictionaries/Frequency'
+    dictionary_name = "Words-Frequency"  # You can change this to whatever dictionary name you want
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
