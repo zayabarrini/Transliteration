@@ -1,0 +1,308 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Syntax Analyzer</title>
+    <style>
+        :root {
+            --S: #1f77b4;   /* blue - Subject */
+            --O: #2ca02c;   /* green - Object */
+            --V: #d62728;   /* red - Verb */
+            --A: #9467bd;   /* purple - Adjunct */
+            --C: #ff7f0e;   /* orange - Conjunction */
+            --P: #bcbd22;   /* yellow - Pre/Postposition */
+            --X: #7f7f7f;   /* gray - Other */
+            --BG: #f7f7fb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        }
+        
+        body {
+            background: var(--BG);
+            color: #222;
+            padding: 24px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            text-align: center;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2a3a8c;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .chip {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chip::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .S { background: var(--S); }
+        .O { background: var(--O); }
+        .V { background: var(--V); }
+        .A { background: var(--A); }
+        .C { background: var(--C); }
+        .P { background: var(--P); color: #222; }
+        .X { background: var(--X); }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .syntax-token {
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            min-width: 80px;
+            text-align: center;
+            margin-right: 15px;
+        }
+        
+        .translation {
+            font-size: 14px;
+            color: #555;
+            font-style: italic;
+        }
+        
+        .syntax-function {
+            margin-left: auto;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: white;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .sentence-display {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 20px;
+            line-height: 1.8;
+            text-align: center;
+        }
+        
+        .token {
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: white;
+            margin: 0 2px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .token:hover::after {
+            content: attr(data-translation);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: 30px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .syntax-function {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hindi Syntax Analyzer</h1>
+        
+        <div class="legend">
+            <span class="chip S">Subject (S)</span>
+            <span class="chip O">Object (O)</span>
+            <span class="chip V">Verb (V)</span>
+            <span class="chip A">Adjunct (A)</span>
+            <span class="chip C">Conjunction (C)</span>
+            <span class="chip P">Pre/Postposition (P)</span>
+            <span class="chip X">Other (X)</span>
+        </div>
+        
+        <div class="input-section">
+            <form method="POST">
+                <textarea name="text" placeholder="Enter Hindi text to analyze..." required>{{ input_text }}</textarea>
+                <button type="submit">Analyze Syntax</button>
+            </form>
+        </div>
+        
+        <div class="loading" id="loading">
+            Analyzing syntax...
+        </div>
+        
+        {% if results %}
+            <div class="sentence-display">
+                {% for item in results %}
+                    <span class="token {{ item.syntax_function }}" data-translation="{{ item.translation }}">{{ item.token }}</span>
+                {% endfor %}
+            </div>
+            
+            <div class="results">
+                <h2>Detailed Analysis:</h2>
+                {% for item in results %}
+                    <div class="result-item">
+                        <span class="syntax-token {{ item.syntax_function }}">{{ item.token }}</span>
+                        <span class="translation">{{ item.translation }}</span>
+                        <span class="syntax-function {{ item.syntax_function }}">{{ item.syntax_function }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% if request.method == 'POST' %}
+                <div class="no-results">
+                    No results found or analysis failed. Please try a different sentence.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        // Add loading indicator for form submission
+        const form = document.querySelector('form');
+        const loading = document.getElementById('loading');
+        
+        if (form) {
+            form.addEventListener('submit', function() {
+                loading.style.display = 'block';
+            });
+        }
+        
+        // Add AJAX functionality for real-time analysis
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+            // Debounce function to limit API calls
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // Analyze text as user types (with debounce)
+            textarea.addEventListener('input', debounce(function(e) {
+                const text = e.target.value.trim();
+                if (text.length > 3) {
+                    // You could implement AJAX-based analysis here
+                    // For now, we'll just keep the form submission approach
+                }
+            }, 1000));
+        }
+    </script>
+</body>
+</html>

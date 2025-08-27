@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/TVSeries/HP"
+DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/Survivor/AU/SurvivorAuS13"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
 OUTPUT_EPUB="${directory_name}.epub"
@@ -86,21 +86,21 @@ END
 }
 
 # Step 1: Format filenames
-echo "Step 1/4: Formatting filenames..."
-find "$DIRECTORY" -type f | while read -r file; do
-    echo "Processing: $file"
-    base_name=$(basename "$file")
-    formatted_filename=$(format_filename "$base_name")
-    dir_path=$(dirname "$file")
+# echo "Step 1/4: Formatting filenames..."
+# find "$DIRECTORY" -type f | while read -r file; do
+#     echo "Processing: $file"
+#     base_name=$(basename "$file")
+#     formatted_filename=$(format_filename "$base_name")
+#     dir_path=$(dirname "$file")
     
-    # Only rename if the filename changed
-    if [ "$base_name" != "$formatted_filename" ]; then
-        mv "$file" "${dir_path}/$formatted_filename"
-        echo "Renamed to: ${dir_path}/$formatted_filename"
-    else
-        echo "No change needed for: $base_name"
-    fi
-done
+#     # Only rename if the filename changed
+#     if [ "$base_name" != "$formatted_filename" ]; then
+#         mv "$file" "${dir_path}/$formatted_filename"
+#         echo "Renamed to: ${dir_path}/$formatted_filename"
+#     else
+#         echo "No change needed for: $base_name"
+#     fi
+# done
 
 # Step 2: Clean subtitle files
 echo "Step 2/4: Cleaning subtitle files..."
