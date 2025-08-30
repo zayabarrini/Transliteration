@@ -675,8 +675,8 @@ def process_zip_of_srts(input_zip_path, target_languages, enable_transliteration
 # Main function
 if __name__ == "__main__":
     # Example usage:
-    input_zip_path = "/home/zaya/Downloads/Zayas/zayascinema/trans/subs.zip"  # Replace with your input zip path
-    target_languages = ["de", "zh-ch"]  # Your target languages
+    input_zip_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/subtitles/subtitles.zip"
+    target_languages = ["zh-ch"]  # Your target languages
     
     final_zip = process_zip_of_srts(
         input_zip_path,
