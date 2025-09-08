@@ -141,9 +141,9 @@ def process_folder(folder_path: str):
             epub_path_no_original = remove_original(epub_path)
             print(f"Processing {epub_path} for language: {language}")
 
-            if language in SUPPORTED_LANGUAGES:
-                # Option 2: Transliterate
-                transliterate_epub(epub_path, language)
+            # if language in SUPPORTED_LANGUAGES:
+            #     # Option 2: Transliterate
+            #     transliterate_epub(epub_path, language)
                 # Option : Transliterate no_original
                 # transliterate_epub(epub_path_no_original)
 

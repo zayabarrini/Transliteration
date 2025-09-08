@@ -7,43 +7,45 @@ from transliteration.epubManagement import extract_epub, create_epub, find_text_
 from transliteration.epubTransliteration import get_language_from_filename
 from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
-def remove_original_text(file_path: str, keep_translations: bool = True) -> None:
+def remove_original_text(file_path: str) -> None:
     """
-    Removes either original text or translated text based on keep_translations flag.
-    Assumes pattern: <p lang="en">English</p><p lang="de" dir="auto">German</p>
+    Removes only the original text elements (immediately before dir="auto" elements)
+    while preserving all other structure.
     """
     parser = etree.XMLParser(remove_blank_text=True, resolve_entities=False)
     tree = etree.parse(file_path, parser)
     root = tree.getroot()
     
-    # Find all paragraph elements with lang attribute
-    paragraphs = root.xpath('//p[@lang]')
+    keep_translations = False   # Set to False to keep originals instead
+
+    # Find all translated elements
+    # translations = root.xpath('//*[@dir="auto" or (@lang and not(@lang="en"))]')
+    translations = root.xpath('//*[@dir="auto" or (@lang)]')
     
-    elements_to_remove = []
+    # For each translation, remove its immediate previous sibling if it exists
+    # and doesn't have dir="auto"
+    # for elem in translations:
+    #     prev = elem.getprevious()
+    #     if keep_translations:
+    #         # When keeping translations, remove originals
+    #         if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
+    #             # This is likely a translation (has dir attribute or different lang from previous)
+    #             if (prev is not None and 
+    #                 prev.tag not in ['head', 'meta', 'title', 'link']):
+    #                 parent = prev.getparent()
+    #                 if parent is not None:
+    #                     parent.remove(prev)
+    #     else:
+    #         # When keeping originals, remove translations
+    #         if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
+    #             # This is likely a translation - remove it
+    #             parent = elem.getparent()
+    #             if parent is not None:
+    #                 parent.remove(elem) 
     
-    for i, elem in enumerate(paragraphs):
-        lang = elem.get('lang', '')
-        
-        if keep_translations:
-            # We want to keep translations, so remove English originals
-            if lang == 'en':
-                # Check if this English paragraph is followed by a translation
-                next_elem = elem.getnext()
-                if (next_elem is not None and 
-                    next_elem.tag == 'p' and 
-                    next_elem.get('lang') != 'en'):
-                    elements_to_remove.append(elem)
-        else:
-            # We want to keep originals, so remove translations
-            if lang != 'en':
-                # Check if this translation is preceded by an English original
-                prev_elem = elem.getprevious()
-                if (prev_elem is not None and 
-                    prev_elem.tag == 'p' and 
-                    prev_elem.get('lang') == 'en'):
-                    elements_to_remove.append(elem)
-    
-    # Remove the identified elements
+    # remove any remaining elements with lang="en"                
+    lang_to_remove = "en"
+    elements_to_remove = root.xpath(f'//*[@lang="{lang_to_remove}"]')
     for elem in elements_to_remove:
         parent = elem.getparent()
         if parent is not None:
@@ -51,7 +53,54 @@ def remove_original_text(file_path: str, keep_translations: bool = True) -> None
 
     # Save the modified file
     tree.write(file_path, encoding='utf-8', pretty_print=True, xml_declaration=True)
+    
+# def remove_original_text(file_path: str, keep_translations: bool = True) -> None:
+#     """
+#     Removes either original text or translated text based on keep_translations flag.
+#     Assumes pattern: <p lang="en">English</p><p lang="de" dir="auto">German</p>
+#     """
+#     parser = etree.XMLParser(remove_blank_text=True, resolve_entities=False)
+#     tree = etree.parse(file_path, parser)
+#     root = tree.getroot()
+    
+#     # Find all paragraph elements with lang attribute
+#     paragraphs = root.xpath('//p[@lang]')
+    
+#     elements_to_remove = []
+#     print(f"Total paragraphs with lang attribute: {len(paragraphs)}")
+#     for i, elem in enumerate(paragraphs):
+#         lang = elem.get('lang', '')
+#         print(f"Processing paragraph {i} with lang='{lang}':", etree.tostring(elem, encoding='unicode'))
+#         if keep_translations:
+#             # We want to keep translations, so remove English originals
+#             if lang == 'en':
+#                 print("Checking english original element:", etree.tostring(elem, encoding='unicode'))
+#                 # Check if this English paragraph is followed by a translation
+#                 prev_elem = elem.getprevious()
+#                 if (prev_elem is not None and 
+#                     prev_elem.tag == 'p' and 
+#                     prev_elem.get('lang') != 'en'):
+#                     elements_to_remove.append(elem)
+#                     print("Removing english original element:", etree.tostring(elem, encoding='unicode'))
+#         else:
+#             # We want to keep originals, so remove translations
+#             if lang != 'en':
+#                 # Check if this translation is preceded by an English original
+#                 prev_elem = elem.getprevious()
+#                 if (prev_elem is not None and 
+#                     prev_elem.tag == 'p' and 
+#                     prev_elem.get('lang') == 'en'):
+#                     elements_to_remove.append(elem)
+    
+#     # Remove the identified elements
+#     for elem in elements_to_remove:
+#         parent = elem.getparent()
+#         if parent is not None:
+#             parent.remove(elem)
 
+#     # Save the modified file
+#     tree.write(file_path, encoding='utf-8', pretty_print=True, xml_declaration=True)
+    
 def process_epub(epub_path: str) -> str:
     """Processes an EPUB to remove original text while preserving structure."""
     base_name = os.path.basename(epub_path).replace('.epub', '')
