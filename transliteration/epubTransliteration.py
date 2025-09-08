@@ -46,6 +46,7 @@ def process_epub(epub_path: str, language: str) -> str:
 
         # Process HTML files (transliteration)
         text_folder = find_text_folder(extract_to)
+        print(f"Text folder found: {text_folder}")
         process_folder(
             text_folder, 
             language, 

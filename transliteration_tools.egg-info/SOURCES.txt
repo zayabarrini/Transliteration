@@ -14,6 +14,7 @@ subtitles/format_tvseries.py
 subtitles/format_tvseries_folders.py
 subtitles/zip2zip.py
 subtitles/zip2zipMultilingual.py
+subtitles/zip2zipMultilingual_old.py
 tests/tests.py
 tests/tests_idea.py
 transliteration/__init__.py
@@ -54,8 +55,9 @@ web/__init__.py
 web/live.py
 web/server.py
 web/webChineseTranslator.py
-web/webJapaneseTranslator.py
+web/webHindi.py
+web/webJapaneseTranslator-error.py
 web/webTranslator.py
-web/webTransliteration.py
-web/webflask.py
-web/webflaskTrans.py
+web/webTransliteration-error.py
+web/webflask-error.py
+web/webflaskTrans-weird.py

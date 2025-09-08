@@ -11,8 +11,9 @@ def get_language_from_epub(epub_path: str) -> str:
     """Try to get language from EPUB using multiple methods with priority."""
     # Method 0: Check filename for language hints
     filename = os.path.basename(epub_path).lower()
-    if '-ja.' in filename or '_ja.' in filename:
-        return 'japanese'
+    get_language_from_epub = detect_language_from_filename(filename)
+    if get_language_from_epub in SUPPORTED_LANGUAGES:
+        return get_language_from_epub
 
     try:
         book = epub.read_epub(epub_path)
@@ -76,6 +77,26 @@ def get_language_from_epub(epub_path: str) -> str:
     
     return None
 
+def detect_language_from_filename(filename: str) -> str:
+    """Detect language from filename patterns for all supported languages."""
+    # Define language patterns for all supported languages
+    language_patterns = {
+        'japanese': ['-ja.', '_ja.', '-jp.', '_jp.', '-jpn.', '_jpn.'],
+        'korean': ['-ko.', '_ko.', '-kor.', '_kor.', '-kr.', '_kr.'],
+        'chinese': ['-zh.', '_zh.', '-ch.', '_ch.', '-chi.', '_chi.', '-cn.', '_cn.'],
+        'hindi': ['-hi.', '_hi.', '-hin.', '_hin.', '-in.', '_in.'],
+        'arabic': ['-ar.', '_ar.', '-ara.', '_ara.', '-ae.', '_ae.', '-sa.', '_sa.'],
+        'russian': ['-ru.', '_ru.', '-rus.', '_rus.', '-ru.', '_ru.']
+    }
+    
+    # Check for each language's patterns in the filename
+    for language, patterns in language_patterns.items():
+        for pattern in patterns:
+            if pattern in filename.lower():
+                return language
+    
+    return None
+
 def map_language_code(lang_code: str) -> str:
     """Map language codes to our supported language names."""
     lang_map = {
@@ -91,6 +112,7 @@ def map_language_code(lang_code: str) -> str:
         'ko': 'korean',
         'kor': 'korean',
         'zh': 'chinese',
+        'ch': 'chinese',
         'chi': 'chinese',
         'hi': 'hindi',
         'hin': 'hindi',
@@ -113,10 +135,11 @@ def process_folder(folder_path: str):
         if filename.endswith('.epub'):
             epub_path = os.path.join(folder_path, filename)
             language = get_language_from_epub(epub_path)
+            print(f"Detected language for {filename}: {language}")
             
             # Option 1: Remove original text
-            # epub_path_no_original = remove_original(epub_path)
-            # print(f"Processing {epub_path} for language: {language}")
+            epub_path_no_original = remove_original(epub_path)
+            print(f"Processing {epub_path} for language: {language}")
 
             if language in SUPPORTED_LANGUAGES:
                 # Option 2: Transliterate
@@ -126,6 +149,6 @@ def process_folder(folder_path: str):
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Downloads/Books/Theme/Mobius3Presentation/db/trans")
+    process_folder("/home/zaya/Downloads/Books/Theme/Literature/db-de/do")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")
 

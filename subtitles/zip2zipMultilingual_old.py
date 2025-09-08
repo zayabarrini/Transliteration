@@ -7,31 +7,16 @@ import zipfile
 from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor
 import sys
-import chardet  # Add this import for encoding detection
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from concurrent.futures import ThreadPoolExecutor
 from transliteration.translationFunctions import translate_text, translate_parallel, transliterate, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
 from transliteration.filter_language_characters import filter_language_characters, filter_language_characters_preserve_spaces
 from functools import lru_cache
 
-# Function to detect file encoding
-def detect_encoding(file_path):
-    with open(file_path, 'rb') as f:
-        raw_data = f.read()
-        result = chardet.detect(raw_data)
-        return result['encoding'] or 'utf-8'
-
-# Function to read an SRT file with encoding detection
+# Function to read an SRT file
 def read_srt(file_path):
-    encoding = detect_encoding(file_path)
-    try:
-        with open(file_path, 'r', encoding=encoding) as f:
-            return f.readlines()
-    except UnicodeDecodeError:
-        # Fallback to latin-1 if detected encoding fails
-        with open(file_path, 'r', encoding='latin-1') as f:
-            return f.readlines()
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.readlines()
 
 # Function to write an SRT file
 def write_srt(file_path, lines):
@@ -146,15 +131,9 @@ def generate_combination_srt(input_file, target_languages, combination, enable_t
     combination_name = '_'.join(combination)
     output_file = f"{base_name}_{combination_name}.srt"
     
-    # Read file with encoding detection
-    encoding = detect_encoding(input_file)
-    try:
-        with open(input_file, 'r', encoding=encoding) as f:
-            lines = [line.rstrip('\n') for line in f.readlines()]
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(input_file, 'r', encoding='latin-1') as f:
-            lines = [line.rstrip('\n') for line in f.readlines()]
+    # Read file with BOM handling
+    with open(input_file, 'r', encoding='utf-8-sig') as f:
+        lines = [line.rstrip('\n') for line in f.readlines()]
     
     # Extract all text content that needs translation
     text_lines = [line for line in lines if line.strip() and 
@@ -237,15 +216,9 @@ def generate_combination_srt(input_file, target_languages, combination, enable_t
 
 def process_single_language(input_file, target_language, output_file, enable_transliteration=False, enable_styling=False):
     """Process SRT file for a single target language with optional transliteration"""
-    # Read file with encoding detection
-    encoding = detect_encoding(input_file)
-    try:
-        with open(input_file, 'r', encoding=encoding) as f:
-            lines = [line.rstrip('\n') for line in f.readlines()]
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(input_file, 'r', encoding='latin-1') as f:
-            lines = [line.rstrip('\n') for line in f.readlines()]
+    # Read file and decode any BOM
+    with open(input_file, 'r', encoding='utf-8-sig') as f:
+        lines = [line.rstrip('\n') for line in f.readlines()]
     
     # Translate all text content (excluding timestamps and numbers)
     text_lines = [line for line in lines if line.strip() and 
@@ -327,6 +300,12 @@ def process_multilingual_srt(input_file, target_languages, enable_transliteratio
         output_file = f"{base_name}_{lang}.srt"
         process_single_language(input_file, lang, output_file, enable_transliteration, enable_styling)
         output_files.append(output_file)
+        
+        # Generate transliterated version if enabled
+        # if should_transliterate(lang, enable_transliteration):
+        #     print(f"Transliterating {lang}...")
+        #     transliterated_file = transliterate_srt(input_file, lang)
+        #     output_files.append(transliterated_file)
     
     # 2. Generate all combinations (2 by 2, 3 by 3, etc.)
     for r in range(2, len(target_languages)+1):
@@ -337,12 +316,21 @@ def process_multilingual_srt(input_file, target_languages, enable_transliteratio
     # 3. Create a zip file with all outputs
     zip_file = create_zip(input_file, output_files)
     
+    # 4. Clean up individual SRT files
+    # for srt_file in output_files:
+    #     try:
+    #         os.remove(srt_file)
+    #         print(f"Removed temporary file: {srt_file}")
+    #     except OSError as e:
+    #         print(f"Error removing {srt_file}: {e}")
+    
     end_time = time.time()
     processing_time = end_time - start_time
     print(f"Time to process {input_file}: {processing_time:.2f} seconds")
     print(f"Created zip file: {zip_file}")
     
     return zip_file
+
 
 def join_lines_if_starts_with_letter(lines):
     """Apply regex to join lines if next line starts with a letter"""
@@ -372,15 +360,9 @@ def join_lines_if_starts_with_letter(lines):
 
 def process_single_srt_file(srt_path, target_languages, enable_transliteration, enable_styling):
     """Process a single SRT file with the given parameters"""
-    # Read the SRT file with encoding detection
-    encoding = detect_encoding(srt_path)
-    try:
-        with open(srt_path, 'r', encoding=encoding) as f:
-            lines = f.readlines()
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(srt_path, 'r', encoding='latin-1') as f:
-            lines = f.readlines()
+    # Read the SRT file
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
     # Apply the line joining transformation
     transformed_lines = join_lines_if_starts_with_letter(lines)
@@ -408,7 +390,6 @@ def process_single_srt_file(srt_path, target_languages, enable_transliteration, 
         pass
     
     return zip_path
-
 # Cache translations to avoid repeating the same work
 @lru_cache(maxsize=1000)
 def cached_translate_text(text, lang):
@@ -456,15 +437,9 @@ def generate_combination_output(lines, translation_maps, transliteration_maps, o
 
 def optimized_process_single_srt_file(srt_path, target_languages, enable_transliteration, enable_styling):
     """Optimized version that caches translations and transliterations"""
-    # Read and transform the SRT file with encoding detection
-    encoding = detect_encoding(srt_path)
-    try:
-        with open(srt_path, 'r', encoding=encoding) as f:
-            lines = f.readlines()
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(srt_path, 'r', encoding='latin-1') as f:
-            lines = f.readlines()
+    # Read and transform the SRT file
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
     # Create translation and transliteration mappings
     translation_maps = {lang: {} for lang in target_languages}
@@ -573,15 +548,9 @@ def generate_single_language_output(lines, translation_map, transliteration_map,
             i += 1
 
 def merge_subtitle_lines(input_file, output_file=None):
-    # Read the SRT file with encoding detection
-    encoding = detect_encoding(input_file)
-    try:
-        with open(input_file, 'r', encoding=encoding) as f:
-            content = f.read()
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(input_file, 'r', encoding='latin-1') as f:
-            content = f.read()
+    # Read the SRT file
+    with open(input_file, 'r', encoding='utf-8') as f:
+        content = f.read()
     
     # Split into individual subtitle blocks
     blocks = re.split(r'\n\n+', content.strip())
@@ -686,15 +655,9 @@ def filter_md_by_language(input_file: str, target_language: str) -> str:
     Returns:
         Path to the output filtered Markdown file
     """
-    # Read the Markdown file with encoding detection
-    encoding = detect_encoding(input_file)
-    try:
-        with open(input_file, 'r', encoding=encoding) as f:
-            lines = f.readlines()
-    except UnicodeDecodeError:
-        # Fallback to latin-1
-        with open(input_file, 'r', encoding='latin-1') as f:
-            lines = f.readlines()
+    # Read the Markdown file
+    with open(input_file, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
     # Prepare output lines
     output_lines = []
@@ -707,6 +670,7 @@ def filter_md_by_language(input_file: str, target_language: str) -> str:
         
         # Process regular text lines
         filtered_text = filter_language_characters_preserve_spaces(line, target_language=LANGUAGE_CODE_MAP[target_language])
+        # filtered_text = filter_language_characters(line, target_language=LANGUAGE_CODE_MAP[target_language])
         if filtered_text:
             output_lines.append(filtered_text + '\n')
     
@@ -731,3 +695,7 @@ if __name__ == "__main__":
     )
     
     print(f"Created combined zip file: {combined_zip}")
+    
+    # input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/all_subtitles/1945-Rome-Open-City-it.srt"
+    # target_language = "zh-ch"
+    # filter_md_by_language(input_file, target_language)

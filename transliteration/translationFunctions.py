@@ -75,67 +75,148 @@ TARGET_PATTERNS = {
     'ar': re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]'),  # Arabic
 }
 
-@lru_cache(maxsize=1000)
+# Cache translator instances to avoid recreation
+_translator_cache = {}
+
+def get_translator(target_language):
+    """Get or create cached translator instance"""
+    lang_code = LANGUAGE_CODE_MAP.get(target_language, target_language)
+    if lang_code not in _translator_cache:
+        _translator_cache[lang_code] = GoogleTranslator(source='auto', target=lang_code)
+    return _translator_cache[lang_code]
+
+@lru_cache(maxsize=5000)  # Increased cache size
 def translate_text(text, target_language):
-    """Translate complete sentences with caching."""
+    """Translate complete sentences with caching and optimized translator usage."""
     if not text.strip():
         return text
     
+    # Quick check for very short or numeric text
+    clean_text = ' '.join(text.strip().split())
+    if len(clean_text) < 3 or clean_text.isdigit():
+        return clean_text
+    
     try:
-        # Use a more robust translation approach
-        translator = GoogleTranslator(source='auto', target=LANGUAGE_CODE_MAP[target_language])
-        # Clean the text first
-        clean_text = ' '.join(text.strip().split())
+        translator = get_translator(target_language)
         translated = translator.translate(clean_text)
-        return translated if translated and translated != clean_text else text
+        return translated if translated and translated != clean_text else clean_text
     except Exception as e:
-        print(f"Error translating text: {e}")
-        return text
+        print(f"Error translating text '{clean_text[:50]}...': {e}")
+        return clean_text
+
+# Batch translation function for better performance
+def batch_translate_texts(texts, target_language):
+    """Translate multiple texts in a batch for better performance"""
+    if not texts:
+        return []
+    
+    translator = get_translator(target_language)
+    results = []
+    
+    for text in texts:
+        if not text.strip():
+            results.append(text)
+            continue
+        
+        clean_text = ' '.join(text.strip().split())
+        if len(clean_text) < 3 or clean_text.isdigit():
+            results.append(clean_text)
+            continue
+        
+        try:
+            translated = translator.translate(clean_text)
+            results.append(translated if translated and translated != clean_text else clean_text)
+        except Exception as e:
+            print(f"Error in batch translation: {e}")
+            results.append(clean_text)
+    
+    return results
 
 def translate_parallel(tokens, target_language):
     """Translate individual words without caching."""
     print(f"Translating {len(tokens)} tokens to {target_language}...")
     
-    def translate_token(token):
-        if not token.strip() or not token.isalpha():
-            return token
-        try:
-            translator = GoogleTranslator(source='auto', target=LANGUAGE_CODE_MAP[target_language])
-            translated = translator.translate(token)
-            return translated if translated else token
-        except Exception as e:
-            print(f"Error translating token '{token}': {e}")
-            return token
+    # Filter out non-translatable tokens first
+    translatable_tokens = []
+    token_indices = []
     
-    with ThreadPoolExecutor() as executor:
-        return list(executor.map(translate_token, tokens))
+    for i, token in enumerate(tokens):
+        if token.strip() and token.isalpha() and len(token) > 1:
+            translatable_tokens.append(token)
+            token_indices.append(i)
+    
+    if not translatable_tokens:
+        return tokens
+    
+    def translate_batch(batch_tokens):
+        translator = get_translator(target_language)
+        translated_batch = []
+        for token in batch_tokens:
+            try:
+                translated = translator.translate(token)
+                translated_batch.append(translated if translated else token)
+            except Exception:
+                translated_batch.append(token)
+        return translated_batch
+    
+    # Process in smaller batches to avoid timeouts
+    batch_size = 50
+    translated_tokens = []
+    
+    for i in range(0, len(translatable_tokens), batch_size):
+        batch = translatable_tokens[i:i + batch_size]
+        translated_batch = translate_batch(batch)
+        translated_tokens.extend(translated_batch)
+    
+    # Reconstruct the full list
+    result = list(tokens)
+    for idx, translated in zip(token_indices, translated_tokens):
+        result[idx] = translated
+    
+    return result
 
 def normalize_language(language):
     """Normalize language input to standard language code."""
     language = language.lower().strip()
     return LANGUAGE_CODE_MAP.get(language, language)
 
+# Cache transliteration tools
+_transliteration_tools = {}
+
+def get_transliteration_tool(language):
+    """Get cached transliteration tool"""
+    if language not in _transliteration_tools:
+        if language == "zh-CN":
+            _transliteration_tools[language] = lambda text: ' '.join(pypinyin.lazy_pinyin(text, style=pypinyin.Style.TONE))
+        elif language == "ja":
+            kakasi = pykakasi.kakasi()
+            kakasi.setMode("H", "a")  # Hiragana to Romaji
+            kakasi.setMode("K", "a")  # Katakana to Romaji
+            kakasi.setMode("J", "a")  # Kanji to Romaji
+            _transliteration_tools[language] = kakasi.getConverter().do
+        elif language == "ru":
+            _transliteration_tools[language] = lambda text: translit(text, 'ru', reversed=True)
+        elif language == "hi":
+            _transliteration_tools[language] = lambda text: indic_transliterate(text, sanscript.DEVANAGARI, sanscript.ITRANS)
+        elif language == "ko":
+            transliter = Transliter(rule=academic)
+            _transliteration_tools[language] = transliter.translit
+        else:
+            _transliteration_tools[language] = lambda text: text
+    
+    return _transliteration_tools[language]
+
+@lru_cache(maxsize=5000)
 def transliterate(input_text, language):
-    """Transliterate text based on the target language."""
+    """Transliterate text based on the target language with caching."""
     if not input_text.strip():
         return input_text
     
     language = normalize_language(language)
-    if language == "zh-CN":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
-    elif language == "ja":
-        kakasi = pykakasi.kakasi()
-        kakasi.setMode("H", "a")  # Hiragana to Romaji
-        kakasi.setMode("K", "a")  # Katakana to Romaji
-        kakasi.setMode("J", "a")  # Kanji to Romaji
-        converter = kakasi.getConverter()
-        return converter.do(input_text)
-    elif language == "ru":
-        return translit(input_text, 'ru', reversed=True)
-    elif language == "hi":
-        return indic_transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
-    elif language == "ko":
-        transliter = Transliter(rule=academic)
-        return transliter.translit(input_text)
-    else:
-        return input_text  # For languages without a need for transliteration
+    transliteration_tool = get_transliteration_tool(language)
+    
+    try:
+        return transliteration_tool(input_text)
+    except Exception as e:
+        print(f"Error transliterating text: {e}")
+        return input_text
