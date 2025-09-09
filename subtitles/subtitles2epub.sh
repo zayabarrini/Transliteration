@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/Survivor/AU/SurvivorAuS13"
+DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/Lord-of-the-Rings/Cinema-Lord-of-the-Rings-Series"
+WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
 OUTPUT_EPUB="${directory_name}.epub"
 COVER_IMAGES_DIR="/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing"
+
+mkdir -p "$WORKING_DIR"
 
 # Function to format the file name using Python for more sophisticated processing
 format_filename() {
@@ -16,10 +19,10 @@ import re
 def format_filename(name):
     # Remove file extension
     name, ext = os.path.splitext(name)
-    
+
     # Replace dots or underscores with spaces
     name = re.sub(r'[._]', ' ', name)
-    
+
     # Keep only the name and the year (if available)
     match = re.match(r'(.*?)(\s\d{4})', name)
     if match:
@@ -27,7 +30,7 @@ def format_filename(name):
     else:
         # Remove everything after the first non-alphabetic group
         name = re.sub(r'[^a-zA-Z0-9\s]+.*$', '', name)
-        
+
     # Remove extra spaces and replace with single hyphen
     name = re.sub(r'\s+', '-', name).strip()
     # Add the extension back
@@ -78,21 +81,21 @@ ibooks:
 """
 
 # Write to temporary file
-with open("$DIRECTORY/metadata.yaml", "w") as f:
+with open("$WORKING_DIR/metadata.yaml", "w") as f:
     f.write(metadata)
 
 print("Metadata file generated with random cover image:", cover_image)
 END
 }
 
-# Step 1: Format filenames
+# # Step 1: Format filenames
 # echo "Step 1/4: Formatting filenames..."
 # find "$DIRECTORY" -type f | while read -r file; do
 #     echo "Processing: $file"
 #     base_name=$(basename "$file")
 #     formatted_filename=$(format_filename "$base_name")
 #     dir_path=$(dirname "$file")
-    
+
 #     # Only rename if the filename changed
 #     if [ "$base_name" != "$formatted_filename" ]; then
 #         mv "$file" "${dir_path}/$formatted_filename"
@@ -102,36 +105,61 @@ END
 #     fi
 # done
 
-# Step 2: Clean subtitle files
-echo "Step 2/4: Cleaning subtitle files..."
-for file in "$DIRECTORY"/*; do
-    if [[ ! -f "$file" ]]; then
-        continue
+# Step 1: Copy and format filenames
+echo "Step 1/4: Copying files to working directory and formatting filenames..."
+find "$DIRECTORY" -type f \( -name "*.srt" -o -name "*.md" \) | while read -r file; do
+    echo "Processing: $file"
+    base_name=$(basename "$file")
+    formatted_filename=$(format_filename "$base_name")
+
+    # Copy file to working directory with formatted name
+    cp "$file" "$WORKING_DIR/$formatted_filename"
+    echo "Copied to: $WORKING_DIR/$formatted_filename"
+done
+
+
+# Step 2: Clean subtitle files (working on copies)
+for file in "$WORKING_DIR"/*.srt; do
+    if [[ -f "$file" ]]; then
+        echo "Cleaning with perl: $(basename "$file")"
+
+        # Use perl to process the file
+        perl -i -0777 -pe '
+            # Remove BOM character
+            s/^\x{FEFF}//;
+
+            # Remove HTML tags
+            s/<[^>]*>//g;
+
+            # Remove timestamp blocks (line number + timestamp line)
+            s/^\d+\R\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
+
+            # Remove any remaining individual timestamp lines
+            s/^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
+
+            # Remove remaining line numbers
+            s/^\d+\R//mg;
+
+            # Remove leading/trailing whitespace from each line
+            s/^\s+|\s+$//mg;
+
+            # Join lines that should be together (continuations)
+            s/\R([a-z,])/ $1/g;
+
+            # THE KEY PART: Convert single newlines to double newlines (Vim equivalent)
+            # This is the Perl equivalent of: %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g
+            s/([^\n])\n([^\n])/$1\n\n$2/g;
+
+            # Clean up excessive newlines
+            s/\n{3,}/\n\n/g;
+
+            # Clean up any extra spaces
+            s/ +/ /g;
+            s/^\s+//;
+            s/\s+$//;
+
+        ' "$file"
     fi
-
-    echo "Cleaning: $file"
-    nvim -es "$file" <<EOF
-    " Step 1: Remove SRT timestamps and line numbers
-    g/^\d\+\n\d\{2\}:\d\{2\}:\d\{2\},\d\{3\} --> \d\{2\}:\d\{2\}:\d\{2\},\d\{3\}/d2
-
-    " Remove HTML italic tags
-    %s/<\/\?i>//g
-
-    " Delete all remaining empty lines (leaving only paragraph separators)
-    g/^$/d
-
-    " Remove unwanted space at beginning of lines
-    %s/^\s\+//
-
-    " Join lines if the next line starts with a lowercase letter
-    %s/\n\(\l\)/ \1/g
-
-    " Convert single newlines into double newlines (paragraph breaks)
-    %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g
-
-    " Save the changes and exit
-    wq
-EOF
 done
 
 # Step 3: Combine files into a single markdown
@@ -166,42 +194,42 @@ def combine_files(directory, output_filename):
     files = []
     for ext in ('*.md', '*.srt'):
         files.extend(Path(directory).glob(ext))
-    
+
     if not files:
         print(f"No .md or .srt files found in {directory}")
         return
-    
+
     files.sort()
-    
+
     with open(output_filename, 'w', encoding='utf-8') as outfile:
         for file in files:
             # Format header from filename (without extension)
             header_title = format_header(file.stem)
             header = f"# {header_title}\n\n"
             outfile.write(header)
-            
+
             try:
                 content = try_read_file(file)
-                
+
                 if file.suffix == '.srt':
                     outfile.write(content)
                     outfile.write("\n\n")
                 else:
                     outfile.write(content)
                     outfile.write("\n\n")
-                
+
                 print(f"Added: {file.name}")
-            
+
             except UnicodeDecodeError as e:
                 print(f"Error reading {file.name}: {str(e)}")
                 continue
             except Exception as e:
                 print(f"Error processing {file.name}: {str(e)}")
                 continue
-    
+
     print(f"\nSuccessfully created combined file at:\n{output_filename}")
 
-combine_files("$DIRECTORY", "$DIRECTORY/$OUTPUT_MD")
+combine_files("$WORKING_DIR", "$WORKING_DIR/$OUTPUT_MD")
 END
 
 # Step 4: Generate EPUB with metadata
@@ -210,22 +238,23 @@ if command -v pandoc &> /dev/null; then
     # Generate metadata file
     echo "Generating metadata..."
     generate_metadata
-    
+
     # Create EPUB with metadata and cover image
     echo "Creating EPUB with metadata..."
-    pandoc "$DIRECTORY/$OUTPUT_MD" \
-        --metadata-file="$DIRECTORY/metadata.yaml" \
+    pandoc "$WORKING_DIR/$OUTPUT_MD" \
+        --metadata-file="$WORKING_DIR/metadata.yaml" \
         --epub-cover-image="$COVER_IMAGES_DIR/$(ls $COVER_IMAGES_DIR | shuf -n 1)" \
         -o "$DIRECTORY/$OUTPUT_EPUB"
-    
-    # Clean up temporary files
-    rm "$DIRECTORY/$OUTPUT_MD" "$DIRECTORY/metadata.yaml"
-    echo "Temporary files removed."
-    
+
+    # Clean up working directory
+    rm -rf "$WORKING_DIR"
+    echo "Working directory removed."
+
     echo "EPUB generated at: $DIRECTORY/$OUTPUT_EPUB"
 else
     echo "Pandoc not found. EPUB generation skipped."
-    echo "Combined markdown file kept at: $DIRECTORY/$OUTPUT_MD"
+    echo "Combined markdown file kept at: $WORKING_DIR/$OUTPUT_MD"
+    echo "Working directory preserved at: $WORKING_DIR"
 fi
 
 echo "All operations completed!"
