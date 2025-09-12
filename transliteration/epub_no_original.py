@@ -16,7 +16,7 @@ def remove_original_text(file_path: str) -> None:
     tree = etree.parse(file_path, parser)
     root = tree.getroot()
     
-    keep_translations = False   # Set to False to keep originals instead
+    keep_translations = True   # Set to False to keep originals instead
 
     # Find all translated elements
     # translations = root.xpath('//*[@dir="auto" or (@lang and not(@lang="en"))]')
@@ -24,32 +24,32 @@ def remove_original_text(file_path: str) -> None:
     
     # For each translation, remove its immediate previous sibling if it exists
     # and doesn't have dir="auto"
-    # for elem in translations:
-    #     prev = elem.getprevious()
-    #     if keep_translations:
-    #         # When keeping translations, remove originals
-    #         if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
-    #             # This is likely a translation (has dir attribute or different lang from previous)
-    #             if (prev is not None and 
-    #                 prev.tag not in ['head', 'meta', 'title', 'link']):
-    #                 parent = prev.getparent()
-    #                 if parent is not None:
-    #                     parent.remove(prev)
-    #     else:
-    #         # When keeping originals, remove translations
-    #         if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
-    #             # This is likely a translation - remove it
-    #             parent = elem.getparent()
-    #             if parent is not None:
-    #                 parent.remove(elem) 
+    for elem in translations:
+        prev = elem.getprevious()
+        if keep_translations:
+            # When keeping translations, remove originals
+            if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
+                # This is likely a translation (has dir attribute or different lang from previous)
+                if (prev is not None and 
+                    prev.tag not in ['head', 'meta', 'title', 'link']):
+                    parent = prev.getparent()
+                    if parent is not None:
+                        parent.remove(prev)
+        else:
+            # When keeping originals, remove translations
+            if 'dir' in elem.attrib or (prev is not None and prev.get('lang') != elem.get('lang')):
+                # This is likely a translation - remove it
+                parent = elem.getparent()
+                if parent is not None:
+                    parent.remove(elem) 
     
-    # remove any remaining elements with lang="en"                
-    lang_to_remove = "en"
-    elements_to_remove = root.xpath(f'//*[@lang="{lang_to_remove}"]')
-    for elem in elements_to_remove:
-        parent = elem.getparent()
-        if parent is not None:
-            parent.remove(elem)
+    # # remove any remaining elements with lang="en"                
+    # lang_to_remove = "en"
+    # elements_to_remove = root.xpath(f'//*[@lang="{lang_to_remove}"]')
+    # for elem in elements_to_remove:
+    #     parent = elem.getparent()
+    #     if parent is not None:
+    #         parent.remove(elem)
 
     # Save the modified file
     tree.write(file_path, encoding='utf-8', pretty_print=True, xml_declaration=True)

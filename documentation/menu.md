@@ -47,3 +47,6 @@
 
 # 23/04/25
 Split Sentences Bulk + Ebook Versions Bulk
+
+# Inputs
+Epub, srt, zip (srt), Text for Translation (web), md, csv

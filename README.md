@@ -1,3 +1,16 @@
+# For What
+
+Multilingual Products, Tools for Reading/Listening
+
+# How to Use, Download and Install
+
+Menu.md
+
+## Requeriments
+
+python_version = "3.12"
+
+
 # Transliteration issues
 ## Arabic
 difference of one word, the first word does not have transliteration
@@ -117,3 +130,5 @@ Since I'm updating metadata
 Теперь я знаю, что он имел в виду себя.
 Я умоляю присяжных иметь в виду, что эта история чрезвычайно субъективна.
 Ни в коем случае не считается любой формой доказательства.
+
+

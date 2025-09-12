@@ -149,6 +149,6 @@ def process_folder(folder_path: str):
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Downloads/Books/Theme/Literature/db-de/do")
+    process_folder("/home/zaya/Downloads/Books/Theme/Zaya/db/do")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")
 

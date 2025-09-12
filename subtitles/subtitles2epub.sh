@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Workspace/Subtitles/Lord-of-the-Rings/Cinema-Lord-of-the-Rings-Series"
+DIRECTORY="/home/zaya/Documents/Gitrepos/Linktrees/ch-ru"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
@@ -9,6 +9,28 @@ OUTPUT_EPUB="${directory_name}.epub"
 COVER_IMAGES_DIR="/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing"
 
 mkdir -p "$WORKING_DIR"
+
+# Function to check if filename is already formatted
+is_filename_formatted() {
+    python3 - <<END
+import os
+import re
+
+def is_formatted(name):
+    # Check if filename is already formatted (no dots/underscores in main part)
+    name, ext = os.path.splitext(name)
+    
+    # If it contains dots or underscores in the main part, it's not formatted
+    if re.search(r'[._]', name):
+        return False
+    
+    # If it has spaces or hyphens instead of dots/underscores, it's formatted
+    return True
+
+original_name = "$1"
+print(is_formatted(original_name))
+END
+}
 
 # Function to format the file name using Python for more sophisticated processing
 format_filename() {
@@ -88,43 +110,34 @@ print("Metadata file generated with random cover image:", cover_image)
 END
 }
 
-# # Step 1: Format filenames
-# echo "Step 1/4: Formatting filenames..."
-# find "$DIRECTORY" -type f | while read -r file; do
-#     echo "Processing: $file"
-#     base_name=$(basename "$file")
-#     formatted_filename=$(format_filename "$base_name")
-#     dir_path=$(dirname "$file")
-
-#     # Only rename if the filename changed
-#     if [ "$base_name" != "$formatted_filename" ]; then
-#         mv "$file" "${dir_path}/$formatted_filename"
-#         echo "Renamed to: ${dir_path}/$formatted_filename"
-#     else
-#         echo "No change needed for: $base_name"
-#     fi
-# done
-
-# Step 1: Copy and format filenames
-echo "Step 1/4: Copying files to working directory and formatting filenames..."
+# Step 1: Copy files to working directory, format only if needed
+echo "Step 1/4: Copying files to working directory (formatting only if needed)..."
 find "$DIRECTORY" -type f \( -name "*.srt" -o -name "*.md" \) | while read -r file; do
     echo "Processing: $file"
     base_name=$(basename "$file")
-    formatted_filename=$(format_filename "$base_name")
+    
+    # Check if filename is already formatted
+    if is_filename_formatted "$base_name"; then
+        formatted_filename="$base_name"
+        echo "Filename already formatted: $base_name"
+    else
+        formatted_filename=$(format_filename "$base_name")
+        echo "Formatting filename: $base_name -> $formatted_filename"
+    fi
 
-    # Copy file to working directory with formatted name
+    # Copy file to working directory
     cp "$file" "$WORKING_DIR/$formatted_filename"
     echo "Copied to: $WORKING_DIR/$formatted_filename"
 done
 
-
 # Step 2: Clean subtitle files (working on copies)
+echo "Step 2/4: Cleaning subtitle files..."
 for file in "$WORKING_DIR"/*.srt; do
     if [[ -f "$file" ]]; then
         echo "Cleaning with perl: $(basename "$file")"
 
-        # Use perl to process the file
-        perl -i -0777 -pe '
+        # Use perl to process the file (your working regex)
+        perl -CSD -i -0777 -pe '
             # Remove BOM character
             s/^\x{FEFF}//;
 
@@ -159,6 +172,10 @@ for file in "$WORKING_DIR"/*.srt; do
             s/\s+$//;
 
         ' "$file"
+        
+        # Ensure UTF-8 encoding for non-Latin characters
+        iconv -f "$(file -bi "$file" | sed -e 's/.*charset=//')" -t UTF-8 "$file" > "${file}.utf8"
+        mv "${file}.utf8" "$file"
     fi
 done
 
@@ -171,7 +188,7 @@ from pathlib import Path
 
 def try_read_file(filepath):
     """Try reading a file with different encodings."""
-    encodings = ['utf-8', 'iso-8859-1', 'windows-1252']
+    encodings = ['utf-8', 'iso-8859-1', 'windows-1252', 'utf-16']
     for encoding in encodings:
         try:
             with open(filepath, 'r', encoding=encoding) as f:

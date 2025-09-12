@@ -51,7 +51,7 @@ Language pairs:
 - Rename
 - EbookVersions.py
 
-# Multilingual Products
+# Multilingual Products, Tools for Reading/Listening
 
 Multi-file Processing, single file processing
 E-book Split Sentences
@@ -66,7 +66,7 @@ E-Book Versions: epubVersions.py
 Subtitle Versions: subMultilingualVersions.py
 Webpage Version: html2transliteration.py
 
-E-book Split Sentences
+E-book Split Sentences (Break paragraphs into sentences for easier reading of double language ebooks)
     ## Multi-file
     input_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test'  # Update this path to your folder containing EPUB files
         output_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test/Output'  # Update this path to your desired output folder
@@ -75,7 +75,7 @@ E-book Split Sentences
     ## Single file
     process_epub(str(epub_file), str(output_path))
 
-E-Book Versions
+E-Book Versions (db, no_original, trans)
     ## Multi-file
         process_folder("/home/zaya/Documents/Ebooks")
     ## Single file
@@ -106,3 +106,7 @@ Webpage Version
     ## Single file
         process_file(input_filename, target_language, enable_transliteration, epub_folder)
 
+Generate Word/Sentence Lists
+Word/Translation/Transliteration
+Sentence/Translation/Transliteration
+Multilingual Ebook (sentence translation to n languages)

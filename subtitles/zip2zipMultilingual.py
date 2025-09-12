@@ -11,7 +11,7 @@ import chardet  # Add this import for encoding detection
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from concurrent.futures import ThreadPoolExecutor
-from transliteration.translationFunctions import translate_text, translate_parallel, transliterate, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
+from transliteration.translationFunctions import translate_text, translate_parallel, batch_translate_texts, transliterate, TARGET_PATTERNS, LANGUAGE_CODE_MAP, LANGUAGE_STYLES
 from transliteration.filter_language_characters import filter_language_characters, filter_language_characters_preserve_spaces
 from functools import lru_cache
 
@@ -132,7 +132,7 @@ def translate_srt_block(block, target_languages):
     
     # Translate to each target language
     for lang in target_languages:
-        translated_text = translate_text(original_text, lang)
+        translated_text = batch_translate_texts(original_text, lang)
         translated_blocks[lang] = {
             'original': original_text,
             'translated': translated_text
@@ -720,14 +720,22 @@ def filter_md_by_language(input_file: str, target_language: str) -> str:
 # Main function
 if __name__ == "__main__":
     # Example usage:
-    input_zip_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/all_subtitles/5.zip"
-    target_languages = ["zh-ch"]  # Your target languages
+    input_zip_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/test1.zip"
+    target_languages = ["zh-ch", "de" , "ru"]  # Your target languages
     
+    # set timer
+    start_time = time.time()
     combined_zip = process_zip_of_srts(
         input_zip_path,
         target_languages,
         enable_transliteration=True,
         enable_styling=False
     )
+    
+    # end timer
+    end_time = time.time()
+    # print(f"Processing time: {end_time - start_time:.2f} seconds")
+    # time in minutes
+    print(f"Processing time: {(end_time - start_time)/60:.2f} minutes")
     
     print(f"Created combined zip file: {combined_zip}")

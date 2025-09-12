@@ -1,3 +1,5 @@
+# Running webApplication (Flask) on the phone 
+
 graph TD
     A[Boot Phone] --> B[Termux: sshd starts automatically]
     C[Ubuntu: mount ~/termux_transliteration] --> D[Edit in VS Code]
