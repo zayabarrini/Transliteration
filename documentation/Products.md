@@ -1,3 +1,19 @@
+# Zaya Barrini Products
+
+cards
+zayasapp
+zayascinema
+zayasCRM
+zayaslanguage
+ZayasTransliteration
+zayaweb
+
+# Inspiration
+
+Toward a Global Topological Psychology
+
+https://zayabarrini.vercel.app/blog/posts/Psychoanalysis-Topology-NdP-Chinese
+
 # Files
 Subtitles
 md
