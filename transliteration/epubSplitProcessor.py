@@ -18,11 +18,11 @@ def process_epub_folder(input_folder, output_folder=None):
     
     for epub_file in input_folder.glob('*.epub'):
         # Skip already processed files (those starting with 's-')
-        if epub_file.name.startswith('s-'):
+        if epub_file.name.endswith('-s'):
             skipped_count += 1
             continue
             
-        output_path = output_folder / f"s-{epub_file.name}"
+        output_path = output_folder / f"{epub_file.name.replace(".epub", "")}-s.epub"
         
         try:
             print(f"Processing: {epub_file.name} → {output_path.name}")
@@ -45,6 +45,6 @@ if __name__ == "__main__":
     # input_folder = sys.argv[1]
     # output_folder = sys.argv[2] if len(sys.argv) > 2 else None
     # /home/zaya/Documents/Ebooks/Flow/Transliteration/Process
-    input_folder = '/home/zaya/Downloads/Process'
-    output_folder = '/home/zaya/Downloads/Process'  # Update this path to your desired output folder
+    input_folder = '/home/zaya/Downloads/Books/Theme/Literature/split/done/a'
+    output_folder = '/home/zaya/Downloads/Books/Theme/Literature/split/done' 
     process_epub_folder(input_folder, output_folder)

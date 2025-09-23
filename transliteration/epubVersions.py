@@ -137,7 +137,7 @@ def process_folder(folder_path: str):
             language = get_language_from_epub(epub_path)
             print(f"Detected language for {filename}: {language}")
             
-            # Option 1: Remove original text
+            ## Option 1: Remove original text
             # epub_path_no_original = remove_original(epub_path)
             # print(f"Processing {epub_path} for language: {language}")
 
@@ -149,6 +149,6 @@ def process_folder(folder_path: str):
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Downloads/Zayas/zayascinema/Music/a/trans")
+    process_folder("/home/zaya/Downloads/a")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")
 

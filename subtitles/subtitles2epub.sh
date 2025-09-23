@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Documents/Gitrepos/Linktrees/ch-ru"
+DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/TheBeautyOf_all_subtitles-de-en-ru"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
@@ -157,7 +157,10 @@ for file in "$WORKING_DIR"/*.srt; do
             s/^\s+|\s+$//mg;
 
             # Join lines that should be together (continuations)
-            s/\R([a-z,])/ $1/g;
+            # s/\R([a-z,])/ $1/g;
+
+            # Remove hash symbols
+            s/#//g;
 
             # THE KEY PART: Convert single newlines to double newlines (Vim equivalent)
             # This is the Perl equivalent of: %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g

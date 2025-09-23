@@ -53,7 +53,10 @@ def filter_language_characters(text: str, target_language: str) -> str:
     pattern, _ = script_ranges[target_language]
     # Find all characters from the target script
     matched_chars = re.findall(pattern, text)
-    filtered_text = ' '.join(matched_chars)
+    if(target_language == 'zh-CN' or target_language == 'ja' or target_language == 'zh-ch' or target_language == 'ko'):
+            filtered_text = ''.join(matched_chars)
+    else:
+        filtered_text = ' '.join(matched_chars)
     
     return filtered_text.strip()
 
@@ -107,7 +110,8 @@ def get_language_script_name(target_language: str) -> str:
     Returns the name of the script for a given language code.
     """
     script_ranges = {
-        'zh-CN': "Chinese (Han)",
+        'zh-CN': "Chinese (Han)",   
+        'zh-ch': "Chinese (Han)",
         'hi': "Devanagari",
         'ar': "Arabic",
         'ja': "Japanese",

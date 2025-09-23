@@ -91,7 +91,7 @@ E-book Split Sentences (Break paragraphs into sentences for easier reading of do
     ## Single file
     process_epub(str(epub_file), str(output_path))
 
-E-Book Versions (db, no_original, trans)
+E-Book Versions (db, no_original, trans, bilingual, trilingual, transliteration on/off)
     ## Multi-file
         process_folder("/home/zaya/Documents/Ebooks")
     ## Single file
@@ -128,6 +128,9 @@ Sentence/Translation/Transliteration
 Multilingual Ebook (sentence translation to n languages)
 
 # Ebook Lists
+
+ar, ch, de, en, es, fr, gr, hb, hi, id, it, ja, jp, ko, la, ml, po, pt, ru, sw, tu
+Versions: originals, double translation (db), db-no, db-trans, split (into sentences - break long paragraphs for easier double language reading) (-s)
 
 ## Themes 
 

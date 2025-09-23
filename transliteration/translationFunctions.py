@@ -189,15 +189,33 @@ def get_transliteration_tool(language):
         if language == "zh-CN":
             _transliteration_tools[language] = lambda text: ' '.join(pypinyin.lazy_pinyin(text, style=pypinyin.Style.TONE))
         elif language == "ja":
-            kakasi = pykakasi.kakasi()
-            kakasi.setMode("H", "a")  # Hiragana to Romaji
-            kakasi.setMode("K", "a")  # Katakana to Romaji
-            kakasi.setMode("J", "a")  # Kanji to Romaji
-            _transliteration_tools[language] = kakasi.getConverter().do
+            kks = pykakasi.kakasi()
+            # Modern pykakasi doesn't need setMode, it automatically handles all Japanese scripts
+            def transliterate_japanese(text):
+                result = kks.convert(text)
+                return ' '.join(item['hepburn'] for item in result)
+
+            _transliteration_tools[language] = transliterate_japanese
         elif language == "ru":
             _transliteration_tools[language] = lambda text: translit(text, 'ru', reversed=True)
         elif language == "hi":
-            _transliteration_tools[language] = lambda text: indic_transliterate(text, sanscript.DEVANAGARI, sanscript.ITRANS)
+            def transliterate_hindi(text):
+                # First transliterate
+                transliterated = indic_transliterate(text, sanscript.DEVANAGARI, sanscript.ITRANS)
+                # Fix spacing issues - remove extra spaces between syllables
+                # Join syllables properly and clean up spacing
+                words = transliterated.split()
+                cleaned_words = []
+                for word in words:
+                    # Remove excessive internal spacing while preserving word boundaries
+                    cleaned_word = ' '.join(word.split())  # Normalize internal spaces
+                    cleaned_words.append(cleaned_word)
+                return ' '.join(cleaned_words)
+            
+            _transliteration_tools[language] = transliterate_hindi
+        elif language == "ar":
+            from modified.modified_pyarabic import custom_utf82latin as custom_arabic
+            _transliteration_tools[language] = custom_arabic
         elif language == "ko":
             transliter = Transliter(rule=academic)
             _transliteration_tools[language] = transliter.translit

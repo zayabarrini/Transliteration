@@ -153,7 +153,7 @@ ibooks:
                 print(f"Error converting to EPUB: {e}")
 
 if __name__ == "__main__":
-    csv_file_path = '/home/zaya/Downloads/mo.csv'
-    output_dir = '/home/zaya/Downloads/Books/Theme/Mobius3'
-    dictionary_name = "Mobius3"  # You can change this to whatever dictionary name you want
+    csv_file_path = '/home/zaya/Downloads/multiple-kanji-2-reading.csv'
+    output_dir = '/home/zaya/Downloads/Books/Theme/Word_Frequency/Ja'
+    dictionary_name = "Word_Frequency-multiple-kanji-2-reading"  # You can change this to whatever dictionary name you want
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)

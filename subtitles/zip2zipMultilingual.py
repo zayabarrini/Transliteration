@@ -416,7 +416,11 @@ def cached_translate_text(text, lang):
 
 @lru_cache(maxsize=1000)
 def cached_transliterate(text, lang):
-    filtered = filter_language_characters(text, target_language=LANGUAGE_CODE_MAP[lang])
+    if lang in ['zh-CN', 'zh-ch',  'ja', 'ko']:
+        filtered = filter_language_characters(text, lang)
+    else:
+        filtered = filter_language_characters_preserve_spaces(text, lang)
+    
     return transliterate(filtered, lang) if filtered else ""
 
 def generate_combination_output(lines, translation_maps, transliteration_maps, output_file):
@@ -511,8 +515,8 @@ def optimized_process_single_srt_file(srt_path, target_languages, enable_transli
     practical_combinations = []
     if len(target_languages) > 1:
         # Only generate 2-language combinations if we have many languages
-        practical_combinations = list(combinations(target_languages, 2))
-        if len(target_languages) <= 3:  # For 3 languages, also include the 3-way combination
+        # practical_combinations = list(combinations(target_languages, 2))
+        if len(target_languages) <= 15:  # For 3 languages, also include the 3-way combination
             practical_combinations.append(tuple(target_languages))
     
     for combo in practical_combinations:
@@ -720,8 +724,9 @@ def filter_md_by_language(input_file: str, target_language: str) -> str:
 # Main function
 if __name__ == "__main__":
     # Example usage:
-    input_zip_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/test1.zip"
-    target_languages = ["zh-ch", "de" , "ru"]  # Your target languages
+    input_zip_path = "/home/zaya/Downloads/Hours.zip"
+    target_languages = ["de", "ru", "zh-ch", "ja", "hi", "ar", "fr", "it"]  # Your target languages
+    # target_languages = ["de", "ru", "zh-ch", "ja", "hi", "ar", "fr", "it", "pl", "el"]  # Your target languages
     
     # set timer
     start_time = time.time()
@@ -737,5 +742,7 @@ if __name__ == "__main__":
     # print(f"Processing time: {end_time - start_time:.2f} seconds")
     # time in minutes
     print(f"Processing time: {(end_time - start_time)/60:.2f} minutes")
+    print(f"Processing time for a complete subtitle: {(end_time - start_time)*1300/(60*8):.2f} minutes")
+
     
     print(f"Created combined zip file: {combined_zip}")
