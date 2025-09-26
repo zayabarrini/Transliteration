@@ -9,10 +9,18 @@ modified/modified_kakasi.py
 modified/modified_kakasi_every_char.py
 modified/modified_pyarabic.py
 modified/modified_russian.py
+spelling/__init__.py
+spelling/cli.py
+spelling/setup.py
+spelling/spell_cleaner.py
 subtitles/__init__.py
 subtitles/format_tvseries.py
 subtitles/format_tvseries_folders.py
+subtitles/sub2epub2sub.py
+subtitles/subtitles2transliteration.py
+subtitles/trilingualEpub.py
 subtitles/zip2zip.py
+subtitles/zip2zipCh.py
 subtitles/zip2zipMultilingual.py
 subtitles/zip2zipMultilingual_old.py
 tests/tests.py
@@ -44,6 +52,7 @@ transliteration/subMultilingualVersions.py
 transliteration/test_epubs_transliteration.py
 transliteration/test_patch.py
 transliteration/translationFunctions.py
+transliteration/translationFunctionsPerformance.py
 transliteration/transliteration.py
 transliteration/transliteration_modified_issues.py
 transliteration_tools.egg-info/PKG-INFO

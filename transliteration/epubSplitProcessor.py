@@ -45,6 +45,6 @@ if __name__ == "__main__":
     # input_folder = sys.argv[1]
     # output_folder = sys.argv[2] if len(sys.argv) > 2 else None
     # /home/zaya/Documents/Ebooks/Flow/Transliteration/Process
-    input_folder = '/home/zaya/Downloads/Books/Theme/Literature/split/done/a'
-    output_folder = '/home/zaya/Downloads/Books/Theme/Literature/split/done' 
+    input_folder = '/home/zaya/Downloads/ime-2025-provas/a'
+    output_folder = '/home/zaya/Downloads/ime-2025-provas/a' 
     process_epub_folder(input_folder, output_folder)

@@ -724,7 +724,7 @@ def filter_md_by_language(input_file: str, target_language: str) -> str:
 # Main function
 if __name__ == "__main__":
     # Example usage:
-    input_zip_path = "/home/zaya/Downloads/Hours.zip"
+    input_zip_path = "/home/zaya/Documents/Gitrepos/Linktrees/Languages/Grammar/WordList/a/test.zip"
     target_languages = ["de", "ru", "zh-ch", "ja", "hi", "ar", "fr", "it"]  # Your target languages
     # target_languages = ["de", "ru", "zh-ch", "ja", "hi", "ar", "fr", "it", "pl", "el"]  # Your target languages
     

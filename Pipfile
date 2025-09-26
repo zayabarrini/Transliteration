@@ -21,7 +21,6 @@ flask = "*"
 setuptools = "*"
 pypinyin = "*"
 pykakasi = "*"
-transliteration-tools = {file = ".", editable = true}
 livereload = "*"
 deep-translator = "*"
 lxml = "*"
@@ -33,6 +32,9 @@ pinyin = "*"
 ebooklib = "*"
 langdetect = "*"
 chardet = "*"
+pyspellchecker = "*"
+spacy = "*"
+transliteration-tools = {file = ".", editable = true}
 
 [dev-packages]
 
