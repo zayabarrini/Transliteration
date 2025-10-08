@@ -34,6 +34,11 @@ langdetect = "*"
 chardet = "*"
 pyspellchecker = "*"
 spacy = "*"
+PyMuPDF = "*"
+pdfplumber = "*"
+pillow = "*"
+requests = "*"
+pix2tex = {version = "*", optional = true}
 transliteration-tools = {file = ".", editable = true}
 
 [dev-packages]

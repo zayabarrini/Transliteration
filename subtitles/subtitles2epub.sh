@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/TheBeautyOf_all_subtitles-de-en-ru"
+DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/Favorites5"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
@@ -17,14 +17,10 @@ import os
 import re
 
 def is_formatted(name):
-    # Check if filename is already formatted (no dots/underscores in main part)
     name, ext = os.path.splitext(name)
-    
-    # If it contains dots or underscores in the main part, it's not formatted
-    if re.search(r'[._]', name):
+    # Check if filename contains dots or underscores (not formatted)
+    if re.search(r'[._]', name.replace('-', '').replace(' ', '')):
         return False
-    
-    # If it has spaces or hyphens instead of dots/underscores, it's formatted
     return True
 
 original_name = "$1"
@@ -32,34 +28,46 @@ print(is_formatted(original_name))
 END
 }
 
-# Function to format the file name using Python for more sophisticated processing
+# Function to format the file name
 format_filename() {
     python3 - <<END
 import os
 import re
 
 def format_filename(name):
-    # Remove file extension
     name, ext = os.path.splitext(name)
-
-    # Replace dots or underscores with spaces
+    
+    # Replace dots and underscores with spaces
     name = re.sub(r'[._]', ' ', name)
-
-    # Keep only the name and the year (if available)
-    match = re.match(r'(.*?)(\s\d{4})', name)
-    if match:
-        name = match.group(1) + match.group(2)  # Name and year
-    else:
-        # Remove everything after the first non-alphabetic group
-        name = re.sub(r'[^a-zA-Z0-9\s]+.*$', '', name)
-
-    # Remove extra spaces and replace with single hyphen
-    name = re.sub(r'\s+', '-', name).strip()
-    # Add the extension back
-    return f"{name.strip()}{ext.lower()}"
+    
+    # Remove common subtitle tags
+    name = re.sub(r'\b(English|WWW|MY|SUBS|CO|DIMENSION|AVS)\b', '', name, flags=re.IGNORECASE)
+    
+    # Clean up: remove extra spaces, special characters, and normalize
+    name = re.sub(r'[^a-zA-Z0-9\s]', '', name)
+    name = re.sub(r'\s+', ' ', name).strip()
+    name = name.replace(' ', '-')
+    
+    return f"{name}{ext.lower()}"
 
 original_name = "$1"
 print(format_filename(original_name))
+END
+}
+
+# Function to detect file encoding
+detect_encoding() {
+    python3 - <<END
+import chardet
+
+def detect_encoding(filepath):
+    with open(filepath, 'rb') as f:
+        raw_data = f.read()
+        result = chardet.detect(raw_data)
+        return result['encoding'] or 'utf-8'
+
+filepath = "$1"
+print(detect_encoding(filepath))
 END
 }
 
@@ -75,7 +83,8 @@ import os
 random_number = random.randint(1, 211)
 date = datetime.today().strftime('%Y-%m-%d')
 directory_name = os.path.basename("$DIRECTORY")
-cover_image = f"$COVER_IMAGES_DIR/bing{random_number}.png"
+cover_images = [f for f in os.listdir("$COVER_IMAGES_DIR") if f.startswith('bing') and f.endswith('.png')]
+cover_image = f"$COVER_IMAGES_DIR/{random.choice(cover_images)}" if cover_images else ""
 
 # Create metadata YAML
 metadata = f"""---
@@ -110,6 +119,88 @@ print("Metadata file generated with random cover image:", cover_image)
 END
 }
 
+# Improved subtitle cleaning function
+# Improved subtitle cleaning function
+clean_subtitle_file() {
+    local file="$1"
+    local temp_file="${file}.cleaned"
+    
+    echo "Cleaning: $(basename "$file")"
+    
+    # First, ensure the file is in UTF-8 encoding
+    local detected_encoding=$(detect_encoding "$file")
+    echo "Detected encoding: $detected_encoding"
+    
+    # Convert to UTF-8 first to temp file
+    if ! iconv -f "$detected_encoding" -t UTF-8 "$file" > "$temp_file" 2>/dev/null; then
+        echo "Warning: Encoding conversion failed, trying fallback methods..."
+        # Fallback: use Python for encoding conversion
+        python3 -c "
+try:
+    with open('$file', 'rb') as f:
+        content = f.read()
+    # Try to decode with common encodings
+    for encoding in ['utf-8', 'latin-1', 'windows-1252', 'cp1252']:
+        try:
+            text = content.decode(encoding)
+            with open('$temp_file', 'w', encoding='utf-8') as out:
+                out.write(text)
+            print(f'Successfully converted with {encoding}')
+            break
+        except UnicodeDecodeError:
+            continue
+except Exception as e:
+    print(f'Error in fallback conversion: {e}')
+    # Last resort: copy as is
+    import shutil
+    shutil.copy2('$file', '$temp_file')
+"
+    fi
+    
+    # Now clean the UTF-8 temp file with more robust Perl processing
+    perl -CSD -0777 -pe '
+        # Remove BOM character
+            s/^\x{FEFF}//;
+
+            # Remove HTML tags
+            s/<[^>]*>//g;
+
+            # Remove timestamp blocks (line number + timestamp line)
+            s/^\d+\R\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
+
+            # Remove any remaining individual timestamp lines
+            s/^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
+
+            # Remove remaining line numbers
+            s/^\d+\R//mg;
+
+            # Remove leading/trailing whitespace from each line
+            s/^\s+|\s+$//mg;
+
+            # Join lines that should be together (continuations)
+            s/\R([a-z,])/ $1/g;
+
+            # Remove hash symbols
+            s/#//g;
+
+            # THE KEY PART: Convert single newlines to double newlines (Vim equivalent)
+            # This is the Perl equivalent of: %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g
+            s/([^\n])\n([^\n])/$1\n\n$2/g;
+
+            # Clean up excessive newlines
+            s/\n{3,}/\n\n/g;
+
+            # Clean up any extra spaces
+            s/ +/ /g;
+            s/^\s+//;
+            s/\s+$//;
+    ' "$temp_file" > "${temp_file}.cleaned"
+    
+    # Replace original with the final cleaned file
+    mv "${temp_file}.cleaned" "$file"
+    rm -f "$temp_file"
+}
+
 # Step 1: Copy files to working directory, format only if needed
 echo "Step 1/4: Copying files to working directory (formatting only if needed)..."
 find "$DIRECTORY" -type f \( -name "*.srt" -o -name "*.md" \) | while read -r file; do
@@ -134,51 +225,7 @@ done
 echo "Step 2/4: Cleaning subtitle files..."
 for file in "$WORKING_DIR"/*.srt; do
     if [[ -f "$file" ]]; then
-        echo "Cleaning with perl: $(basename "$file")"
-
-        # Use perl to process the file (your working regex)
-        perl -CSD -i -0777 -pe '
-            # Remove BOM character
-            s/^\x{FEFF}//;
-
-            # Remove HTML tags
-            s/<[^>]*>//g;
-
-            # Remove timestamp blocks (line number + timestamp line)
-            s/^\d+\R\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
-
-            # Remove any remaining individual timestamp lines
-            s/^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
-
-            # Remove remaining line numbers
-            s/^\d+\R//mg;
-
-            # Remove leading/trailing whitespace from each line
-            s/^\s+|\s+$//mg;
-
-            # Join lines that should be together (continuations)
-            # s/\R([a-z,])/ $1/g;
-
-            # Remove hash symbols
-            s/#//g;
-
-            # THE KEY PART: Convert single newlines to double newlines (Vim equivalent)
-            # This is the Perl equivalent of: %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g
-            s/([^\n])\n([^\n])/$1\n\n$2/g;
-
-            # Clean up excessive newlines
-            s/\n{3,}/\n\n/g;
-
-            # Clean up any extra spaces
-            s/ +/ /g;
-            s/^\s+//;
-            s/\s+$//;
-
-        ' "$file"
-        
-        # Ensure UTF-8 encoding for non-Latin characters
-        iconv -f "$(file -bi "$file" | sed -e 's/.*charset=//')" -t UTF-8 "$file" > "${file}.utf8"
-        mv "${file}.utf8" "$file"
+        clean_subtitle_file "$file"
     fi
 done
 
@@ -191,25 +238,29 @@ from pathlib import Path
 
 def try_read_file(filepath):
     """Try reading a file with different encodings."""
-    encodings = ['utf-8', 'iso-8859-1', 'windows-1252', 'utf-16']
+    encodings = ['utf-8', 'latin-1', 'windows-1252', 'cp1252', 'iso-8859-1']
     for encoding in encodings:
         try:
             with open(filepath, 'r', encoding=encoding) as f:
-                return f.read()
+                return f.read(), encoding
         except UnicodeDecodeError:
             continue
-    raise UnicodeDecodeError(f"Could not decode {filepath} with any of the tried encodings")
+    # Last resort: read as binary and decode with error handling
+    with open(filepath, 'rb') as f:
+        return f.read().decode('utf-8', errors='replace'), 'utf-8 (with errors)'
 
 def format_header(name):
     """Format the filename into a nice header title"""
     name = re.sub(r'[._]', ' ', name)  # Replace dots/underscores with spaces
     name = re.sub(r'\s+', ' ', name).strip()  # Collapse multiple spaces
-    return name
+    # Remove common subtitle tags
+    name = re.sub(r'\b(english|www|my|subs|co|dimension|avs|srt)\b', '', name, flags=re.IGNORECASE)
+    name = re.sub(r'\s+', ' ', name).strip()
+    return name.title()
 
 def combine_files(directory, output_filename):
     """
     Combine all .md and .srt files in a directory into a single markdown file.
-    Each file's content is preceded by its filename as a header.
     """
     files = []
     for ext in ('*.md', '*.srt'):
@@ -229,22 +280,22 @@ def combine_files(directory, output_filename):
             outfile.write(header)
 
             try:
-                content = try_read_file(file)
-
+                content, used_encoding = try_read_file(file)
+                print(f"Added: {file.name} (encoding: {used_encoding})")
+                
+                # Additional cleaning for markdown
                 if file.suffix == '.srt':
-                    outfile.write(content)
-                    outfile.write("\n\n")
-                else:
-                    outfile.write(content)
-                    outfile.write("\n\n")
+                    # Remove any remaining timestamp artifacts
+                    content = re.sub(r'\d{1,2}:\d{2}:\d{2}[,.]\d{3}.*?\n', '', content)
+                    content = re.sub(r'\n{3,}', '\n\n', content)
+                
+                outfile.write(content.strip())
+                outfile.write("\n\n---\n\n")
 
-                print(f"Added: {file.name}")
-
-            except UnicodeDecodeError as e:
-                print(f"Error reading {file.name}: {str(e)}")
-                continue
             except Exception as e:
                 print(f"Error processing {file.name}: {str(e)}")
+                error_msg = f"*[Error reading this file: {str(e)}]*\n\n"
+                outfile.write(error_msg)
                 continue
 
     print(f"\nSuccessfully created combined file at:\n{output_filename}")
@@ -259,18 +310,32 @@ if command -v pandoc &> /dev/null; then
     echo "Generating metadata..."
     generate_metadata
 
-    # Create EPUB with metadata and cover image
-    echo "Creating EPUB with metadata..."
-    pandoc "$WORKING_DIR/$OUTPUT_MD" \
-        --metadata-file="$WORKING_DIR/metadata.yaml" \
-        --epub-cover-image="$COVER_IMAGES_DIR/$(ls $COVER_IMAGES_DIR | shuf -n 1)" \
-        -o "$DIRECTORY/$OUTPUT_EPUB"
+    # Get a random cover image
+    cover_images=("$COVER_IMAGES_DIR"/bing*.png)
+    if [ ${#cover_images[@]} -gt 0 ]; then
+        random_cover="${cover_images[RANDOM % ${#cover_images[@]}]}"
+        echo "Using cover image: $random_cover"
+        
+        # Create EPUB with metadata and cover image
+        echo "Creating EPUB with metadata..."
+        pandoc "$WORKING_DIR/$OUTPUT_MD" \
+            --metadata-file="$WORKING_DIR/metadata.yaml" \
+            --epub-cover-image="$random_cover" \
+            -o "$DIRECTORY/$OUTPUT_EPUB" \
+            --toc --toc-depth=2
+        
+        echo "EPUB generated at: $DIRECTORY/$OUTPUT_EPUB"
+    else
+        echo "Warning: No cover images found in $COVER_IMAGES_DIR"
+        pandoc "$WORKING_DIR/$OUTPUT_MD" \
+            --metadata-file="$WORKING_DIR/metadata.yaml" \
+            -o "$DIRECTORY/$OUTPUT_EPUB" \
+            --toc --toc-depth=2
+    fi
 
     # Clean up working directory
     rm -rf "$WORKING_DIR"
     echo "Working directory removed."
-
-    echo "EPUB generated at: $DIRECTORY/$OUTPUT_EPUB"
 else
     echo "Pandoc not found. EPUB generation skipped."
     echo "Combined markdown file kept at: $WORKING_DIR/$OUTPUT_MD"
