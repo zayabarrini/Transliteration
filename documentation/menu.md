@@ -45,8 +45,19 @@
 ║ 0. Back to main menu                   ║
 ╚════════════════════════════════════════╝
 
+
+Audio
+Documentation
+Latex
+Subtitles
+Transliteration
+Web
+WordLists
+
 # 23/04/25
 Split Sentences Bulk + Ebook Versions Bulk
 
 # Inputs
 Epub, srt, zip (srt), Text for Translation (web), md, csv
+Output: Epub with translation, transliteration, multilingual composition, Color-coded syntax
+Includes: metadata, Toc
