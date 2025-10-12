@@ -138,17 +138,17 @@ def process_folder(folder_path: str):
             print(f"Detected language for {filename}: {language}")
             
             ## Option 1: Remove original text
-            epub_path_no_original = remove_original(epub_path)
-            print(f"Processing {epub_path} for language: {language}")
+            # epub_path_no_original = remove_original(epub_path)
+            # print(f"Processing {epub_path} for language: {language}")
 
-            # if language in SUPPORTED_LANGUAGES:
-            #     # Option 2: Transliterate
-            #     transliterate_epub(epub_path, language)
+            if language in SUPPORTED_LANGUAGES:
+                # Option 2: Transliterate
+                transliterate_epub(epub_path, language)
                 # Option : Transliterate no_original
                 # transliterate_epub(epub_path_no_original)
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Downloads/Books-todo/trans/a/a")
+    process_folder("/home/zaya/Downloads/Books-todo/trans/a/a/a")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")
 

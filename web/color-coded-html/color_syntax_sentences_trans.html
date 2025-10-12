@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Color-Coded Syntax Sentences: Japanese, Hindi, Arabic</title>
+<style>
+  :root{
+    --S:#1f77b4;   /* blue */
+    --O:#2ca02c;   /* green */
+    --V:#d62728;   /* red */
+    --A:#9467bd;   /* purple (Adjunct: time/place/manner) */
+    --C:#ff7f0e;   /* orange (Conjunction/Subordinator) */
+    --P:#bcbd22;   /* yellow-olive (Pre/Postposition/Complement marker) */
+    --X:#7f7f7f;   /* gray (other/particles) */
+    --BG:#f7f7fb;
+  }
+  body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; background: var(--BG); margin: 0; padding: 24px; color:#222;}
+  h1{ margin: 0 0 16px; font-size: 28px;}
+  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .chip{padding:4px 8px; border-radius:12px; font-size:13px; color:white; display:inline-flex; align-items:center; gap:6px;}
+  .S{background:var(--S);} .O{background:var(--O);} .V{background:var(--V);} .A{background:var(--A);} .C{background:var(--C);} .P{background:var(--P); color:#222;} .X{background:var(--X);}
+  table{ width:100%; border-collapse:separate; border-spacing:0; background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  th, td{ padding:12px 14px; vertical-align:top; }
+  thead th{ background:#eef2ff; font-weight:700; text-align:left; }
+  tbody tr:nth-child(even){ background:#fafbff; }
+  .lang{ font-weight:600; color:#444;}
+  .sent{ line-height:1.9; font-size:18px; position: relative; }
+  .en{ color:#555; font-style:italic; font-size:15px; }
+  .tok{ padding:2px 6px; border-radius:8px; color:white; position: relative; display: inline-block; }
+  .tok.P{ color:#222; }
+  .grid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;}
+  footer{margin-top:18px; color:#666; font-size:13px;}
+  
+  /* Tooltip styling */
+  .tok::before {
+    content: attr(data-translation);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+  }
+  
+  .tok:hover::before {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>
+</head>
+<body>
+  <h1>Color‑Coded Syntax: Japanese · Hindi · Arabic</h1>
+  <div class="legend">
+    <span class="chip S">Subject (S)</span>
+    <span class="chip O">Object (O)</span>
+    <span class="chip V">Verb (V)</span>
+    <span class="chip A">Adjunct: Time/Place/Manner (A)</span>
+    <span class="chip C">Conjunction/Subordinator (C)</span>
+    <span class="chip P">Pre/Postposition/Complement (P/Comp.)</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Japanese (SOV)</th>
+        <th>Hindi (SOV)</th>
+        <th>Arabic (VSO/SVO)</th>
+        <th>English gloss</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- 1 -->
+      <tr>
+        <td>1</td>
+        <td class="sent">
+          <span class="tok S" data-translation="I">私は</span>
+          <span class="tok A" data-translation="yesterday">昨日</span>
+          <span class="tok O" data-translation="delicious apple">美味しい りんごを</span>
+          <span class="tok V" data-translation="ate">食べました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="I">मैंने</span>
+          <span class="tok A" data-translation="yesterday">कल</span>
+          <span class="tok O" data-translation="delicious apple">स्वादिष्ट सेब</span>
+          <span class="tok V" data-translation="ate">खाया</span>
+        </td>
+        <td class="sent">
+          <span class="tok V" data-translation="I ate">أكلتُ</span>
+          <span class="tok O" data-translation="the delicious apple">التفاحةَ اللذيذةَ</span>
+          <span class="tok A" data-translation="yesterday">أمسِ</span>
+        </td>
+        <td class="en">I ate the delicious apple yesterday.</td>
+      </tr>
+
+      <!-- 2 -->
+      <tr>
+        <td>2</td>
+        <td class="sent">
+          <span class="tok S" data-translation="She">彼女は</span>
+          <span class="tok A" data-translation="in the library">図書館で</span>
+          <span class="tok O" data-translation="book">本を</span>
+          <span class="tok V" data-translation="is reading">読んでいます</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="She">वह</span>
+          <span class="tok A" data-translation="in the library">पुस्तकालय में</span>
+          <span class="tok O" data-translation="book">किताब</span>
+          <span class="tok V" data-translation="is reading">पढ़ रही है</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="She">هي</span>
+          <span class="tok V" data-translation="reads">تقرأ</span>
+          <span class="tok O" data-translation="a book">كتابًا</span>
+          <span class="tok A" data-translation="in the library">في المكتبة</span>
+        </td>
+        <td class="en">She is reading a book in the library.</td>
+      </tr>
+
+      <!-- 3 -->
+      <tr>
+        <td>3</td>
+        <td class="sent">
+          <span class="tok C" data-translation="Because it was raining">雨が 降っていたので</span>、
+          <span class="tok S" data-translation="we">私たちは</span>
+          <span class="tok A" data-translation="at home">家に</span>
+          <span class="tok V" data-translation="stayed">いました</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="Because rain was happening">क्योंकि बारिश हो रही थी</span>,
+          <span class="tok S" data-translation="we">हम</span>
+          <span class="tok A" data-translation="in home">घर में</span>
+          <span class="tok V" data-translation="stayed">रहे</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="Because the rain was falling">لأن المطر كان يهطل</span>،
+          <span class="tok V" data-translation="we stayed">بقينا</span>
+          <span class="tok A" data-translation="in the house">في البيت</span>
+        </td>
+        <td class="en">Because it was raining, we stayed home.</td>
+      </tr>
+
+      <!-- 4 -->
+      <tr>
+        <td>4</td>
+        <td class="sent">
+          <span class="tok C" data-translation="If">もし</span>
+          <span class="tok S" data-translation="you">あなたが</span>
+          <span class="tok A" data-translation="hard">一生懸命に</span>
+          <span class="tok V" data-translation="study">勉強すれば</span>、
+          <span class="tok O" data-translation="the exam">試験に</span>
+          <span class="tok V" data-translation="will pass">合格します</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="If">अगर</span>
+          <span class="tok S" data-translation="you">तुम</span>
+          <span class="tok A" data-translation="with hard work">मेहनत से</span>
+          <span class="tok V" data-translation="will study">पढ़ोगे</span>,
+          <span class="tok C" data-translation="then">तो</span>
+          <span class="tok O" data-translation="exam">परीक्षा</span>
+          <span class="tok V" data-translation="will pass">पास करोगे</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="If">إذا</span>
+          <span class="tok V" data-translation="you studied">درستَ</span>
+          <span class="tok A" data-translation="well">جيدًا</span>,
+          <span class="tok V" data-translation="then you will succeed">فسوف تنجح</span>
+          <span class="tok O" data-translation="in the exam">في الامتحان</span>
+        </td>
+        <td class="en">If you study hard, you will pass the exam.</td>
+      </tr>
+
+      <!-- 5 -->
+      <tr>
+        <td>5</td>
+        <td class="sent">
+          <span class="tok A" data-translation="Next to">隣に</span>
+          <span class="tok C" data-translation="living">住んでいる</span>
+          <span class="tok S" data-translation="teacher">先生は</span>
+          <span class="tok V" data-translation="is kind">優しい</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="Who">जो</span>
+          <span class="tok S" data-translation="teacher">अध्यापक</span>
+          <span class="tok A" data-translation="nearby">पास</span>
+          <span class="tok V" data-translation="live">रहते हैं</span>,
+          <span class="tok S" data-translation="they">वे</span>
+          <span class="tok V" data-translation="are kind">दयालु हैं</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="The teacher">المعلم</span>
+          <span class="tok C" data-translation="who">الذي</span>
+          <span class="tok V" data-translation="lives">يسكن</span>
+          <span class="tok A" data-translation="next to us">بجانبنا</span>
+          <span class="tok V" data-translation="is kind">لطيف</span>
+        </td>
+        <td class="en">The teacher who lives next door is kind.</td>
+      </tr>
+
+      <!-- 6 -->
+      <tr>
+        <td>6</td>
+        <td class="sent">
+          <span class="tok A" data-translation="After graduating">卒業した後に</span>
+          <span class="tok S" data-translation="they">彼らは</span>
+          <span class="tok A" data-translation="to Japan">日本に</span>
+          <span class="tok V" data-translation="will travel">旅行します</span>
+        </td>
+        <td class="sent">
+          <span class="tok A" data-translation="After graduating">स्नातक होने के बाद</span>
+          <span class="tok S" data-translation="they">वे</span>
+          <span class="tok A" data-translation="to Japan">जापान</span>
+          <span class="tok V" data-translation="will go">जाएँगे</span>
+        </td>
+        <td class="sent">
+          <span class="tok A" data-translation="After they graduate">بعد أن يتخرجوا</span>,
+          <span class="tok V" data-translation="they will travel">سيسافرون</span>
+          <span class="tok A" data-translation="to Japan">إلى اليابان</span>
+        </td>
+        <td class="en">They will travel to Japan after they graduate.</td>
+      </tr>
+
+      <!-- 7 -->
+      <tr>
+        <td>7</td>
+        <td class="sent">
+          <span class="tok S" data-translation="I">私は</span>
+          <span class="tok S" data-translation="he">彼が</span>
+          <span class="tok O" data-translation="what">何を</span>
+          <span class="tok V" data-translation="is saying">言っている</span>
+          <span class="tok C" data-translation="that (nominalizer)">のか</span>
+          <span class="tok V" data-translation="don't know">知りません</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="I">मैं</span>
+          <span class="tok P" data-translation="not">नहीं</span>
+          <span class="tok V" data-translation="know">जानता</span>
+          <span class="tok C" data-translation="that">कि</span>
+          <span class="tok S" data-translation="he">वह</span>
+          <span class="tok O" data-translation="what">क्या</span>
+          <span class="tok V" data-translation="is saying">कह रहा है</span>
+        </td>
+        <td class="sent">
+          <span class="tok P" data-translation="not">لا</span>
+          <span class="tok V" data-translation="I know">أعرف</span>
+          <span class="tok O" data-translation="what">ما</span>
+          <span class="tok V" data-translation="he is saying">يقوله</span>
+        </td>
+        <td class="en">I don't know what he is saying.</td>
+      </tr>
+
+      <!-- 8 -->
+      <tr>
+        <td>8</td>
+        <td class="sent">
+          <span class="tok S" data-translation="The child">子供は</span>
+          <span class="tok C" data-translation="because was hungry">お腹が空いていたので</span>
+          <span class="tok V" data-translation="cried">泣きました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="The child">बच्चा</span>
+          <span class="tok V" data-translation="cried">रोया</span>
+          <span class="tok C" data-translation="because">क्योंकि</span>
+          <span class="tok S" data-translation="he">वह</span>
+          <span class="tok V" data-translation="was hungry">भूखा था</span>
+        </td>
+        <td class="sent">
+          <span class="tok V" data-translation="Cried">بكى</span>
+          <span class="tok S" data-translation="the child">الطفل</span>
+          <span class="tok C" data-translation="because he">لأنه</span>
+          <span class="tok V" data-translation="was">كان</span>
+          <span class="tok A" data-translation="hungry">جائعًا</span>
+        </td>
+        <td class="en">The child cried because he was hungry.</td>
+      </tr>
+
+      <!-- 9 -->
+      <tr>
+        <td>9</td>
+        <td class="sent">
+          <span class="tok S" data-translation="We">私たちは</span>
+          <span class="tok O" data-translation="the man who helped us">私たちを 助けてくれた 男の人に</span>
+          <span class="tok V" data-translation="met">会いました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S" data-translation="We">हमने</span>
+          <span class="tok P" data-translation="with that man">उस आदमी से</span>
+          <span class="tok V" data-translation="met">मुलाकात की</span>
+          <span class="tok C" data-translation="who">जिसने</span>
+          <span class="tok O" data-translation="our help did">हमारी मदद की</span>
+        </td>
+        <td class="sent">
+          <span class="tok V" data-translation="We met">قابلنا</span>
+          <span class="tok O" data-translation="the man">الرجل</span>
+          <span class="tok C" data-translation="who">الذي</span>
+          <span class="tok V" data-translation="helped us">ساعدنا</span>
+        </td>
+        <td class="en">We met the man who helped us.</td>
+      </tr>
+
+      <!-- 10 -->
+      <tr>
+        <td>10</td>
+        <td class="sent">
+          <span class="tok C" data-translation="Although it was difficult">難しかったけれども</span>、
+          <span class="tok S" data-translation="she">彼女は</span>
+          <span class="tok O" data-translation="the problem">問題を</span>
+          <span class="tok V" data-translation="solved">解きました</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="Although">हालांकि</span>
+          <span class="tok S" data-translation="it">यह</span>
+          <span class="tok V" data-translation="was difficult">कठिन था</span>,
+          <span class="tok S" data-translation="she">उसने</span>
+          <span class="tok O" data-translation="problem">समस्या</span>
+          <span class="tok V" data-translation="solved">हल की</span>
+        </td>
+        <td class="sent">
+          <span class="tok C" data-translation="Although it">رغم أنه</span>
+          <span class="tok V" data-translation="was">كان</span>
+          <span class="tok A" data-translation="difficult">صعبًا</span>,
+          <span class="tok S" data-translation="however she">إلا أنها</span>
+          <span class="tok V" data-translation="solved">حلّت</span>
+          <span class="tok O" data-translation="the problem">المشكلة</span>
+        </td>
+        <td class="en">Although it was difficult, she solved the problem.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <footer>
+    Tip: Hover over each colored token to see its translation. Colors represent S (blue), O (green), V (red), A (purple), C (orange), P (yellow) syntax elements.
+  </footer>
+</body>
+</html>

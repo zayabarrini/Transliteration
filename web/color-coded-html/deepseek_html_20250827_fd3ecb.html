@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Syntax Highlighting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            color: #1a2a6c;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .examples-section, .libraries-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .language-section {
+            margin-bottom: 30px;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #b21f1f;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border-left: 4px solid;
+        }
+        
+        .japanese-code {
+            border-left-color: #dc143c;
+        }
+        
+        .hindi-code {
+            border-left-color: #ff8c00;
+        }
+        
+        .arabic-code {
+            border-left-color: #0077b6;
+        }
+        
+        .keyword {
+            color: #d63384;
+            font-weight: bold;
+        }
+        
+        .string {
+            color: #0ca678;
+        }
+        
+        .comment {
+            color: #6c757d;
+        }
+        
+        .function {
+            color: #3b5bdb;
+        }
+        
+        .operator {
+            color: #fd7e14;
+        }
+        
+        .library {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .library h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .library p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .pros {
+            background: #d8f2e3;
+        }
+        
+        .cons {
+            background: #fae0e0;
+        }
+        
+        .pros h5, .cons h5 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .conclusion {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .conclusion h2 {
+            color: #1a2a6c;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Multilingual Syntax Highlighting</h1>
+            <p class="subtitle">Color-coded syntax examples for Japanese, Hindi, and Arabic with library recommendations for implementation</p>
+        </header>
+        
+        <div class="content">
+            <div class="examples-section">
+                <h2>Syntax Examples</h2>
+                
+                <div class="language-section">
+                    <h3>Japanese</h3>
+                    <div class="code-block japanese-code">
+                        <span class="keyword">関数</span> <span class="function">挨拶</span>(<span class="keyword">名前</span>) {<br>
+                        &nbsp;&nbsp;<span class="keyword">もし</span> (<span class="keyword">名前</span> == <span class="string">"世界"</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">出力</span>(<span class="string">"こんにちは世界！"</span>);<br>
+                        &nbsp;&nbsp;} <span class="keyword">それ以外</span> {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">出力</span>(<span class="string">"こんにちは、"</span> + <span class="keyword">名前</span>);<br>
+                        &nbsp;&nbsp;}<br>
+                        }<br>
+                        <span class="comment">// 挨拶を表示する</span>
+                    </div>
+                </div>
+                
+                <div class="language-section">
+                    <h3>Hindi</h3>
+                    <div class="code-block hindi-code">
+                        <span class="keyword">फंक्शन</span> <span class="function">अभिवादन</span>(<span class="keyword">नाम</span>) {<br>
+                        &nbsp;&nbsp;<span class="keyword">यदि</span> (<span class="keyword">नाम</span> == <span class="string">"दुनिया"</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">आउटपुट</span>(<span class="string">"नमस्ते दुनिया!"</span>);<br>
+                        &nbsp;&nbsp;} <span class="keyword">अन्यथा</span> {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">आउटपुट</span>(<span class="string">"नमस्ते, "</span> + <span class="keyword">नाम</span>);<br>
+                        &nbsp;&nbsp;}<br>
+                        }<br>
+                        <span class="comment">// अभिवादन प्रदर्शित करें</span>
+                    </div>
+                </div>
+                
+                <div class="language-section">
+                    <h3>Arabic</h3>
+                    <div class="code-block arabic-code">
+                        <span class="keyword">دالة</span> <span class="function">تحية</span>(<span class="keyword">اسم</span>) {<br>
+                        &nbsp;&nbsp;<span class="keyword">إذا</span> (<span class="keyword">اسم</span> == <span class="string">"العالم"</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">إخراج</span>(<span class="string">"مرحبا بالعالم!"</span>);<br>
+                        &nbsp;&nbsp;} <span class="keyword">وإلا</span> {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">إخراج</span>(<span class="string">"مرحبا، "</span> + <span class="keyword">اسم</span>);<br>
+                        &nbsp;&nbsp;}<br>
+                        }<br>
+                        <span class="comment">// عرض التحية</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="libraries-section">
+                <h2>Recommended Libraries</h2>
+                
+                <div class="library">
+                    <h4>Prism.js</h4>
+                    <p>A lightweight, extensible syntax highlighter with support for multiple languages.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Pros</h5>
+                            <ul>
+                                <li>Lightweight and fast</li>
+                                <li>Easy to extend with new languages</li>
+                                <li>Good browser support</li>
+                                <li>Themes available</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Cons</h5>
+                            <ul>
+                                <li>No built-in RTL support for Arabic</li>
+                                <li>Need to create custom language definitions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="library">
+                    <h4>Highlight.js</h4>
+                    <p>Popular syntax highlighting library with automatic language detection.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Pros</h5>
+                            <ul>
+                                <li>Automatic language detection</li>
+                                <li>Large community</li>
+                                <li>Many themes available</li>
+                                <li>Good documentation</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Cons</h5>
+                            <ul>
+                                <li>Larger file size</li>
+                                <li>Might need customization for RTL</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="library">
+                    <h4>CodeMirror</h4>
+                    <p>A versatile text editor implemented in JavaScript with syntax highlighting.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Pros</h5>
+                            <ul>
+                                <li>Full-featured text editor</li>
+                                <li>Good RTL support</li>
+                                <li>Extremely customizable</li>
+                                <li>Many add-ons available</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Cons</h5>
+                            <ul>
+                                <li>Heavier than pure highlighters</li>
+                                <li>More complex to set up</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="library">
+                    <h4>Pygments (Python Library)</h4>
+                    <p>A generic syntax highlighter suitable for use in web development.</p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5>Pros</h5>
+                            <ul>
+                                <li>Server-side rendering</li>
+                                <li>Wide language support</li>
+                                <li>Can generate HTML output</li>
+                                <li>No JavaScript required</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5>Cons</h5>
+                            <ul>
+                                <li>Requires Python backend</li>
+                                <li>No interactive highlighting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="conclusion">
+            <h2>Implementation Recommendations</h2>
+            <p>For implementing color-coded syntax highlighting for Japanese, Hindi, and Arabic:</p>
+            <ul>
+                <li>Use <strong>Prism.js</strong> if you need a lightweight client-side solution and are willing to create custom language definitions</li>
+                <li>Use <strong>Highlight.js</strong> if you want automatic language detection and a large selection of themes</li>
+                <li>Use <strong>CodeMirror</strong> if you need a full text editor with built-in RTL support for Arabic</li>
+                <li>Use <strong>Pygments</strong> if you're working with Python and prefer server-side rendering</li>
+            </ul>
+            <p>For RTL languages like Arabic, you may need to add custom CSS rules for proper text direction:</p>
+            <div class="code-block">
+                <span class="comment">/* Arabic code block styling */</span><br>
+                .arabic-code {<br>
+                &nbsp;&nbsp;direction: rtl;<br>
+                &nbsp;&nbsp;text-align: right;<br>
+                &nbsp;&nbsp;font-family: 'Arabic Font', sans-serif;<br>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation for code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('.code-block');
+            
+            codeBlocks.forEach((block, index) => {
+                // Set initial state for animation
+                block.style.opacity = '0';
+                block.style.transform = 'translateX(-20px)';
+                
+                // Animate blocks sequentially
+                setTimeout(() => {
+                    block.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    block.style.opacity = '1';
+                    block.style.transform = 'translateX(0)';
+                }, 300 + (index * 200));
+            });
+        });
+    </script>
+</body>
+</html>

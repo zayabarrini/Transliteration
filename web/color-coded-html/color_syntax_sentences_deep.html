@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Sentence Highlighting Demo</title>
+    <style>
+        :root {
+            --S: #1f77b4;   /* blue */
+            --O: #2ca02c;   /* green */
+            --V: #d62728;   /* red */
+            --A: #9467bd;   /* purple (Adjunct: time/place/manner) */
+            --C: #ff7f0e;   /* orange (Conjunction/Subordinator) */
+            --P: #bcbd22;   /* yellow-olive (Pre/Postposition/Complement marker) */
+            --X: #7f7f7f;   /* gray (other/particles) */
+            --BG: #f7f7fb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        }
+        
+        body {
+            background: var(--BG);
+            color: #222;
+            padding: 24px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #1a2a6c;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .demo-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .input-section, .output-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        button {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2a3a8c;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .chip {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chip::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .S { background: var(--S); }
+        .O { background: var(--O); }
+        .V { background: var(--V); }
+        .A { background: var(--A); }
+        .C { background: var(--C); }
+        .P { background: var(--P); color: #222; }
+        .X { background: var(--X); }
+        
+        .output {
+            min-height: 200px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        
+        .token {
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: white;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        
+        .token.P { color: #222; }
+        
+        .libraries {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+        
+        .library {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .library:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .library h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .library p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .code {
+            background: #f6f8fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .note {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 30px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 900px) {
+            .demo-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Sentence Highlighting</h1>
+            <p class="subtitle">Demo of linguistic analysis and color-coded syntax highlighting for multiple languages</p>
+        </header>
+        
+        <div class="demo-area">
+            <div class="input-section">
+                <h2>Input Sentence</h2>
+                <textarea id="inputText" placeholder="Enter a sentence to analyze...">私は昨日美味しいりんごを食べました</textarea>
+                
+                <select id="languageSelect">
+                    <option value="ja">Japanese</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ar">Arabic</option>
+                    <option value="en">English</option>
+                </select>
+                
+                <button id="analyzeBtn">Analyze Sentence</button>
+                
+                <div class="legend">
+                    <span class="chip S">Subject (S)</span>
+                    <span class="chip O">Object (O)</span>
+                    <span class="chip V">Verb (V)</span>
+                    <span class="chip A">Adjunct (A)</span>
+                    <span class="chip C">Conjunction (C)</span>
+                    <span class="chip P">Pre/Postposition (P)</span>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2>Analyzed Output</h2>
+                <div class="output" id="outputResult">
+                    <span class="token S">私は</span>
+                    <span class="token A">昨日</span>
+                    <span class="token O">美味しいりんごを</span>
+                    <span class="token V">食べました</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="libraries">
+            <h2>Recommended Libraries</h2>
+            
+            <div class="library">
+                <h3>spaCy + Stanza (Python)</h3>
+                <p>For advanced NLP with support for multiple languages including Japanese, Hindi, and Arabic.</p>
+                <div class="code">
+# Example using spaCy with Stanza
+import spacy
+import stanza
+
+# Initialize the pipeline for Japanese
+stanza.download('ja')
+nlp = stanza.Pipeline('ja')
+
+# Process text
+doc = nlp("私は昨日美味しいりんごを食べました")
+for sentence in doc.sentences:
+    for word in sentence.words:
+        print(f"Word: {word.text}, Lemma: {word.lemma}, POS: {word.pos}, Dependency: {word.deprel}")
+                </div>
+            </div>
+            
+            <div class="library">
+                <h3>Compromise (JavaScript)</h3>
+                <p>Lightweight NLP library for the browser with support for multiple languages.</p>
+                <div class="code">
+// Example using Compromise
+const nlp = require('compromise');
+
+// For Japanese, you might need additional plugins
+let doc = nlp("私は昨日美味しいりんごを食べました");
+
+// Extract nouns, verbs, etc.
+let nouns = doc.nouns().out();
+let verbs = doc.verbs().out();
+
+console.log("Nouns:", nouns);
+console.log("Verbs:", verbs);
+                </div>
+            </div>
+            
+            <div class="library">
+                <h3>Google Cloud Natural Language API</h3>
+                <p>Cloud-based solution with excellent multilingual support.</p>
+                <div class="code">
+// Example using Google Cloud Natural Language API
+const language = require('@google-cloud/language');
+
+const client = new language.LanguageServiceClient();
+
+const document = {
+    content: '私は昨日美味しいりんごを食べました',
+    type: 'PLAIN_TEXT',
+    language: 'ja'
+};
+
+client.analyzeSyntax({document})
+    .then(results => {
+        const syntax = results[0];
+        console.log(syntax);
+    })
+    .catch(err => {
+        console.error('ERROR:', err);
+    });
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><strong>Note:</strong> Full implementation would require server-side processing or specialized libraries for each language. The demo above shows a simplified version of how such a system could work.</p>
+        </div>
+        
+        <footer>
+            <p>This is a demonstration of concept for linguistic analysis and syntax highlighting.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const inputText = document.getElementById('inputText');
+            const languageSelect = document.getElementById('languageSelect');
+            const outputResult = document.getElementById('outputResult');
+            
+            // Sample analysis data (in a real app, this would come from an NLP library)
+            const sampleAnalyses = {
+                'ja': [
+                    { text: '私は', tag: 'S' },
+                    { text: '昨日', tag: 'A' },
+                    { text: '美味しいりんごを', tag: 'O' },
+                    { text: '食べました', tag: 'V' }
+                ],
+                'hi': [
+                    { text: 'मैंने', tag: 'S' },
+                    { text: 'कल', tag: 'A' },
+                    { text: 'स्वादिष्ट सेब', tag: 'O' },
+                    { text: 'खाया', tag: 'V' }
+                ],
+                'ar': [
+                    { text: 'أكلتُ', tag: 'V' },
+                    { text: 'التفاحةَ اللذيذةَ', tag: 'O' },
+                    { text: 'أمسِ', tag: 'A' }
+                ],
+                'en': [
+                    { text: 'I', tag: 'S' },
+                    { text: 'ate', tag: 'V' },
+                    { text: 'the delicious apple', tag: 'O' },
+                    { text: 'yesterday', tag: 'A' }
+                ]
+            };
+            
+            analyzeBtn.addEventListener('click', function() {
+                const lang = languageSelect.value;
+                const text = inputText.value.trim();
+                
+                if (!text) {
+                    outputResult.innerHTML = '<span style="color:#666">Please enter a sentence to analyze</span>';
+                    return;
+                }
+                
+                // In a real application, you would send the text to a server for analysis
+                // For this demo, we'll use the sample data
+                let analysis = sampleAnalyses[lang];
+                
+                // If we don't have sample data for this language, use a generic approach
+                if (!analysis) {
+                    analysis = [
+                        { text: text, tag: 'X' }
+                    ];
+                }
+                
+                // Display the analyzed sentence
+                outputResult.innerHTML = '';
+                analysis.forEach(token => {
+                    const span = document.createElement('span');
+                    span.className = `token ${token.tag}`;
+                    span.textContent = token.text;
+                    outputResult.appendChild(span);
+                });
+            });
+            
+            // Initialize with sample text
+            analyzeBtn.click();
+        });
+    </script>
+</body>
+</html>

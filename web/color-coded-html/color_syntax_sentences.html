@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Color-Coded Syntax Sentences: Japanese, Hindi, Arabic</title>
+<style>
+  :root{
+    --S:#1f77b4;   /* blue */
+    --O:#2ca02c;   /* green */
+    --V:#d62728;   /* red */
+    --A:#9467bd;   /* purple (Adjunct: time/place/manner) */
+    --C:#ff7f0e;   /* orange (Conjunction/Subordinator) */
+    --P:#bcbd22;   /* yellow-olive (Pre/Postposition/Complement marker) */
+    --X:#7f7f7f;   /* gray (other/particles) */
+    --BG:#f7f7fb;
+  }
+  body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; background: var(--BG); margin: 0; padding: 24px; color:#222;}
+  h1{ margin: 0 0 16px; font-size: 28px;}
+  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .chip{padding:4px 8px; border-radius:12px; font-size:13px; color:white; display:inline-flex; align-items:center; gap:6px;}
+  .S{background:var(--S);} .O{background:var(--O);} .V{background:var(--V);} .A{background:var(--A);} .C{background:var(--C);} .P{background:var(--P); color:#222;} .X{background:var(--X);}
+  table{ width:100%; border-collapse:separate; border-spacing:0; background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  th, td{ padding:12px 14px; vertical-align:top; }
+  thead th{ background:#eef2ff; font-weight:700; text-align:left; }
+  tbody tr:nth-child(even){ background:#fafbff; }
+  .lang{ font-weight:600; color:#444;}
+  .sent{ line-height:1.9; font-size:18px; }
+  .en{ color:#555; font-style:italic; font-size:15px; }
+  .tok{ padding:2px 6px; border-radius:8px; color:white; }
+  .tok.P{ color:#222; }
+  .grid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;}
+  footer{margin-top:18px; color:#666; font-size:13px;}
+</style>
+</head>
+<body>
+  <h1>Color‑Coded Syntax: Japanese · Hindi · Arabic</h1>
+  <div class="legend">
+    <span class="chip S">Subject (S)</span>
+    <span class="chip O">Object (O)</span>
+    <span class="chip V">Verb (V)</span>
+    <span class="chip A">Adjunct: Time/Place/Manner (A)</span>
+    <span class="chip C">Conjunction/Subordinator (C)</span>
+    <span class="chip P">Pre/Postposition/Complement (P/Comp.)</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Japanese (SOV)</th>
+        <th>Hindi (SOV)</th>
+        <th>Arabic (VSO/SVO)</th>
+        <th>English gloss</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- 1 -->
+      <tr>
+        <td>1</td>
+        <td class="sent">
+          <span class="tok S">私は</span>
+          <span class="tok A">昨日</span>
+          <span class="tok O">美味しい りんごを</span>
+          <span class="tok V">食べました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">मैंने</span>
+          <span class="tok A">कल</span>
+          <span class="tok O">स्वादिष्ट सेब</span>
+          <span class="tok V">खाया</span>
+        </td>
+        <td class="sent">
+          <span class="tok V">أكلتُ</span>
+          <span class="tok O">التفاحةَ اللذيذةَ</span>
+          <span class="tok A">أمسِ</span>
+        </td>
+        <td class="en">I ate the delicious apple yesterday.</td>
+      </tr>
+
+      <!-- 2 -->
+      <tr>
+        <td>2</td>
+        <td class="sent">
+          <span class="tok S">彼女は</span>
+          <span class="tok A">図書館で</span>
+          <span class="tok O">本を</span>
+          <span class="tok V">読んでいます</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">वह</span>
+          <span class="tok A">पुस्तकालय में</span>
+          <span class="tok O">किताब</span>
+          <span class="tok V">पढ़ रही है</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">هي</span>
+          <span class="tok V">تقرأ</span>
+          <span class="tok O">كتابًا</span>
+          <span class="tok A">في المكتبة</span>
+        </td>
+        <td class="en">She is reading a book in the library.</td>
+      </tr>
+
+      <!-- 3 -->
+      <tr>
+        <td>3</td>
+        <td class="sent">
+          <span class="tok C">雨が 降っていたので</span>、
+          <span class="tok S">私たちは</span>
+          <span class="tok A">家に</span>
+          <span class="tok V">いました</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">क्योंकि बारिश हो रही थी</span>,
+          <span class="tok S">हम</span>
+          <span class="tok A">घर में</span>
+          <span class="tok V">रहे</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">لأن المطر كان يهطل</span>،
+          <span class="tok V">بقينا</span>
+          <span class="tok A">في البيت</span>
+        </td>
+        <td class="en">Because it was raining, we stayed home.</td>
+      </tr>
+
+      <!-- 4 -->
+      <tr>
+        <td>4</td>
+        <td class="sent">
+          <span class="tok C">もし</span>
+          <span class="tok S">あなたが</span>
+          <span class="tok A">一生懸命に</span>
+          <span class="tok V">勉強すれば</span>、
+          <span class="tok O">試験に</span>
+          <span class="tok V">合格します</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">अगर</span>
+          <span class="tok S">तुम</span>
+          <span class="tok A">मेहनत से</span>
+          <span class="tok V">पढ़ोगे</span>,
+          <span class="tok C">तो</span>
+          <span class="tok O">परीक्षा</span>
+          <span class="tok V">पास करोगे</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">إذا</span>
+          <span class="tok V">درستَ</span>
+          <span class="tok A">جيدًا</span>،
+          <span class="tok V">فسوف تنجح</span>
+          <span class="tok O">في الامتحان</span>
+        </td>
+        <td class="en">If you study hard, you will pass the exam.</td>
+      </tr>
+
+      <!-- 5 -->
+      <tr>
+        <td>5</td>
+        <td class="sent">
+          <span class="tok A">隣に</span>
+          <span class="tok C">住んでいる</span>
+          <span class="tok S">先生は</span>
+          <span class="tok V">優しい</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">जो</span>
+          <span class="tok S">अध्यापक</span>
+          <span class="tok A">पास</span>
+          <span class="tok V">रहते हैं</span>,
+          <span class="tok S">वे</span>
+          <span class="tok V">दयालु हैं</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">المعلم</span>
+          <span class="tok C">الذي</span>
+          <span class="tok V">يسكن</span>
+          <span class="tok A">بجانبنا</span>
+          <span class="tok V">لطيف</span>
+        </td>
+        <td class="en">The teacher who lives next door is kind.</td>
+      </tr>
+
+      <!-- 6 -->
+      <tr>
+        <td>6</td>
+        <td class="sent">
+          <span class="tok A">卒業した後に</span>
+          <span class="tok S">彼らは</span>
+          <span class="tok A">日本に</span>
+          <span class="tok V">旅行します</span>
+        </td>
+        <td class="sent">
+          <span class="tok A">स्नातक होने के बाद</span>
+          <span class="tok S">वे</span>
+          <span class="tok A">जापान</span>
+          <span class="tok V">जाएँगे</span>
+        </td>
+        <td class="sent">
+          <span class="tok A">بعد أن يتخرجوا</span>،
+          <span class="tok V">سيسافرون</span>
+          <span class="tok A">إلى اليابان</span>
+        </td>
+        <td class="en">They will travel to Japan after they graduate.</td>
+      </tr>
+
+      <!-- 7 -->
+      <tr>
+        <td>7</td>
+        <td class="sent">
+          <span class="tok S">私は</span>
+          <span class="tok S">彼が</span>
+          <span class="tok O">何を</span>
+          <span class="tok V">言っている</span>
+          <span class="tok C">のか</span>
+          <span class="tok V">知りません</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">मैं</span>
+          <span class="tok P">नहीं</span>
+          <span class="tok V">जानता</span>
+          <span class="tok C">कि</span>
+          <span class="tok S">वह</span>
+          <span class="tok O">क्या</span>
+          <span class="tok V">कह रहा है</span>
+        </td>
+        <td class="sent">
+          <span class="tok P">لا</span>
+          <span class="tok V">أعرف</span>
+          <span class="tok O">ما</span>
+          <span class="tok V">يقوله</span>
+        </td>
+        <td class="en">I don’t know what he is saying.</td>
+      </tr>
+
+      <!-- 8 -->
+      <tr>
+        <td>8</td>
+        <td class="sent">
+          <span class="tok S">子供は</span>
+          <span class="tok C">お腹が空いていたので</span>
+          <span class="tok V">泣きました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">बच्चा</span>
+          <span class="tok V">रोया</span>
+          <span class="tok C">क्योंकि</span>
+          <span class="tok S">वह</span>
+          <span class="tok V">भूखा था</span>
+        </td>
+        <td class="sent">
+          <span class="tok V">بكى</span>
+          <span class="tok S">الطفل</span>
+          <span class="tok C">لأنه</span>
+          <span class="tok V">كان</span>
+          <span class="tok A">جائعًا</span>
+        </td>
+        <td class="en">The child cried because he was hungry.</td>
+      </tr>
+
+      <!-- 9 -->
+      <tr>
+        <td>9</td>
+        <td class="sent">
+          <span class="tok S">私たちは</span>
+          <span class="tok O">私たちを 助けてくれた 男の人に</span>
+          <span class="tok V">会いました</span>
+        </td>
+        <td class="sent">
+          <span class="tok S">हमने</span>
+          <span class="tok P">उस आदमी से</span>
+          <span class="tok V">मुलाकात की</span>
+          <span class="tok C">जिसने</span>
+          <span class="tok O">हमारी मदद की</span>
+        </td>
+        <td class="sent">
+          <span class="tok V">قابلنا</span>
+          <span class="tok O">الرجل</span>
+          <span class="tok C">الذي</span>
+          <span class="tok V">ساعدنا</span>
+        </td>
+        <td class="en">We met the man who helped us.</td>
+      </tr>
+
+      <!-- 10 -->
+      <tr>
+        <td>10</td>
+        <td class="sent">
+          <span class="tok C">難しかったけれども</span>、
+          <span class="tok S">彼女は</span>
+          <span class="tok O">問題を</span>
+          <span class="tok V">解きました</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">हालांकि</span>
+          <span class="tok S">यह</span>
+          <span class="tok V">कठिन था</span>,
+          <span class="tok S">उसने</span>
+          <span class="tok O">समस्या</span>
+          <span class="tok V">हल की</span>
+        </td>
+        <td class="sent">
+          <span class="tok C">رغم أنه</span>
+          <span class="tok V">كان</span>
+          <span class="tok A">صعبًا</span>،
+          <span class="tok S">إلا أنها</span>
+          <span class="tok V">حلّت</span>
+          <span class="tok O">المشكلة</span>
+        </td>
+        <td class="en">Although it was difficult, she solved the problem.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <footer>
+    Tip: Hover and read each colored token as S (blue), O (green), V (red), A (purple), C (orange), P (yellow) to internalize the syntax flow.
+  </footer>
+</body>
+</html>

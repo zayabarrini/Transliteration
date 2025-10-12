@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Syntax Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-color-coded-ch.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Syntax Analyzer</h1>
+        
+        <div class="legend">
+            <span class="chip S">Subject (S)</span>
+            <span class="chip O">Object (O)</span>
+            <span class="chip V">Verb (V)</span>
+            <span class="chip A">Adjunct: Time/Place/Manner (A)</span>
+            <span class="chip C">Conjunction/Subordinator (C)</span>
+            <span class="chip P">Preposition/Complement (P)</span>
+            <span class="chip X">Other (X)</span>
+        </div>
+        
+        <div class="input-section">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="text">Enter Text:</label>
+                    <textarea name="text" id="text" placeholder="Enter Chinese text here...">{{ original_text or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <select name="language" id="language">
+                        <option value="chinese" {% if request.form.get('language') == 'chinese' %}selected{% endif %}>Chinese</option>
+                        <option value="japanese" {% if request.form.get('language') == 'japanese' %}selected{% endif %}>Japanese</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Analyze Syntax</button>
+            </form>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if result %}
+        <div class="result-section">
+            <div class="sentence-display">
+                <div class="sentence-title">Original {{ lang_name }} Text:</div>
+                <div class="word-breakdown">
+                    {% for item in result %}
+                        {% if item.is_punctuation %}
+                            <span class="punctuation-token">{{ item.word }}</span>
+                        {% else %}
+                            <ruby>
+                                <rt class="translation">{{ item.translation }}</rt>
+                                <span class="word-token {{ item.syntax }}">{{ item.word }}</span>
+                                <rt class="pinyin">{{ item.transliteration }}</rt>
+                            </ruby>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="translation-display">
+                    <span class="translation-label">Full translation word by word:</span>
+                    {% for item in result %}
+                        {% if item.is_punctuation %}
+                            <span class="punctuation-token">{{ item.word }}</span>
+                        {% else %}
+                            {{ item.translation }} 
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="translation-display">
+                    <span class="translation-label">Full translation:</span>
+                    {{ full_translation }}
+                </div>
+            </div>
+            
+            <table class="syntax-table">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Pinyin</th>
+                        <th>Translation</th>
+                        <th>POS Tag</th>
+                        <th>Syntax Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in result %}
+                        {% if not item.is_punctuation %}
+                        <tr>
+                            <td><strong>{{ item.word }}</strong></td>
+                            <td>{{ item.transliteration }}</td>
+                            <td>{{ item.translation }}</td>
+                            <td>
+                                <code class="pos-tag">{{ item.pos }}</code>
+                            </td>
+                            <td>
+                                <span class="chip {{ item.syntax }}">
+                                    {% if item.syntax == 'S' %}Subject
+                                    {% elif item.syntax == 'O' %}Object
+                                    {% elif item.syntax == 'V' %}Verb
+                                    {% elif item.syntax == 'A' %}Adjunct
+                                    {% elif item.syntax == 'C' %}Conjunction
+                                    {% elif item.syntax == 'P' %}Preposition
+                                    {% else %}Other
+                                    {% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

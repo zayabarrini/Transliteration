@@ -45,7 +45,7 @@ def process_chinese(text):
     result = []
     for word, pinyin_word, translation in zip(words, pinyin_result, translations):
         result.append({
-            'word': word,
+            'word': word,/home/zaya/Downloads/Workspace/color-coded-html
             'transliteration': pinyin_word,
             'translation': translation
         })

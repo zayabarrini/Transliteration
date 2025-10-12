@@ -5,12 +5,13 @@ from transliteration.epubManagement import extract_epub, create_epub, find_text_
 from transliteration.epubTransliteration import get_language_from_filename
 from transliteration.add_metadata_and_cover import add_metadata_and_cover
 
+
 # Default configuration
 DEFAULT_CONFIG = {
-    'option': 4,
-    'language_to_keep': 'ru',
-    'reference_has_no_lang': True
-}
+        'option': 4,
+        'language_to_keep': 'en',
+        'reference_has_no_lang': True
+    }
 
 # Predefined configurations for common use cases
 # Add to your CONFIG_PRESETS
@@ -38,8 +39,26 @@ CONFIG_PRESETS = {
         'option': 4,
         'language_to_keep': 'ru',
         'reference_has_no_lang': True
+    },
+    'Remove_original_text_elements': {
+        'option': 1,
     }
 }
+
+# # Option 1: Remove original text elements before dir="auto"
+# remove_original_text(file_path, option=1)
+
+# # Option 2: Remove all English elements
+# remove_original_text(file_path, option=2, language_to_keep="en")
+
+# # Option 3: Keep only Russian paragraphs that come after English paragraphs (your current use case)
+# remove_original_text(file_path, option=3, language_to_keep="ru", language_after="en")
+
+# # Option 3: Keep only English paragraphs that come after Chinese paragraphs
+# remove_original_text(file_path, option=3, language_to_keep="en", language_after="zh")
+
+# # Option 3: Keep only German paragraphs that come after French paragraphs
+# remove_original_text(file_path, option=3, language_to_keep="de", language_after="fr")
 
 def remove_original_text(file_path: str, config: dict = None) -> None:
     """
@@ -69,6 +88,7 @@ def remove_original_text(file_path: str, config: dict = None) -> None:
         root = tree.getroot()
         
         option = config.get('option', 3)
+        # option = 1
         
         if option == 1:
             _remove_original_before_dir_auto(root)

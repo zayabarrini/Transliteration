@@ -17,7 +17,7 @@ fi
 
 # Output file (use directory name for output)
 DIR_BASENAME=$(basename "$INPUT_DIR")
-OUTPUT_FILE="${DIR_BASENAME}_combined.djvu"
+OUTPUT_FILE="${INPUT_DIR}_combined.djvu"
 TOC_FILE="accurate_toc.dsed"
 BOOKMARKS_FILE="bookmarks.bm"
 TEMP_LIST="djvu_files.list"

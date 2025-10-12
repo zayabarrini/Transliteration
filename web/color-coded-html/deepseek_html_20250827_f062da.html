@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Syntax Highlighter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .language-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .japanese .card-header {
+            background: #dc143c;
+        }
+        
+        .hindi .card-header {
+            background: #ff8c00;
+        }
+        
+        .arabic .card-header {
+            background: #0077b6;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .syntax-example {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            direction: ltr;
+        }
+        
+        .arabic .syntax-example {
+            direction: rtl;
+            font-size: 1.6rem;
+        }
+        
+        .hindi .syntax-example {
+            font-size: 1.5rem;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .keyword {
+            color: #d63384;
+            font-weight: bold;
+        }
+        
+        .string {
+            color: #0ca678;
+        }
+        
+        .comment {
+            color: #6c757d;
+        }
+        
+        .function {
+            color: #3b5bdb;
+        }
+        
+        .operator {
+            color: #fd7e14;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #1a2a6c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2a3a8c;
+        }
+        
+        @media (max-width: 768px) {
+            .language-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Multilingual Syntax Highlighter</h1>
+            <p class="subtitle">Color-coded syntax examples for Japanese, Hindi, and Arabic with HTML/CSS/JavaScript. This solution works in any browser without external libraries.</p>
+        </header>
+        
+        <div class="language-cards">
+            <!-- Japanese Card -->
+            <div class="card japanese">
+                <div class="card-header">
+                    Japanese Syntax Example
+                </div>
+                <div class="card-body">
+                    <div class="syntax-example">
+                        <span class="keyword">もし</span>(condition) {
+                            <span class="function">処理を実行</span>(<span class="string">"こんにちは世界"</span>);
+                        } <span class="keyword">それ以外</span> {
+                            <span class="function">別の処理</span>();
+                        }
+                        <span class="comment">// これはコメントです</span>
+                    </div>
+                    <div class="explanation">
+                        <p>This example shows a conditional statement in Japanese pseudocode. The syntax uses Japanese keywords:</p>
+                        <ul>
+                            <li><span class="keyword">もし</span> - "if" condition</li>
+                            <li><span class="keyword">それ以外</span> - "else" clause</li>
+                            <li><span class="function">処理を実行</span> - "execute processing" function call</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hindi Card -->
+            <div class="card hindi">
+                <div class="card-header">
+                    Hindi Syntax Example
+                </div>
+                <div class="card-body">
+                    <div class="syntax-example">
+                        <span class="keyword">यदि</span>(condition) {
+                            <span class="function">कार्यान्वयन</span>(<span class="string">"नमस्ते दुनिया"</span>);
+                        } <span class="keyword">अन्यथा</span> {
+                            <span class="function">अन्य_कार्य</span>();
+                        }
+                        <span class="comment">// यह एक टिप्पणी है</span>
+                    </div>
+                    <div class="explanation">
+                        <p>This example shows a conditional statement in Hindi pseudocode. The syntax uses Hindi keywords:</p>
+                        <ul>
+                            <li><span class="keyword">यदि</span> - "if" condition</li>
+                            <li><span class="keyword">अन्यथा</span> - "else" clause</li>
+                            <li><span class="function">कार्यान्वयन</span> - "execute" function call</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arabic Card -->
+            <div class="card arabic">
+                <div class="card-header">
+                    Arabic Syntax Example
+                </div>
+                <div class="card-body">
+                    <div class="syntax-example">
+                        <span class="keyword">إذا</span>(condition) {
+                            <span class="function">نفذ</span>(<span class="string">"مرحبا بالعالم"</span>);
+                        } <span class="keyword">وإلا</span> {
+                            <span class="function">نفذ_وظيفة_أخرى</span>();
+                        }
+                        <span class="comment">// هذا تعليق</span>
+                    </div>
+                    <div class="explanation">
+                        <p>This example shows a conditional statement in Arabic pseudocode. The syntax uses Arabic keywords:</p>
+                        <ul>
+                            <li><span class="keyword">إذا</span> - "if" condition</li>
+                            <li><span class="keyword">وإلا</span> - "else" clause</li>
+                            <li><span class="function">نفذ</span> - "execute" function call</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This implementation uses pure HTML, CSS, and JavaScript with no external dependencies.</p>
+            <p>For more complex applications, you could use Python with frameworks like Flask or Django to generate these pages dynamically.</p>
+            <a href="#" class="btn">View Code on GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation for cards when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach((card, index) => {
+                // Set initial state for animation
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                // Animate cards sequentially
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 300 + (index * 200));
+            });
+        });
+    </script>
+</body>
+</html>
