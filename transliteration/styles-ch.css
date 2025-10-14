@@ -1,6 +1,8 @@
+/* styles-ebooks.css - Base styles for both modes */
 ruby {
-    display: inline-block;
-    position: relative;
+    display: inline-flex;
+    flex-direction: column-reverse;
+    align-items: center;
     line-height: 1.5;
     margin-right: 0.1em;
     vertical-align: top;
@@ -14,4 +16,34 @@ rt {
     line-height: 1.2;
     position: relative;
     margin-top: -0.2em;
+}
+
+rt.translation {
+    order: 1;
+}
+
+rt.pinyin {
+    order: -1;
+}
+
+/* Color-coded syntax styles - only applied when using color mode */
+.S { background: #60a5fa; color: #1e3a8a; }   /* soft blue */
+.O { background: #34d399; color: #065f46; }   /* mint green */
+.V { background: #f87171; color: #7f1d1d; }   /* coral red */
+.A { background: #a78bfa; color: #4c1d95; }   /* lavender */
+.C { background: #fbbf24; color: #78350f; }   /* honey */
+.P { background: #fde68a; color: #78350f; }   /* light gold */
+.PUNCT { background: transparent; color: #6b7280; }
+
+/* Enhanced styling for color-coded mode */
+ruby.S, ruby.O, ruby.V, ruby.A, ruby.C, ruby.P, ruby.X {
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin: 0 1px;
+}
+
+/* For the syntax/pos text in color-coded mode */
+ruby.S rt, ruby.O rt, ruby.V rt, ruby.A rt, ruby.C rt, ruby.P rt, ruby.X rt {
+    font-size: 40%; /* Smaller for the additional text */
+    color: #666;
 }

@@ -44,9 +44,15 @@ def get_css_file(language, epub_folder):
 
 def add_css_link(soup, css_rel_path):
     """Add the CSS link to the HTML head"""
+    # Ensure html element exists
+    if not soup.html:
+        soup.html = soup.new_tag('html')
+        soup.append(soup.html)
+    
     # Create or clean head section
     if not soup.head:
-        soup.html.insert(0, soup.new_tag('head'))
+        head_tag = soup.new_tag('head')
+        soup.html.insert(0, head_tag)
     
     # Remove existing style/link tags
     for tag in soup.head.find_all(['style', 'link']):

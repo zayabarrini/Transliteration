@@ -119,7 +119,7 @@ def process_chinese(text):
         else:
             try:
                 # Add delay to avoid rate limiting
-                time.sleep(0.5)
+                time.sleep(0.1)
                 translation = translator.translate(word, src='zh-cn', dest='en')
                 translations.append(translation)
             except Exception as e:

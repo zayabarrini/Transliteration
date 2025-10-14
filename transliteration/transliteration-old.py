@@ -128,88 +128,9 @@ def append_punctuation_to_previous_word(segmented_words):
     
     return corrected_words
 
-import jieba
-import jieba.posseg as pseg
-from pypinyin import pinyin, Style, lazy_pinyin
-import re
-
-EXCLUDE_CHARS = {
-    ' ', '.', ',', '!', '?', '。', '，', '！', '？', '、',
-    '「', '」', '『', '』', '（', '）', '《', '》', '“', '”',
-    '‘', '’', '…', '—', '：', ':', '；', ';', '～', '°', 'º'
-}
-
-def is_punctuation(word):
-    """Check if a word is punctuation"""
-    return word in EXCLUDE_CHARS
-
-def analyze_chinese_syntax(text):
-    """Improved POS-based syntax analysis for Chinese"""
-    words = list(pseg.cut(text))
-    syntax_data = []
-    
-    for i, (word, pos) in enumerate(words):
-        # Skip punctuation in syntax analysis
-        if is_punctuation(word):
-            syntax_data.append((word, 'PUNCT', pos))
-            continue
-            
-        # Enhanced heuristic rules based on POS tags
-        if pos.startswith('v'):  # Verbs (v, vd, vn, etc.)
-            category = 'V'
-        elif pos in ['r', 'nh', 'nr'] and i == 0:  # First person/name often subject
-            category = 'S'
-        elif pos in ['r', 'nh', 'nr'] and i > 0 and syntax_data:  
-            # Check previous word to determine if this is subject or object
-            prev_syntax = syntax_data[-1][1] if syntax_data else ''
-            if prev_syntax in ['V', 'P']:  # After verb or preposition, likely object
-                category = 'O'
-            else:
-                category = 'S'
-        elif pos.startswith('n') and i > 0:  # Nouns after first position
-            prev_syntax = syntax_data[-1][1] if syntax_data else ''
-            if prev_syntax == 'V':  # Object after verb
-                category = 'O'
-            elif prev_syntax in ['P', 'C']:  # After preposition/conjunction
-                category = 'O'
-            else:
-                category = 'S' if i == 0 else 'O'
-        elif pos.startswith('n') and i == 0:  # First noun is likely subject
-            category = 'S'
-        elif pos in ['d', 'a', 'b']:  # Adverbs, adjectives, other modifiers
-            category = 'A'
-        elif pos in ['c', 'p', 'cc']:  # Conjunctions, prepositions
-            category = 'C' if pos in ['c', 'cc'] else 'P'
-        elif pos in ['u', 'y', 'e']:  # Auxiliary, modal particles
-            category = 'P'
-        elif pos in ['m', 'q']:  # Numbers, quantifiers
-            category = 'A'  # Treat as adjunct/modifier
-        elif pos in ['f', 's']:  # Direction, place
-            category = 'A'
-        else:
-            category = 'X'  # Other
-            
-        syntax_data.append((word, category, pos))
-    
-    return syntax_data
-
-def get_pinyin_for_word(word):
-    """Get pinyin for a word, handling multi-character words properly"""
-    if is_punctuation(word):
-        return ''
-    
-    # For multi-character words, join the pinyin with spaces
-    pinyin_list = lazy_pinyin(
-        word,
-        style=Style.TONE,
-        neutral_tone_with_five=True,
-        strict=False
-    )
-    return ' '.join(pinyin_list)
-
-def get_pinyin_annotations(text, color_coded=False):
-    """Get pinyin annotations with word-level grouping and optional color-coding"""
+def get_pinyin_annotations(text):
     from pypinyin import lazy_pinyin, Style, load_phrases_dict
+    import re
     
     # Custom phrase corrections
     load_phrases_dict({
@@ -218,66 +139,58 @@ def get_pinyin_annotations(text, color_coded=False):
         "明白": [["míng"], ["bai"]]
     })
     
-    # Perform syntax analysis to get word groupings
-    syntax_analysis = analyze_chinese_syntax(text)
-    
-    # Build the result by processing each word
-    result = []
-    
-    for word, syntax, pos in syntax_analysis:
-        if is_punctuation(word):
-            # Add punctuation directly
-            result.append(word)
-        else:
-            # Get pinyin for the entire word
-            word_pinyin = get_pinyin_for_word(word)
-            
-            if color_coded:
-                # Color-coded mode: join entire word with syntax/POS info
-                if word_pinyin and word_pinyin != word:
-                    # result.append(f'<ruby class="{syntax}">{word} {syntax} {pos}<rt>{word_pinyin}</rt></ruby>')
-                    # result.append(f'<ruby class="{syntax}"><rt>{syntax} {pos}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>')
-                    result.append(f'<ruby class="{syntax}"><rt>{syntax}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>')
-                    # result.append(f'<ruby class="{syntax}">{word}<rt>{word_pinyin}</rt></ruby>')
+    # Complete exclusion set
+    exclude_chars = {
+        ' ', '.', ',', '!', '?', '。', '，', '！', '？', '、',
+        '「', '」', '『', '』', '（', '）', '《', '》', '“', '”',
+        '‘', '’', '…', '—', '：', ':', '；', ';', '～', '°', 'º'
+    }
 
+    # Get pinyin with word grouping
+    pinyin_list = lazy_pinyin(
+        text,
+        style=Style.TONE,
+        neutral_tone_with_five=True,
+        errors=lambda x: [x] if x in exclude_chars else [''],
+        strict=False
+    )
+    
+    # Build proper ruby annotations
+    result = []
+    i = 0
+    while i < len(text):
+        char = text[i]
+        
+        if char in exclude_chars:
+            result.append(char)
+            i += 1
+        elif re.match(r'^[\u4e00-\u9fff]$', char):
+            # Handle multi-character words
+            word = char
+            while i+1 < len(text) and re.match(r'^[\u4e00-\u9fff]$', text[i+1]):
+                word += text[i+1]
+                i += 1
+            
+            # Get pinyin for the entire word
+            word_pinyin = lazy_pinyin(
+                word,
+                style=Style.TONE,
+                neutral_tone_with_five=True
+            )
+            
+            # Annotate each character
+            for c, py in zip(word, word_pinyin):
+                if py and py != c:
+                    result.append(f'<ruby>{c}<rt>{py}</rt></ruby>')
                 else:
-                    result.append(f'<span class="{syntax}">{word}</span>')
-            else:
-                # Simple mode: just word with pinyin
-                if word_pinyin and word_pinyin != word:
-                    # For multi-character words, create a single ruby annotation
-                    result.append(f'<ruby>{word}<rt>{word_pinyin}</rt></ruby>')
-                else:
-                    result.append(word)
+                    result.append(c)
+            
+            i += 1
+        else:
+            result.append(char)
+            i += 1
     
     return ''.join(result)
-
-def process_chinese_advanced(text):
-    """Advanced processing with full syntax analysis (for detailed breakdown)"""
-    # Use POS-based syntax analysis
-    syntax_analysis = analyze_chinese_syntax(text)
-    
-    result = []
-    for word, syntax, pos in syntax_analysis:
-        if is_punctuation(word):
-            result.append({
-                'word': word,
-                'transliteration': '',
-                'syntax': syntax,
-                'pos': pos,
-                'is_punctuation': True
-            })
-        else:
-            pinyin_word = get_pinyin_for_word(word)
-            result.append({
-                'word': word,
-                'transliteration': pinyin_word,
-                'syntax': syntax,
-                'pos': pos,
-                'is_punctuation': False
-            })
-    
-    return result
 
 def process_japanese_segment(text, soup):
     """Process a segment of Japanese text into ruby annotations"""
@@ -417,16 +330,6 @@ def add_furigana(text, transliteration, language):
     
     return ''.join(furigana_text)
 
-def transliterate_chinese(text, mode='color'):
-    """
-    Main function for Chinese transliteration
-    
-    Args:
-        text: Chinese text to transliterate
-        mode: 'simple' for basic pinyin, 'color' for color-coded syntax/POS
-    """
-    return get_pinyin_annotations(text, color_coded=(mode == 'color'))
-    
 # Function to transliterate text
 def transliterate(input_text, language):
     language = language.lower()
@@ -437,7 +340,7 @@ def transliterate(input_text, language):
         return ""
     if language == "chinese":
         # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
-        return transliterate_chinese(input_text)
+        return get_pinyin_annotations(input_text)
     elif language == "japanese":
         import pykakasi as original_pykakasi
         test_kakasi = original_pykakasi.kakasi()
@@ -574,21 +477,3 @@ if __name__ == "__main__":
     language = "japanese"
     result = transliterate(input_text, language)
     print(result)
-    
-    sample_text = "我喜欢学习中文。"
-    
-    # Simple mode
-    simple_result = transliterate_chinese(sample_text, 'simple')
-    print("Simple mode:")
-    print(simple_result)
-    
-    # Color-coded mode
-    color_result = transliterate_chinese(sample_text, 'color')
-    print("\nColor-coded mode:")
-    print(color_result)
-    
-    # Advanced analysis
-    detailed_analysis = process_chinese_advanced(sample_text)
-    print("\nDetailed analysis:")
-    for item in detailed_analysis:
-        print(f"Word: {item['word']}, Pinyin: {item['transliteration']}, Syntax: {item['syntax']}, POS: {item['pos']}")
