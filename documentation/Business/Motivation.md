@@ -1,3 +1,11 @@
+# Personal Progress
+
+@ReadAloud
+French: Grammar, (Seminários de Lacan + Revistas de Psicanálise)
+German: Grammar + db Epubs
+Russian, Italian, Chinese (color-coded transliteration): db Epubs
+Arabic, Hindi, Japanese: Zaya-Grammar + db Epubs (Needs color-coded transliteration)
+
 # How international mobility, foreign languages knowledge, institutions knowledge and powerful connections have matter in big powerful disputes
 
 Excellent question. You're asking how the "soft" or "human" factors—distinct from pure legal argument—influence high-stakes disputes. In major legal and political battles, the law provides the arena, but these factors often determine the outcome.
