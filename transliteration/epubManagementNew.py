@@ -8,7 +8,7 @@ from lxml import etree
 
 def extract_epub(epub_path: str, extract_to: str) -> None:
     """Extracts EPUB contents to a directory."""
-              with zipfile.ZipFile(epub_path, "r") as zip_ref:
+    with zipfile.ZipFile(epub_path, "r") as zip_ref:
         zip_ref.extractall(extract_to)
 
 

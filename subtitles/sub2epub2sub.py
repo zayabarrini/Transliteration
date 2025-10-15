@@ -1,22 +1,23 @@
+import codecs
+import os
+import re
+import shutil
 import time
 import zipfile
-import os
-import ebooklib
-from ebooklib import epub
-from bs4 import BeautifulSoup
-import re
 from pathlib import Path
-import chardet
-import codecs
-import shutil
 
+import chardet
+import ebooklib
+from bs4 import BeautifulSoup
+from ebooklib import epub
+
+from transliteration.filter_language_characters import filter_language_characters
 from transliteration.translationFunctions import (
-    transliterate,
-    TARGET_PATTERNS,
     LANGUAGE_CODE_MAP,
     LANGUAGE_STYLES,
+    TARGET_PATTERNS,
+    transliterate,
 )
-from transliteration.filter_language_characters import filter_language_characters
 
 
 def read_srt(file_path):

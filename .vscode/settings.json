@@ -1,32 +1,20 @@
 {
-  // Global formatting settings
+  // Enable format on save for all files
   "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
-  },
-
-  // File associations
-  "files.associations": {
-    "**/*.html": "html",
-    "**/*.js": "javascript",
-    "**/*.css": "css",
-    "**/*.json": "json",
-    "**/*.md": "markdown"
-  },
-
-  // Python specific - Enhanced configuration
+  
+  // File-specific formatters
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "ms-python.python",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit",
-      "source.fixAll": "explicit"
+      "source.organizeImports": "explicit"
     }
   },
-
-  // JavaScript/TypeScript specific
   "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
@@ -46,28 +34,28 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
-
-  // Prettier settings
-  "prettier.requireConfig": true,
-
-  // ESLint settings
-  "eslint.validate": ["javascript", "typescript"],
-
-  // Python settings - Enhanced
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": true
+  },
+  
+  // Python-specific settings - Let VS Code auto-detect Pipenv
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": ["--line-length", "100", "--skip-string-normalization"],
-  "python.sortImports.args": ["--profile", "black", "--line-length", "100"],
-  "python.linting.flake8Enabled": true,
-  "python.linting.flake8Args": [
-    "--max-line-length=100",
-    "--extend-ignore=E203,W503,E501,F401,F403,F405,F811,F841,E402,E722,E741,W605,E266,E999,F541,W291,F601,E721,F821"
+  "python.formatting.blackArgs": [
+    "--line-length=100"
   ],
-  "python.analysis.autoImportCompletions": true,
-
-  // Ensure formatting works even with errors
-  "python.formatting.blackPath": "black",
-  "editor.formatOnSaveMode": "file",
-
-  // Optional: Show formatting notifications
-  "editor.formatOnSaveTimeout": 3000
+  "python.sortImports.args": [
+    "--profile=black"
+  ],
+  
+  // Prettier settings
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "es5",
+  "prettier.printWidth": 100
 }

@@ -1,23 +1,24 @@
-import re
 import csv
 import os
+import re
+import sys
+import tempfile
 import time
 import zipfile
-import tempfile
-from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor
-import sys
+from itertools import combinations
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from concurrent.futures import ThreadPoolExecutor
+
+from transliteration.filter_language_characters import filter_language_characters
 from transliteration.translationFunctions import (
-    translate_text,
-    translate_parallel,
-    TARGET_PATTERNS,
     LANGUAGE_CODE_MAP,
     LANGUAGE_STYLES,
+    TARGET_PATTERNS,
+    translate_parallel,
+    translate_text,
 )
-from transliteration.filter_language_characters import filter_language_characters
 from transliteration.transliteration import transliterate
 
 # from translationFunctions import (
