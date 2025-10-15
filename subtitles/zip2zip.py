@@ -1,31 +1,33 @@
-from pathlib import Path
-import re
 import csv
 import os
+import re
+import sys
 import tempfile
 import time
 import traceback
 import zipfile
-from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor
-import sys
+from itertools import combinations
+from pathlib import Path
+
 import chardet  # Add this import for encoding detection
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from concurrent.futures import ThreadPoolExecutor
-from transliteration.translationFunctions import (
-    translate_text,
-    translate_parallel,
-    transliterate,
-    TARGET_PATTERNS,
-    LANGUAGE_CODE_MAP,
-    LANGUAGE_STYLES,
-)
+from functools import lru_cache
+
 from transliteration.filter_language_characters import (
     filter_language_characters,
     filter_language_characters_preserve_spaces,
 )
-from functools import lru_cache
+from transliteration.translationFunctions import (
+    LANGUAGE_CODE_MAP,
+    LANGUAGE_STYLES,
+    TARGET_PATTERNS,
+    translate_parallel,
+    translate_text,
+    transliterate,
+)
 
 # Import your translation functions (commented out as they're not provided)
 # from translationFunctions import (
