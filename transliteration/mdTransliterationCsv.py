@@ -12,49 +12,71 @@ import jieba
 import csv
 import random
 
+
 def format_transliteration(text):
     # Add spaces after commas and periods
-    text = re.sub(r'([,.])', r'\1 ', text)
-    
+    text = re.sub(r"([,.])", r"\1 ", text)
+
     # Add spaces around hyphens
-    text = re.sub(r'([a-zA-Z])-([a-zA-Z])', r'\1 - \2', text)
-    
+    text = re.sub(r"([a-zA-Z])-([a-zA-Z])", r"\1 - \2", text)
+
     # Break long sentences into smaller chunks
-    sentences = re.split(r'(?<=[。！？])', text)
-    formatted_text = '\n'.join([s.strip() for s in sentences if s.strip()])
-    
+    sentences = re.split(r"(?<=[。！？])", text)
+    formatted_text = "\n".join([s.strip() for s in sentences if s.strip()])
+
     return formatted_text
+
 
 def is_latin(token):
     """Check if a token contains only Latin characters."""
-    return bool(re.match(r'^[A-Za-z0-9\s\W_]+$', token))
+    return bool(re.match(r"^[A-Za-z0-9\s\W_]+$", token))
+
 
 # Function to tokenize text into words and symbols
 def tokenize_text(text):
     # Tokenize the text into words and non-words (punctuation, spaces, etc.)
-    tokens = re.findall(r'\w+|\W+', text)
-    
+    tokens = re.findall(r"\w+|\W+", text)
+
     # Initialize a list to store the corrected tokens
     corrected_tokens = []
-    
+
     for token in tokens:
-        if re.match(r'\W+', token):  # Check if the token is punctuation
+        if re.match(r"\W+", token):  # Check if the token is punctuation
             if corrected_tokens:  # If there is a previous word, append punctuation to it
                 corrected_tokens[-1] += token
             else:  # If no previous word exists, add the punctuation as a standalone token
                 corrected_tokens.append(token)
         else:  # If the token is a word, add it to the list
             corrected_tokens.append(token)
-    
+
     return corrected_tokens
+
 
 def append_punctuation_to_previous_word(segmented_words):
     # List of punctuation marks to handle
-    punctuation_marks = ['。', '，', '！', '？', '、', '「', '」', '『', '』', '（', '）', '《', '》', '.', ',', '!', '?']
-    
+    punctuation_marks = [
+        "。",
+        "，",
+        "！",
+        "？",
+        "、",
+        "「",
+        "」",
+        "『",
+        "』",
+        "（",
+        "）",
+        "《",
+        "》",
+        ".",
+        ",",
+        "!",
+        "?",
+    ]
+
     # Initialize a new list to store the corrected tokens
     corrected_words = []
-    
+
     for word in segmented_words:
         if word in punctuation_marks:  # Check if the word is punctuation
             if corrected_words:  # If there is a previous word, append punctuation to it
@@ -63,25 +85,45 @@ def append_punctuation_to_previous_word(segmented_words):
                 corrected_words.append(word)
         else:  # If the word is not punctuation, add it to the list
             corrected_words.append(word)
-    
+
     return corrected_words
+
 
 # Function to add furigana to text
 def add_furigana(text, transliteration, language):
     # tokens = text
-    exclude_chars = [' ', '.', ',', '!', '?', '。', '，', '！', '？', '、', '「', '」', '『', '』', '（', '）', '《', '》']
+    exclude_chars = [
+        " ",
+        ".",
+        ",",
+        "!",
+        "?",
+        "。",
+        "，",
+        "！",
+        "？",
+        "、",
+        "「",
+        "」",
+        "『",
+        "』",
+        "（",
+        "）",
+        "《",
+        "》",
+    ]
     if language == "japanese":
-        trans_words = [item['hepburn'] for item in transliteration]
+        trans_words = [item["hepburn"] for item in transliteration]
     elif language == "korean":
         trans_words = transliteration  # Use the list of tuples directly
     else:
         trans_words = transliteration.split()
-    
+
     furigana_text = []
     trans_index = 0
-    
+
     if language == "japanese":
-        segmented_chars = [item['orig'] for item in transliteration]
+        segmented_chars = [item["orig"] for item in transliteration]
         # segmented_chars = list(token)
         for char in segmented_chars:
             if trans_index < len(trans_words):
@@ -109,7 +151,7 @@ def add_furigana(text, transliteration, language):
                 furigana_text.append(f"<ruby>{word}</ruby>")
     # else:
     #     furigana_text.append(f"<ruby>{token}</ruby>")
-    
+
     if language == "chinese":
         tokens = tokenize_text(text)
         for token in tokens:
@@ -128,20 +170,21 @@ def add_furigana(text, transliteration, language):
                 print(segmented_words)
                 # add punctuation to the previous word
                 corrected_words = append_punctuation_to_previous_word(segmented_words)
- 
+
                 for word in corrected_words:
                     num_syllables = len(word)
-                    pinyin = ' '.join(trans_words[trans_index:trans_index + num_syllables])
+                    pinyin = " ".join(trans_words[trans_index : trans_index + num_syllables])
                     # remove punctuation from pin yin
-                    pinyin = re.sub(r'[^\w\s]', '', pinyin)
+                    pinyin = re.sub(r"[^\w\s]", "", pinyin)
                     trans_index += num_syllables
                     furigana_text.append(f"<ruby>{word}<rt>{pinyin}</rt></ruby>")
-    return ''.join(furigana_text)
+    return "".join(furigana_text)
+
 
 # Function to transliterate text
 def transliterate(input_text, language):
     if language == "chinese":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
+        return " ".join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
     elif language == "japanese":
         kakasi = pykakasi.kakasi()
         # kakasi.setMode("H", "a")
@@ -153,7 +196,8 @@ def transliterate(input_text, language):
         return result
     elif language == "russian":
         import transliterate
-        return transliterate.translit(input_text, 'ru', reversed=True)
+
+        return transliterate.translit(input_text, "ru", reversed=True)
     elif language == "hindi":
         result = indic_transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
         return result
@@ -165,29 +209,32 @@ def transliterate(input_text, language):
         return result
     else:
         return input_text
-    
+
+
 # Remove English lines from content
 def remove_latin(content, language):
     print(f"Removing English lines from {language} content")
     language_ranges = {
-        'chinese': r'[\u4e00-\u9fff]',
-        'russian': r'[\u0400-\u04FF]',
-        'hindi': r'[\u0900-\u097F]',
-        'japanese': r'[\u3040-\u30FF\u4E00-\u9FFF]',
-        'korean': r'[\uAC00-\uD7AF]',
-        'arabic': r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]',  # Added Arabic
+        "chinese": r"[\u4e00-\u9fff]",
+        "russian": r"[\u0400-\u04FF]",
+        "hindi": r"[\u0900-\u097F]",
+        "japanese": r"[\u3040-\u30FF\u4E00-\u9FFF]",
+        "korean": r"[\uAC00-\uD7AF]",
+        "arabic": r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]",  # Added Arabic
     }
-    
-    target_pattern = language_ranges.get(language, r'[\u4e00-\u9fff]')  # Default to Chinese
-    english_pattern = re.compile(r'^[A-Za-z0-9\s,.!?;:()\'\"-]+$', re.MULTILINE)
+
+    target_pattern = language_ranges.get(language, r"[\u4e00-\u9fff]")  # Default to Chinese
+    english_pattern = re.compile(r"^[A-Za-z0-9\s,.!?;:()\'\"-]+$", re.MULTILINE)
     target_language_pattern = re.compile(target_pattern)
-    
+
     lines = content.splitlines()
     filtered_lines = [
-        line for line in lines
+        line
+        for line in lines
         if target_language_pattern.search(line)  # Keep only lines with the target language script
-    ]  
-    return '\n'.join(filtered_lines)
+    ]
+    return "\n".join(filtered_lines)
+
 
 # Save content as Markdown
 def save_markdown(content, output_file):
@@ -195,44 +242,46 @@ def save_markdown(content, output_file):
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(content)
 
+
 def is_header(line):
     """Check if the line is a Markdown header."""
-    return re.match(r'^#+\s*', line) is not None
+    return re.match(r"^#+\s*", line) is not None
+
 
 def generate_epub(content, output_file, css_file=None, metadata=None, cover_image=None):
     # Using Pandoc to generate EPUB
     temp_file = "temp.md"
     with open(temp_file, "w", encoding="utf-8") as f:
         f.write(content)
-    
+
     # Build Pandoc command
     pandoc_args = ["pandoc", "-o", output_file, "-t", "epub", temp_file]
-    
+
     # Add CSS file if provided
     if css_file:
         pandoc_args.extend(["--css", css_file])
-    
+
     # Add metadata if provided
     if metadata:
         for key, value in metadata.items():
             pandoc_args.extend(["--metadata", f"{key}={value}"])
-    
+
     # Add cover image if provided
     if cover_image:
         pandoc_args.extend(["--epub-cover-image", cover_image])
-    
+
     print(f"Running Pandoc command: {' '.join(pandoc_args)}")
-    
+
     try:
         # Run the pandoc command
         result = subprocess.run(pandoc_args, capture_output=True, text=True)
-        
+
         # Print the output and errors (if any)
         if result.stdout:
             print("Pandoc Output:", result.stdout)
         if result.stderr:
             print("Pandoc Error:", result.stderr)
-        
+
         # Check if the command was successful
         if result.returncode == 0:
             print(f"EPUB successfully generated: {output_file}")
@@ -244,18 +293,19 @@ def generate_epub(content, output_file, css_file=None, metadata=None, cover_imag
         # Clean up the temporary file
         if os.path.exists(temp_file):
             os.remove(temp_file)
-            
+
+
 def process_file(input_filename):
-    with open(input_filename, mode='r', encoding='utf-8') as file:
+    with open(input_filename, mode="r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            input_md_file = row['input']  # Path to the input Markdown file
-            language = row['target_language']  # Target language
+            input_md_file = row["input"]  # Path to the input Markdown file
+            language = row["target_language"]  # Target language
             enable_transliteration = True  # Enable transliteration by default
 
             if enable_transliteration:
                 # Read the content of the input Markdown file
-                with open(input_md_file, mode='r', encoding='utf-8') as md_file:
+                with open(input_md_file, mode="r", encoding="utf-8") as md_file:
                     input_text = md_file.read()
 
                 # Extract base_name from the input Markdown file path
@@ -269,7 +319,10 @@ def process_file(input_filename):
                 # Process each line of the input text
                 content_with_transliteration = ""
                 for line in input_text.splitlines():  # Process each line
-                    if re.search(r'[\u4e00-\u9fff\u0400-\u04FF\u0900-\u097F\u3040-\u30FF\uAC00-\uD7AF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]', line):
+                    if re.search(
+                        r"[\u4e00-\u9fff\u0400-\u04FF\u0900-\u097F\u3040-\u30FF\uAC00-\uD7AF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]",
+                        line,
+                    ):
                         # If the line contains target language script, add transliteration
                         if is_header(line):
                             # If it's a header, return the line as-is
@@ -311,8 +364,9 @@ def process_file(input_filename):
                         "author": "Zaya Barrini",
                         "website": "https://zayabarrini.vercel.app/",
                     },
-                    cover_image=cover_image
+                    cover_image=cover_image,
                 )
+
 
 # Example Usage
 # input_filename = '/home/zaya/Documents/Ebooks/Russian-Favorite-Movies-3.0.md'
@@ -322,5 +376,5 @@ def process_file(input_filename):
 
 # process_file(input_filename, target_language, enable_transliteration=True)
 
-input_folder = '/home/zaya/Downloads/transliteration_files.csv'
+input_folder = "/home/zaya/Downloads/transliteration_files.csv"
 process_file(input_folder)

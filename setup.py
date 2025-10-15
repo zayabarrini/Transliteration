@@ -5,13 +5,13 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=[
-        'pypinyin',
-        'hangul-romanize',
-        'indic-transliteration',
-        'pykakasi',
-        'pyarabic',
-        'jieba',
-        'transliterate'
+        "pypinyin",
+        "hangul-romanize",
+        "indic-transliteration",
+        "pykakasi",
+        "pyarabic",
+        "jieba",
+        "transliterate",
     ],
     python_requires=">=3.6",
 )

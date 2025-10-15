@@ -9,9 +9,9 @@ setup(
         "spacy>=3.0.0",
     ],
     entry_points={
-        'console_scripts': [
-            'clean-spelling=spelling.cli:main',
+        "console_scripts": [
+            "clean-spelling=spelling.cli:main",
         ],
     },
-    python_requires='>=3.8',
+    python_requires=">=3.8",
 )

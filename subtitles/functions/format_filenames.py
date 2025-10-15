@@ -5,24 +5,23 @@ import re
 def format_filename(name):
     # Remove file extension
     name, ext = os.path.splitext(name)
-    
+
     # Replace dots or underscores with spaces
-    name = re.sub(r'[._]', ' ', name)
-    
-    
-    
+    name = re.sub(r"[._]", " ", name)
+
     # Keep only the name and the year (if available)
-    match = re.match(r'(.*?)(\s\d{4})', name)
+    match = re.match(r"(.*?)(\s\d{4})", name)
     if match:
         name = match.group(1) + match.group(2)  # Name and year
     else:
         # Remove everything after the first non-alphabetic group
-        name = re.sub(r'[^a-zA-Z0-9\s]+.*$', '', name)
-        
+        name = re.sub(r"[^a-zA-Z0-9\s]+.*$", "", name)
+
     # Remove extra spaces
-    name = re.sub(r'\s+', '-', name).strip()
+    name = re.sub(r"\s+", "-", name).strip()
     # Add the extension back
     return f"{name.strip()}{ext.lower()}"
+
 
 def clean_filenames(directory):
     for filename in os.listdir(directory):
@@ -42,6 +41,7 @@ def clean_filenames(directory):
                 print(f'Renamed: "{filename}" -> "{os.path.basename(new_path)}"')
             else:
                 print(f'Skipped: "{filename}" (already formatted)')
+
 
 if __name__ == "__main__":
     # directory = input("Enter the directory containing files: ").strip()

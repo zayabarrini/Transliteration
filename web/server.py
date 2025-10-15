@@ -8,89 +8,90 @@ import time
 
 # Map target languages to Google Translate language codes
 LANGUAGE_CODE_MAP = {
-    'german': 'de',
-    'italian': 'it',
-    'french': 'fr',
-    'russian': 'ru',
-    'chinese': 'zh-CN',
-    'japanese': 'ja',
-    'hindi': 'hi',
-    'arabic': 'ar',
-    'korean': 'ko',
-    'english': 'en',
-    'spanish': 'es'
+    "german": "de",
+    "italian": "it",
+    "french": "fr",
+    "russian": "ru",
+    "chinese": "zh-CN",
+    "japanese": "ja",
+    "hindi": "hi",
+    "arabic": "ar",
+    "korean": "ko",
+    "english": "en",
+    "spanish": "es",
 }
 
-TRANSLITERATION_LANGUAGES = ['chinese', 'japanese', 'hindi', 'arabic', 'korean', 'russian']
+TRANSLITERATION_LANGUAGES = ["chinese", "japanese", "hindi", "arabic", "korean", "russian"]
+
 
 class TranslationHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         # Add headers to prevent caching
-        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Expires', '0')
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
         super().end_headers()
 
     def do_GET(self):
-        if self.path == '/':
+        if self.path == "/":
             self.send_response(HTTPStatus.OK)
-            self.send_header('Content-type', 'text/html')
+            self.send_header("Content-type", "text/html")
             self.end_headers()
-            
-            with open('output.html', 'r', encoding='utf-8') as f:
-                self.wfile.write(f.read().encode('utf-8'))
+
+            with open("output.html", "r", encoding="utf-8") as f:
+                self.wfile.write(f.read().encode("utf-8"))
         else:
             super().do_GET()
 
     def do_POST(self):
-        if self.path == '/translate':
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length).decode('utf-8')
+        if self.path == "/translate":
+            content_length = int(self.headers["Content-Length"])
+            post_data = self.rfile.read(content_length).decode("utf-8")
             params = parse_qs(post_data)
-            input_text = params['text'][0]
+            input_text = params["text"][0]
 
             self.send_response(HTTPStatus.OK)
-            self.send_header('Content-type', 'text/html')
+            self.send_header("Content-type", "text/html")
             self.end_headers()
 
             results_html = self.process_translation(input_text)
-            with open('output.html', 'r', encoding='utf-8') as f:
+            with open("output.html", "r", encoding="utf-8") as f:
                 html = f.read()
-                updated_html = html.replace('<div id="results"></div>', 
-                                          f'<div id="results">{results_html}</div>')
-                self.wfile.write(updated_html.encode('utf-8'))
+                updated_html = html.replace(
+                    '<div id="results"></div>', f'<div id="results">{results_html}</div>'
+                )
+                self.wfile.write(updated_html.encode("utf-8"))
 
     def process_translation(self, input_text):
         translator = Translator()
         results = []
-        
+
         for lang_name, lang_code in LANGUAGE_CODE_MAP.items():
             try:
                 translation = translator.translate(input_text, dest=lang_code).text
-                
+
                 if lang_name in TRANSLITERATION_LANGUAGES:
                     # This is a placeholder - replace with your actual transliteration
-                    transliteration = f"TL-{translation[:5]}..."  
-                    formatted_text = f'<ruby>{translation}<rt>{transliteration}</rt></ruby>'
+                    transliteration = f"TL-{translation[:5]}..."
+                    formatted_text = f"<ruby>{translation}<rt>{transliteration}</rt></ruby>"
                 else:
                     formatted_text = translation
-                
-                results.append({
-                    'language': lang_name,
-                    'translation': translation,
-                    'formatted_text': formatted_text,
-                    'needs_transliteration': lang_name in TRANSLITERATION_LANGUAGES
-                })
+
+                results.append(
+                    {
+                        "language": lang_name,
+                        "translation": translation,
+                        "formatted_text": formatted_text,
+                        "needs_transliteration": lang_name in TRANSLITERATION_LANGUAGES,
+                    }
+                )
             except Exception as e:
                 print(f"Error processing {lang_name}: {str(e)}")
-                results.append({
-                    'language': lang_name,
-                    'error': str(e)
-                })
-        
+                results.append({"language": lang_name, "error": str(e)})
+
         results_html = ""
         for result in results:
-            if 'error' in result:
+            if "error" in result:
                 results_html += f"""
                 <div class="error">
                     <h2>{result['language'].capitalize()}</h2>
@@ -107,14 +108,16 @@ class TranslationHandler(http.server.SimpleHTTPRequestHandler):
                 </div>
                 """
             results_html += "<hr>"
-        
+
         return results_html
+
 
 def start_server(port=8000):
     # Create default files if they don't exist
-    if not os.path.exists('output.html'):
-        with open('output.html', 'w', encoding='utf-8') as f:
-            f.write("""<!DOCTYPE html>
+    if not os.path.exists("output.html"):
+        with open("output.html", "w", encoding="utf-8") as f:
+            f.write(
+                """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -132,11 +135,13 @@ def start_server(port=8000):
         <div id="results"></div>
     </div>
 </body>
-</html>""")
+</html>"""
+            )
 
-    if not os.path.exists('styles.css'):
-        with open('styles.css', 'w', encoding='utf-8') as f:
-            f.write("""body {
+    if not os.path.exists("styles.css"):
+        with open("styles.css", "w", encoding="utf-8") as f:
+            f.write(
+                """body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
@@ -176,11 +181,13 @@ ruby {
 }
 rt {
     font-size: 0.7em;
-}""")
+}"""
+            )
 
     print(f"Server starting at http://localhost:{port}")
     with socketserver.TCPServer(("", port), TranslationHandler) as httpd:
         httpd.serve_forever()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     start_server()

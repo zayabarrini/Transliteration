@@ -6,7 +6,7 @@ Offer repetition + Machine Learning
 
 # Dependencies
 
-Google Translation - Google can easily implement this and embed it on apps, android 
+Google Translation - Google can easily implement this and embed it on apps, android
 Transliteration Libraries
 
 # Transliteration-page

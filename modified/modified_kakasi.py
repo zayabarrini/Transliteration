@@ -50,8 +50,21 @@ class Kakasi:
     def __init__(self):
         self._jconv = JConv()
         self._iconv = IConv()
-        self.japanese_punctuation = [' ', '。', '、', '！', '？', '「', '」', '『', '』', '（', '）', '・']
-        self.non_japanese_pattern = re.compile(r'[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\s]')
+        self.japanese_punctuation = [
+            " ",
+            "。",
+            "、",
+            "！",
+            "？",
+            "「",
+            "」",
+            "『",
+            "』",
+            "（",
+            "）",
+            "・",
+        ]
+        self.non_japanese_pattern = re.compile(r"[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\s]")
 
     def is_japanese(self, text: str) -> bool:
         return not self.non_japanese_pattern.search(text)
@@ -62,10 +75,9 @@ class Kakasi:
 
     def convert(self, text: str) -> List[Dict[str, str]]:
         if not text:
-            return [{
-                "orig": "", "kana": "", "hira": "",
-                "hepburn": "", "passport": "", "kunrei": ""
-            }]
+            return [
+                {"orig": "", "kana": "", "hira": "", "hepburn": "", "passport": "", "kunrei": ""}
+            ]
 
         result = []
         original_text = ""
@@ -76,27 +88,32 @@ class Kakasi:
 
         while i < len(text):
             char = text[i]
-            
+
             # Skip non-Japanese characters (except whitespace and punctuation)
-            if (self.non_japanese_pattern.match(char) and 
-                char not in self.japanese_punctuation):
+            if self.non_japanese_pattern.match(char) and char not in self.japanese_punctuation:
                 i += 1
                 continue
-            
+
             # Handle punctuation first
             if char in self.japanese_punctuation:
                 if len(original_text) > 0:
                     result.append(self._iconv.convert(original_text, kana_text))
                     original_text = ""
                     kana_text = ""
-                result.append({
-                    "orig": char, "kana": char, "hira": char,
-                    "hepburn": char, "passport": char, "kunrei": char
-                })
+                result.append(
+                    {
+                        "orig": char,
+                        "kana": char,
+                        "hira": char,
+                        "hepburn": char,
+                        "passport": char,
+                        "kunrei": char,
+                    }
+                )
                 prev_type = _TYPE.SYMBOL
                 i += 1
                 continue
-            
+
             # Main processing logic
             if char in Ch.endmark:
                 prev_type = _TYPE.SYMBOL

@@ -1,28 +1,27 @@
 body {
-    direction: rtl;
-    text-align: right;
-    font-family: 'Amiri', 'Scheherazade', serif;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Amiri', 'Scheherazade', serif;
 }
 
 ruby {
-    display: inline-block;
-    position: relative;
-    line-height: 1.5;
-    margin-left: 0.5em;
-    unicode-bidi: isolate !important;
-    /* font-size: xx-large; */
-    font-size: 4em;
-
+  display: inline-block;
+  position: relative;
+  line-height: 1.5;
+  margin-left: 0.5em;
+  unicode-bidi: isolate !important;
+  /* font-size: xx-large; */
+  font-size: 4em;
 }
 
 rt {
-    display: block !important;
-    font-size: 50%;
-    text-align: right;
-    padding-left: 0.5em !important;
-    line-height: 1.2;
-    position: relative;
-    margin-top: -0.2em;
-    font-family: 'Arial', sans-serif;
-    unicode-bidi: isolate;
+  display: block !important;
+  font-size: 50%;
+  text-align: right;
+  padding-left: 0.5em !important;
+  line-height: 1.2;
+  position: relative;
+  margin-top: -0.2em;
+  font-family: 'Arial', sans-serif;
+  unicode-bidi: isolate;
 }

@@ -1,4 +1,5 @@
 README.md
+pyproject.toml
 setup.py
 modified/__init__.py
 modified/kanji.py
@@ -53,6 +54,7 @@ transliteration/test_epubs_transliteration.py
 transliteration/test_patch.py
 transliteration/translationFunctions.py
 transliteration/translationFunctionsPerformance.py
+transliteration/transliteration-old.py
 transliteration/transliteration.py
 transliteration/transliteration_modified_issues.py
 transliteration_tools.egg-info/PKG-INFO
@@ -63,6 +65,7 @@ transliteration_tools.egg-info/top_level.txt
 web/__init__.py
 web/live.py
 web/server.py
+web/webChineseColor-coded.py
 web/webChineseTranslator.py
 web/webHindi.py
 web/webJapaneseTranslator-error.py

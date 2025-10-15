@@ -15,6 +15,7 @@ Toward a Global Topological Psychology
 https://zayabarrini.vercel.app/blog/posts/Psychoanalysis-Topology-NdP-Chinese
 
 # Files
+
 Subtitles
 md
 epub
@@ -22,38 +23,45 @@ web
 html
 
 # Ebooks
+
 ## Easy
+
 Grammar
 Conversing
 Language Conversation Made Natural Engaging Dialogues
 
 ## Flow
+
 Favorite-movies-3.md
 Favorite-movies-2.md
 Favorite-movies.md
 Fluxos - Melancholic Machines
 
 ## Basic
+
 150-Lacanian-Sentences
 Vocabulaire de la psychanalyse
 Harry Potter
 
 ## Interesting
+
 Psychoanalytical Magazines
 Literature
 Philosophy
 
 # Language map
+
 originals - (fr, en, es, pt, de, ru, it, ko, ch, ja, hi, ar)
 all-en
 original-(fr, en, es, pt, de?)
 
 ## 02/04/25
+
 original-trans: fr-de, en-ch, es-ru, pt-ar, de-en
 ch/ko/ja/hi/ar/ru-en
 ch/ko/ja/hi/ar - transliteration Included
 
-# To do 
+# To do
 
 Break Original Ebooks into phrases so Transliteration/Translation is easier to FlowRead
 Remove original or translation
@@ -82,45 +90,32 @@ E-Book Versions: epubVersions.py
 Subtitle Versions: subMultilingualVersions.py
 Webpage Version: html2transliteration.py
 
-E-book Split Sentences (Break paragraphs into sentences for easier reading of double language ebooks)
-    ## Multi-file
-    input_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test'  # Update this path to your folder containing EPUB files
-        output_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test/Output'  # Update this path to your desired output folder
-        process_epub_folder(input_folder, output_folder)
-    
+E-book Split Sentences (Break paragraphs into sentences for easier reading of double language ebooks) ## Multi-file
+input_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test' # Update this path to your folder containing EPUB files
+output_folder = '/home/zaya/Documents/Ebooks/Flow/Transliteration/Test/Output' # Update this path to your desired output folder
+process_epub_folder(input_folder, output_folder)
+
     ## Single file
     process_epub(str(epub_file), str(output_path))
 
-E-Book Versions (db, no_original, trans, bilingual, trilingual, transliteration on/off)
-    ## Multi-file
-        process_folder("/home/zaya/Documents/Ebooks")
-    ## Single file
-        # Option 1: Remove original text
-                epub_path_no_original = remove_original(epub_path)
-        if language in SUPPORTED_LANGUAGES:
-            # Option 2: Transliterate
-            transliterate_epub(epub_path)
-            # Option : Transliterate no_original
-            transliterate_epub(epub_path_no_original)
+E-Book Versions (db, no_original, trans, bilingual, trilingual, transliteration on/off) ## Multi-file
+process_folder("/home/zaya/Documents/Ebooks") ## Single file # Option 1: Remove original text
+epub_path_no_original = remove_original(epub_path)
+if language in SUPPORTED_LANGUAGES: # Option 2: Transliterate
+transliterate_epub(epub_path) # Option : Transliterate no_original
+transliterate_epub(epub_path_no_original)
 
-Subtitle Versions
-    ## Multi-file
-        # input_dir = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/"
-    ## Single file
-        ### Only Transliteration
-            transliterate_srt(input_file, target_language)
-        ### Multilingual zip generation
-            input_file = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/test.srt"
-            target_languages = ["de", "zh-ch"]        
-            process_multilingual_srt(input_file, target_languages, enable_transliteration=True)
+Subtitle Versions ## Multi-file # input_dir = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/" ## Single file ### Only Transliteration
+transliterate_srt(input_file, target_language) ### Multilingual zip generation
+input_file = "/home/zaya/Documents/Gitrepos/cinema/Subtitles/test.srt"
+target_languages = ["de", "zh-ch"]  
+ process_multilingual_srt(input_file, target_languages, enable_transliteration=True)
 
-Webpage Version
-    ## Multi-file
-        html_folder = '/home/zaya/Downloads/Harry Potter シリーズ全7巻 (J.K. Rowling) (Z-Library)-trans/OEBPS/Text'  # Update this path to your folder containing HTML files
-        target_language = 'japanese'  # Target language (e.g., 'chinese', 'japanese', etc.)
-        process_folder(html_folder, target_language)
-    ## Single file
-        process_file(input_filename, target_language, enable_transliteration, epub_folder)
+Webpage Version ## Multi-file
+html_folder = '/home/zaya/Downloads/Harry Potter シリーズ全7巻 (J.K. Rowling) (Z-Library)-trans/OEBPS/Text' # Update this path to your folder containing HTML files
+target_language = 'japanese' # Target language (e.g., 'chinese', 'japanese', etc.)
+process_folder(html_folder, target_language) ## Single file
+process_file(input_filename, target_language, enable_transliteration, epub_folder)
 
 Generate Word/Sentence Lists
 Word/Translation/Transliteration
@@ -132,7 +127,7 @@ Multilingual Ebook (sentence translation to n languages)
 ar, ch, de, en, es, fr, gr, hb, hi, id, it, ja, jp, ko, la, ml, po, pt, ru, sw, tu
 Versions: originals, double translation (db), db-no, db-trans, split (into sentences - break long paragraphs for easier double language reading) (-s)
 
-## Themes 
+## Themes
 
 Actresses
 AllLanguages
@@ -177,7 +172,7 @@ WordList
 ar, ch, de, en, es, fr, gr, hb, hi, id, it, ja, jp, ko, la, ml, po, pt, ru, sw, tu
 
 Ch
-Black_Mirror-db-ch.epub
+Black*Mirror-db-ch.epub
 Black_Mirror-db-ch_transliterated.epub
 Characters-Frequency-ch-db-trans.epub
 Characters-Strokes-ch-db-trans.epub
@@ -214,11 +209,11 @@ Favorite-Movies-4-ch-db.epub
 Favorite-Movies-4-ch-db_no_original.epub
 Favorite-Movies-4-ch-db_no_original_no_original.epub
 Favorite-Movies-4-ch-db_transliterated.epub
-Favorite-Movies_-The-Hours--db-ch.epub
-Favorite-Movies_-The-Hours--no-ch.epub
-Favorite-Movies_-The-Hours-db-ch.epub
-Favorite-Movies_-The-Hours-db-ch_transliterated.epub
-Favorite-Movies_-TheHours--db-ch_transliterated.epub
+Favorite-Movies*-The-Hours--db-ch.epub
+Favorite-Movies*-The-Hours--no-ch.epub
+Favorite-Movies*-The-Hours-db-ch.epub
+Favorite-Movies*-The-Hours-db-ch_transliterated.epub
+Favorite-Movies*-TheHours--db-ch*transliterated.epub
 Fluxos---Melancholic-Machines--ch---巴里尼尺寸.epub
 Fluxos---Melancholic-Machines-ch-nl---Zaya-Barrini.epub
 Fluxos-Melancholic-Machines--ch.epub
@@ -300,4 +295,4 @@ Vocabulaire-psychanalyse-Chinese-English-ch.epub
 Word_Frequency-ch-db-trans.epub
 WordList-ch-no.epub
 WordList-Pinyin,-WordList-Chinese-db-ch.epub
-WordList-Pinyin,-WordList-Chinese_-words-db---Zaya-Barrini-ch.epub
+WordList-Pinyin,-WordList-Chinese*-words-db---Zaya-Barrini-ch.epub

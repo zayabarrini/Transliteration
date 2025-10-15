@@ -10,18 +10,23 @@ except NameError:
 
 class Syllable(object):
     """Hangul syllable interface"""
-    MIN = ord(u'가')
-    MAX = ord(u'힣')
+
+    MIN = ord("가")
+    MAX = ord("힣")
 
     def __init__(self, char=None, code=None):
         if char is None and code is None:
-            raise TypeError('__init__ takes char or code as a keyword argument (not given)')
+            raise TypeError("__init__ takes char or code as a keyword argument (not given)")
         if char is not None and code is not None:
-            raise TypeError('__init__ takes char or code as a keyword argument (both given)')
+            raise TypeError("__init__ takes char or code as a keyword argument (both given)")
         if char:
             code = ord(char)
         if not self.MIN <= code <= self.MAX:
-            raise TypeError('__init__ expected Hangul syllable but {0} not in [{1}..{2}]'.format(code, self.MIN, self.MAX))
+            raise TypeError(
+                "__init__ expected Hangul syllable but {0} not in [{1}..{2}]".format(
+                    code, self.MIN, self.MAX
+                )
+            )
         self.code = code
 
     @property
@@ -48,8 +53,9 @@ class Syllable(object):
         return self.char
 
     def __repr__(self):
-        return u'''<Syllable({}({}),{}({}),{}({}),{}({}))>'''.format(
-            self.code, self.char, self.initial, u'', self.vowel, u'', self.final, u'')
+        return """<Syllable({}({}),{}({}),{}({}),{}({}))>""".format(
+            self.code, self.char, self.initial, "", self.vowel, "", self.final, ""
+        )
 
 
 class Transliter(object):
@@ -59,22 +65,40 @@ class Transliter(object):
         # print("USING ENHANCED KOREAN TRANSLITERATION")
         self.rule = rule
         # Define Korean punctuation and symbols that should remain unchanged
-        self.korean_punctuation = [' ', '.', ',', '!', '?', '。', '，', '！', '？', '、', 
-                                 '「', '」', '『', '』', '（', '）', '《', '》']
+        self.korean_punctuation = [
+            " ",
+            ".",
+            ",",
+            "!",
+            "?",
+            "。",
+            "，",
+            "！",
+            "？",
+            "、",
+            "「",
+            "」",
+            "『",
+            "』",
+            "（",
+            "）",
+            "《",
+            "》",
+        ]
 
     def translit(self, text):
         """Translit Korean text to romanized text and return a list of (char, transliteration) pairs.
-        
+
         Args:
             text: Unicode string containing Korean text
-            
+
         Returns:
             List of tuples where each tuple is (original_char, transliteration)
         """
         result = []
         pre = (None, None)
         now = (None, None)
-        
+
         for c in text:
             # Handle punctuation and spaces
             if c in self.korean_punctuation:
@@ -88,7 +112,7 @@ class Transliter(object):
                 pre = (None, None)
                 now = (None, None)
                 continue
-            
+
             try:
                 post = (c, Syllable(c))
             except TypeError:

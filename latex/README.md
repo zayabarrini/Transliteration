@@ -5,6 +5,6 @@ pipenv run python pdf2latex.py /home/zaya/Downloads/EQED_20201.pdf -o /home/zaya
 pipenv run python pdf2latex.py ../documentation/sample.pdf -o simple.tex --simple-layout
 
 # Mathpix $
-pipenv run python pdf2latex.py ../documentation/math_paper.pdf -o paper.tex \
-    --mathpix-id YOUR_APP_ID --mathpix-key YOUR_APP_KEY
 
+pipenv run python pdf2latex.py ../documentation/math_paper.pdf -o paper.tex \
+ --mathpix-id YOUR_APP_ID --mathpix-key YOUR_APP_KEY

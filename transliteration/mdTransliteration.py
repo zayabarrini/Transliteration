@@ -13,45 +13,48 @@ import jieba
 # def format_transliteration(text):
 #     # Add spaces after commas and periods
 #     text = re.sub(r'([,.])', r'\1 ', text)
-    
+
 #     # Add spaces around hyphens
 #     text = re.sub(r'([a-zA-Z])-([a-zA-Z])', r'\1 - \2', text)
-    
+
 #     # Break long sentences into smaller chunks
 #     sentences = re.split(r'(?<=[。！？])', text)
 #     formatted_text = '\n'.join([s.strip() for s in sentences if s.strip()])
-    
+
 #     return formatted_text
+
 
 def is_latin(token):
     """Check if a token contains only Latin characters."""
-    return bool(re.match(r'^[A-Za-z0-9\s\W_]+$', token))
+    return bool(re.match(r"^[A-Za-z0-9\s\W_]+$", token))
+
 
 def tokenize_text(text):
     """Tokenize the text into words and symbols."""
     # Use a regex to split the text into words and symbols
-    tokens = re.findall(r'\w+|\W+', text)
+    tokens = re.findall(r"\w+|\W+", text)
     return tokens
+
 
 def add_furigana(text, transliteration, language):
     # Tokenize the text into words and symbols
     tokens = tokenize_text(text)
-    
+
     # Split transliteration into individual syllables or words
     if language == "japanese":
         trans_words = transliteration  # transliteration is already a list of syllables
     else:
         trans_words = transliteration.split()
-            
+
     # Align words with their transliterations
     furigana_text = []
     trans_index = 0
-    
+
     for token in tokens:
         if is_latin(token):
             # If the token is Latin (e.g., code syntax, English), append it as-is
             furigana_text.append(token)
-        elif re.match(r'\W+', token):
+        elif re.match(r"\W+", token):
             # If the token is a symbol (e.g., punctuation, brackets), append it as-is
             furigana_text.append(token)
         else:
@@ -63,11 +66,11 @@ def add_furigana(text, transliteration, language):
                 for word in segmented_words:
                     num_syllables = len(word)
                     # Get the corresponding pinyin syllables
-                    pinyin = ' '.join(trans_words[trans_index:trans_index + num_syllables])
+                    pinyin = " ".join(trans_words[trans_index : trans_index + num_syllables])
                     trans_index += num_syllables
                     # Add <ruby> tags
                     furigana_text.append(f"<ruby>{word}<rt>{pinyin}</rt></ruby>")
-            
+
             elif language == "japanese":
                 segmented_chars = list(token)
                 # Treat each character as a separate unit for furigana
@@ -82,7 +85,7 @@ def add_furigana(text, transliteration, language):
                     else:
                         # If not enough syllables, append the character without transliteration
                         furigana_text.append(char)
-            
+
             elif language == "korean":
                 # Treat each Hangul syllable block as a separate unit for furigana
                 for char in token:
@@ -104,20 +107,21 @@ def add_furigana(text, transliteration, language):
             else:
                 # Default behavior for other languages
                 furigana_text.append(token)
-    
-    return ''.join(furigana_text)
+
+    return "".join(furigana_text)
+
 
 # def add_furigana(text, transliteration, language):
 #     # Tokenize the text into words and symbols
 #     tokens = tokenize_text(text)
-    
+
 #     # Split transliteration into individual pinyin syllables
 #     trans_words = transliteration.split()
-    
+
 #     # Align Chinese words with pinyin syllables
 #     furigana_text = []
 #     trans_index = 0
-    
+
 #     for token in tokens:
 #         if is_latin(token):
 #             # If the token is Latin (e.g., code syntax, English), append it as-is
@@ -132,20 +136,20 @@ def add_furigana(text, transliteration, language):
 #                 segmented_words = list(jieba.cut(token))
 #             else:
 #                 segmented_words = [token]  # Default to treating the token as a single word
-            
+
 #             # Process each segmented word
 #             for word in segmented_words:
 #                 # Count the number of pinyin syllables for the current word
 #                 # Assumes each Chinese character corresponds to one pinyin syllable
 #                 num_syllables = len(word)
-                
+
 #                 # Get the corresponding pinyin syllables
 #                 pinyin = ' '.join(trans_words[trans_index:trans_index + num_syllables])
 #                 trans_index += num_syllables
-                
+
 #                 # Add <ruby> tags
 #                 furigana_text.append(f"<ruby>{word}<rt>{pinyin}</rt></ruby>")
-    
+
 #     return ''.join(furigana_text)
 
 # Group 5 words into chunks
@@ -155,29 +159,30 @@ def add_furigana(text, transliteration, language):
 #         words = list(jieba.cut(text))  # Use jieba for Chinese word segmentation
 #     else:
 #         words = text.split()  # Default split for other languages
-    
+
 #     # Split transliteration into individual pinyin syllables
 #     trans_words = transliteration.split()
-    
+
 #     # Group words and pinyin into chunks
 #     furigana_text = []
 #     trans_index = 0
 #     chunk_size = 5  # Number of words per chunk
-    
+
 #     for i in range(0, len(words), chunk_size):
 #         chunk_words = words[i:i + chunk_size]
 #         chunk_pinyin = trans_words[trans_index:trans_index + len(chunk_words)]
 #         trans_index += len(chunk_words)
-        
+
 #         # Combine chunk into <ruby> tags
 #         furigana_text.append(f"<ruby>{''.join(chunk_words)}<rt>&#8203;{' '.join(chunk_pinyin)}&#8203;</rt></ruby>")
-    
+
 #     return ' '.join(furigana_text)
+
 
 # Define a transliteration function for each language
 def transliterate(input_text, language):
     if language == "chinese":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
+        return " ".join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
     elif language == "japanese":
         kakasi = pykakasi.kakasi()
         kakasi.setMode("H", "a")  # Hiragana to Romaji
@@ -192,11 +197,13 @@ def transliterate(input_text, language):
     elif language == "russian":
         # Use a library like transliterate for Cyrillic to Latin
         import transliterate
-        return transliterate.translit(input_text, 'ru', reversed=True)
+
+        return transliterate.translit(input_text, "ru", reversed=True)
     elif language == "hindi":
         # Use a library like indic-transliteration for Hindi to Latin
         from indic_transliteration import sanscript
         from indic_transliteration.sanscript import transliterate
+
         result = transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
         print(result)
         return result
@@ -209,28 +216,31 @@ def transliterate(input_text, language):
     else:
         return input_text  # For languages without a need for transliteration
 
+
 # Remove English lines from content
 def remove_latin(content, language):
     print(f"Removing English lines from {language} content")
     language_ranges = {
-        'chinese': r'[\u4e00-\u9fff]',
-        'russian': r'[\u0400-\u04FF]',
-        'hindi': r'[\u0900-\u097F]',
-        'japanese': r'[\u3040-\u30FF\u4E00-\u9FFF]',
-        'korean': r'[\uAC00-\uD7AF]',
-        'arabic': r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]',  # Added Arabic
+        "chinese": r"[\u4e00-\u9fff]",
+        "russian": r"[\u0400-\u04FF]",
+        "hindi": r"[\u0900-\u097F]",
+        "japanese": r"[\u3040-\u30FF\u4E00-\u9FFF]",
+        "korean": r"[\uAC00-\uD7AF]",
+        "arabic": r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]",  # Added Arabic
     }
-    
-    target_pattern = language_ranges.get(language, r'[\u4e00-\u9fff]')  # Default to Chinese
-    english_pattern = re.compile(r'^[A-Za-z0-9\s,.!?;:()\'\"-]+$', re.MULTILINE)
+
+    target_pattern = language_ranges.get(language, r"[\u4e00-\u9fff]")  # Default to Chinese
+    english_pattern = re.compile(r"^[A-Za-z0-9\s,.!?;:()\'\"-]+$", re.MULTILINE)
     target_language_pattern = re.compile(target_pattern)
-    
+
     lines = content.splitlines()
     filtered_lines = [
-        line for line in lines
+        line
+        for line in lines
         if target_language_pattern.search(line)  # Keep only lines with the target language script
-    ]  
-    return '\n'.join(filtered_lines)
+    ]
+    return "\n".join(filtered_lines)
+
 
 # Save content as Markdown
 def save_markdown(content, output_file):
@@ -238,36 +248,41 @@ def save_markdown(content, output_file):
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(content)
 
+
 def is_header(line):
     """Check if the line is a Markdown header."""
-    return re.match(r'^#+\s*', line) is not None
+    return re.match(r"^#+\s*", line) is not None
+
 
 # Pipeline for processing the file and generating two versions
 def process_file(input_file, language, enable_transliteration):
     print(f"Processing {input_file} for {language} with transliteration: {enable_transliteration}")
-    with open(input_file, 'r', encoding='utf-8') as f:
+    with open(input_file, "r", encoding="utf-8") as f:
         content = f.read()
 
     # Step 1: Remove English lines (keeping only the target language translation)
     # content_no_english = remove_latin(content, language)
-    
+
     # Determine output filenames
     base_name = os.path.splitext(input_filename)[0]
     # output_filename_version1 = f"{base_name}-{language}.md"
-    
+
     # Step 4: Save Version 1 (only Input Language characters)
     # print(f"Saving {output_filename_version1}")
     # save_markdown(content_no_english, output_filename_version1)
-    
+
     # Want transliteration for the target language?
-    if enable_transliteration:   
+    if enable_transliteration:
         output_filename_version2 = f"{base_name}-{language}-trans.md"
 
         # Step 2: Add Transliteration (Pinyin, Romaji, etc.)
-        print(f"Saving {output_filename_version2} with transliteration")    
+        print(f"Saving {output_filename_version2} with transliteration")
         content_with_transliteration = ""
         for line in content.splitlines():  # Use the original content (including Latin lines)
-            if re.search(r'[\u4e00-\u9fff\u0400-\u04FF\u0900-\u097F\u3040-\u30FF\uAC00-\uD7AF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]', line):
+            if re.search(
+                r"[\u4e00-\u9fff\u0400-\u04FF\u0900-\u097F\u3040-\u30FF\uAC00-\uD7AF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]",
+                line,
+            ):
                 # If the line contains target language script, add transliteration
                 if is_header(line):
                     # If it's a header, return the line as-is
@@ -282,9 +297,10 @@ def process_file(input_file, language, enable_transliteration):
             else:
                 # If the line is Latin (e.g., English), keep it as is
                 content_with_transliteration += f"{line}\n\n"
-        
+
         # Step 3: Save Version 2 (Original + Transliteration + Latin lines)
         save_markdown(content_with_transliteration, output_filename_version2)
+
 
 # Example Usage
 # input_filename = '/home/zaya/Documents/Ebooks/Japanese-Favorite-Movies-3.0.md'

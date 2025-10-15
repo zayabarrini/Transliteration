@@ -1,6 +1,6 @@
 def transliterate(input_text, language):
     if sys.getsizeof(input_text) > 1_000_000:  # 1MB
-        return "Input too large" 
+        return "Input too large"
     if not input_text:
         return ""
     if language == "chinese":
@@ -21,16 +21,19 @@ def transliterate(input_text, language):
         # converter = kakasi.getConverter()
     elif language == "russian":
         import transliterate
-        return transliterate.translit(input_text, 'ru', reversed=True)
+
+        return transliterate.translit(input_text, "ru", reversed=True)
     elif language == "hindi":
         result = indic_transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
         return result
     elif language == "arabic":
         # return original_pyarabic.custom_utf82latin(input_text)  # Will use patched version
         from modified.modified_pyarabic import custom_utf82latin as custom_arabic
+
         return custom_arabic(input_text)
     elif language == "korean":
-        from modified.modified_hangul import Transliter as CustomTransliter 
+        from modified.modified_hangul import Transliter as CustomTransliter
+
         transliter = CustomTransliter(rule=academic)  # Explicit rule
         # transliter = OriginalTransliter(rule=academic)  # Explicit rule
         result = transliter.translit(input_text)

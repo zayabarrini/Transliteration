@@ -8,21 +8,21 @@ app = Flask(__name__)
 
 # Language codes and names
 LANGUAGES = [
-    {'code': 'zh-ch', 'name': 'Chinese'},
-    {'code': 'jp', 'name': 'Japanese'},
-    {'code': 'hi', 'name': 'Hindi'},
-    {'code': 'ar', 'name': 'Arabic'},
-    {'code': 'ko', 'name': 'Korean'},
-    {'code': 'ru', 'name': 'Russian'},
-    {'code': 'de', 'name': 'German'},
-    {'code': 'fr', 'name': 'French'},
-    {'code': 'it', 'name': 'Italian'},
-    {'code': 'en', 'name': 'English'},
-    {'code': 'es', 'name': 'Spanish'}
+    {"code": "zh-ch", "name": "Chinese"},
+    {"code": "jp", "name": "Japanese"},
+    {"code": "hi", "name": "Hindi"},
+    {"code": "ar", "name": "Arabic"},
+    {"code": "ko", "name": "Korean"},
+    {"code": "ru", "name": "Russian"},
+    {"code": "de", "name": "German"},
+    {"code": "fr", "name": "French"},
+    {"code": "it", "name": "Italian"},
+    {"code": "en", "name": "English"},
+    {"code": "es", "name": "Spanish"},
 ]
 
 # Languages that need transliteration
-TRANSLITERATION_LANGUAGES = ['jp', 'ru', 'hi', 'ar', 'ko', 'zh-ch']
+TRANSLITERATION_LANGUAGES = ["jp", "ru", "hi", "ar", "ko", "zh-ch"]
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -117,47 +117,54 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 def process_translation(text, language_code):
     """Translate text and apply transliteration if needed."""
     translated = translate_text(text, language_code)
-    
+
     transliterated = None
     needs_html = False
-    
+
     if language_code in TRANSLITERATION_LANGUAGES:
         # Get full language name in lowercase for transliteration functions
         language_name = next(
-            (lang['name'].lower() for lang in LANGUAGES if lang['code'] == language_code),
-            language_code
+            (lang["name"].lower() for lang in LANGUAGES if lang["code"] == language_code),
+            language_code,
         )
         transliterated = transliterate(translated, language_name)
         if transliterated:
             needs_html = True
             transliterated = add_furigana(translated, transliterated, language_name)
-    
+
     return {
-        'language': next((lang['name'] for lang in LANGUAGES if lang['code'] == language_code), language_code),
-        'translation': translated,
-        'transliteration': transliterated,
-        'needs_html': needs_html  # Flag to indicate HTML content
+        "language": next(
+            (lang["name"] for lang in LANGUAGES if lang["code"] == language_code), language_code
+        ),
+        "translation": translated,
+        "transliteration": transliterated,
+        "needs_html": needs_html,  # Flag to indicate HTML content
     }
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route("/", methods=["GET", "POST"])
 def index():
     input_text = ""
     results = []
-    
-    if request.method == 'POST':
-        input_text = request.form['text']
-        
+
+    if request.method == "POST":
+        input_text = request.form["text"]
+
         if input_text.strip():
             with ThreadPoolExecutor() as executor:
                 # Process all translations in parallel
-                futures = [executor.submit(process_translation, input_text, lang['code']) 
-                          for lang in LANGUAGES]
+                futures = [
+                    executor.submit(process_translation, input_text, lang["code"])
+                    for lang in LANGUAGES
+                ]
                 results = [future.result() for future in futures]
-    
+
     return render_template_string(HTML_TEMPLATE, input_text=input_text, results=results)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)

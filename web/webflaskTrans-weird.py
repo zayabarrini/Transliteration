@@ -11,18 +11,18 @@ LANGUAGES = [
     # {'code': 'zh-ch', 'name': 'Chinese'},
     # {'code': 'jp', 'name': 'Japanese'},
     # {'code': 'ko', 'name': 'Korean'},
-    {'code': 'hi', 'name': 'Hindi'},
-    {'code': 'ar', 'name': 'Arabic'},
-    {'code': 'ru', 'name': 'Russian'},
-    {'code': 'de', 'name': 'German'},
-    {'code': 'fr', 'name': 'French'},
-    {'code': 'it', 'name': 'Italian'},
-    {'code': 'en', 'name': 'English'},
-    {'code': 'es', 'name': 'Spanish'}
+    {"code": "hi", "name": "Hindi"},
+    {"code": "ar", "name": "Arabic"},
+    {"code": "ru", "name": "Russian"},
+    {"code": "de", "name": "German"},
+    {"code": "fr", "name": "French"},
+    {"code": "it", "name": "Italian"},
+    {"code": "en", "name": "English"},
+    {"code": "es", "name": "Spanish"},
 ]
 
 # Languages that need transliteration
-TRANSLITERATION_LANGUAGES = ['jp', 'ru', 'hi', 'ar', 'ko', 'zh-ch']
+TRANSLITERATION_LANGUAGES = ["jp", "ru", "hi", "ar", "ko", "zh-ch"]
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -64,63 +64,69 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 def add_word_translation(original_text, translated_words):
     """
     Create ruby annotations with translations above each word
     Example: <ruby><rt>translation</rt>original</ruby>
     """
-    tokens = re.findall(r'(\w+|\s+|[^\w\s])', original_text)
+    tokens = re.findall(r"(\w+|\s+|[^\w\s])", original_text)
     output = []
     word_index = 0
-    
+
     for token in tokens:
         if not token.strip() or not token.isalpha():
             output.append(token)
             continue
-            
+
         if word_index < len(translated_words):
-            output.append(f'<ruby><rt>{token}</rt>{translated_words[word_index]}</ruby>')
+            output.append(f"<ruby><rt>{token}</rt>{translated_words[word_index]}</ruby>")
             word_index += 1
         else:
             output.append(token)
-    
-    return ''.join(output)
+
+    return "".join(output)
+
 
 def process_translation(text, language_code):
     """Process text to show word-by-word translations"""
     # Get full translation
     full_translation = translate_text(text, language_code)
-    
+
     # Get word-by-word translation
-    tokens = re.findall(r'(\w+|\s+|[^\w\s])', text)
+    tokens = re.findall(r"(\w+|\s+|[^\w\s])", text)
     translated_words = translate_parallel(tokens, language_code)
-    
+
     # Create annotated HTML
     annotated_html = add_word_translation(text, translated_words)
-    
+
     return {
-        'language': next(lang['name'] for lang in LANGUAGES if lang['code'] == language_code),
-        'translation': full_translation,
-        'transliteration': annotated_html,
-        'needs_html': True
+        "language": next(lang["name"] for lang in LANGUAGES if lang["code"] == language_code),
+        "translation": full_translation,
+        "transliteration": annotated_html,
+        "needs_html": True,
     }
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route("/", methods=["GET", "POST"])
 def index():
     input_text = ""
     results = []
-    
-    if request.method == 'POST':
-        input_text = request.form['text']
-        
+
+    if request.method == "POST":
+        input_text = request.form["text"]
+
         if input_text.strip():
             with ThreadPoolExecutor() as executor:
                 # Process all translations in parallel
-                futures = [executor.submit(process_translation, input_text, lang['code']) 
-                          for lang in LANGUAGES]
+                futures = [
+                    executor.submit(process_translation, input_text, lang["code"])
+                    for lang in LANGUAGES
+                ]
                 results = [future.result() for future in futures]
-    
+
     return render_template_string(HTML_TEMPLATE, input_text=input_text, results=results)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True, port=5002)

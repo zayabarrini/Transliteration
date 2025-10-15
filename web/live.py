@@ -16,14 +16,17 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+
 # Function to check if a token contains only Latin characters
 def is_latin(token):
-    return bool(re.match(r'^[A-Za-z0-9\s\W_]+$', token))
+    return bool(re.match(r"^[A-Za-z0-9\s\W_]+$", token))
+
 
 # Function to tokenize text into words and symbols
 def tokenize_text(text):
-    tokens = re.findall(r'\w+|\W+', text)
+    tokens = re.findall(r"\w+|\W+", text)
     return tokens
+
 
 # Function to add furigana to text
 def add_furigana(text, transliteration, language):
@@ -35,21 +38,21 @@ def add_furigana(text, transliteration, language):
         trans_words = transliteration
     else:
         trans_words = transliteration.split()
-    
+
     furigana_text = []
     trans_index = 0
-    
+
     for token in tokens:
         if is_latin(token):
             furigana_text.append(token)
-        elif re.match(r'\W+', token):
+        elif re.match(r"\W+", token):
             furigana_text.append(token)
         else:
             if language == "chinese":
                 segmented_words = list(jieba.cut(token))
                 for word in segmented_words:
                     num_syllables = len(word)
-                    pinyin = ' '.join(trans_words[trans_index:trans_index + num_syllables])
+                    pinyin = " ".join(trans_words[trans_index : trans_index + num_syllables])
                     trans_index += num_syllables
                     furigana_text.append(f"<ruby>{word}<rt>{pinyin}</rt></ruby>")
             elif language == "japanese":
@@ -78,13 +81,14 @@ def add_furigana(text, transliteration, language):
                     furigana_text.append(token)
             else:
                 furigana_text.append(token)
-    
-    return ''.join(furigana_text)
+
+    return "".join(furigana_text)
+
 
 # Function to transliterate text
 def transliterate(input_text, language):
     if language == "chinese":
-        return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
+        return " ".join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE3))
     elif language == "japanese":
         kakasi = pykakasi.kakasi()
         kakasi.setMode("H", "a")
@@ -95,7 +99,8 @@ def transliterate(input_text, language):
         return result.split()
     elif language == "russian":
         import transliterate
-        return transliterate.translit(input_text, 'ru', reversed=True)
+
+        return transliterate.translit(input_text, "ru", reversed=True)
     elif language == "hindi":
         result = indic_transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
         return result
@@ -104,9 +109,10 @@ def transliterate(input_text, language):
     elif language == "korean":
         transliter = Transliter(rule=academic)
         result = transliter.translit(input_text)
-        return result.split() 
+        return result.split()
     else:
         return input_text
+
 
 # Function to write the HTML file
 def write_html_file(content, output_file):
@@ -133,6 +139,7 @@ def write_html_file(content, output_file):
     """
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(html_content)
+
 
 # Function to write the CSS file
 def write_css_file(css_file):
@@ -171,20 +178,23 @@ def write_css_file(css_file):
     with open(css_file, "w", encoding="utf-8") as f:
         f.write(css_content)
 
+
 # Function to start a live server
 def start_live_server(port=8000):
     server = Server()
     server.watch("output.html")  # Watch the HTML file for changes
-    server.watch("styles.css")   # Watch the CSS file for changes
-    server.watch("test.json")    # Watch the JSON file for changes
+    server.watch("styles.css")  # Watch the CSS file for changes
+    server.watch("test.json")  # Watch the JSON file for changes
     server.watch("webTransliteration.py")  # Watch the Python script for changes
     server.serve(root=".", port=port, open_url_delay=1)  # Serve the current directory
-    
+
+
 # Function to read and parse the JSON file
 def read_json_file(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+
 
 # Watch for changes to JSON or Python files
 class FileChangeHandler(FileSystemEventHandler):
@@ -195,6 +205,7 @@ class FileChangeHandler(FileSystemEventHandler):
         if event.src_path.endswith((".json", ".py")):
             print(f"Detected changes in {event.src_path}. Regenerating files...")
             self.callback()
+
 
 def watch_files(callback):
     event_handler = FileChangeHandler(callback)
@@ -208,12 +219,13 @@ def watch_files(callback):
         observer.stop()
     observer.join()
 
+
 # Main function to process the input file
 def process_file(input_file):
     def generate_files():
         # Read the JSON file
         input_file_data = read_json_file(input_file)
-        
+
         # Generate HTML content
         html_content = ""
         for entry in input_file_data:
@@ -221,7 +233,7 @@ def process_file(input_file):
             text = entry["text"]
             transliteration_line = transliterate(text, language)
             formatted_line = add_furigana(text, transliteration_line, language)
-            
+
             html_content += f"""
             <h1>{language.capitalize()}</h1>
             <p>{formatted_line}</p>
@@ -242,6 +254,9 @@ def process_file(input_file):
     # Start the live server
     start_live_server()
 
+
 # Example usage
-input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/test.json"  # Replace with your input file
+input_file = (
+    "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/test.json"  # Replace with your input file
+)
 process_file(input_file)

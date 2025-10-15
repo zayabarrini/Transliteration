@@ -40,6 +40,9 @@ pillow = "*"
 requests = "*"
 pix2tex = {version = "*", optional = true}
 transliteration-tools = {file = ".", editable = true}
+black = "*"
+isort = "*"
+flake8 = "*"
 
 [dev-packages]
 

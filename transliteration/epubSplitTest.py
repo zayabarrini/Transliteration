@@ -1,46 +1,49 @@
 from bs4 import BeautifulSoup
 import re
 
+
 def strip_internal_tags(html_content):
     """Remove all internal tags within paragraphs, preserving only text content"""
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
-    for p in soup.find_all('p'):
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    for p in soup.find_all("p"):
         # Get all text content, stripping tags
-        clean_text = p.get_text(' ', strip=True)
+        clean_text = p.get_text(" ", strip=True)
         # Replace the paragraph with clean text
         p.string = clean_text
-    
+
     return soup
+
 
 def split_paragraphs(soup):
     """Split paragraphs at sentence boundaries"""
-    paragraphs = soup.find_all('p')
-    
+    paragraphs = soup.find_all("p")
+
     for p in paragraphs:
         text = p.get_text()
         # Skip if too short
         if len(text) < 15:
             continue
-            
+
         # Split sentences (multilingual support)
-        sentences = re.split(r'(?<=[.!?…。！？])\s+', text)
-        
+        sentences = re.split(r"(?<=[.!?…。！？])\s+", text)
+
         # Only split if we have multiple sentences
         if len(sentences) > 1:
             # Clear original paragraph and keep first sentence
             p.string = sentences[0].strip()
-            
+
             # Add remaining sentences as new paragraphs after current one
             current = p
             for sentence in sentences[1:]:
                 if len(sentence.strip()) >= 15:  # Minimum length
-                    new_p = soup.new_tag('p')
+                    new_p = soup.new_tag("p")
                     new_p.string = sentence.strip()
                     current.insert_after(new_p)
                     current = new_p
-    
+
     return soup
+
 
 def process_epub_content(html_content):
     """Full processing pipeline"""
@@ -48,6 +51,7 @@ def process_epub_content(html_content):
     soup = strip_internal_tags(html_content)
     # Then split paragraphs
     return split_paragraphs(soup)
+
 
 # Example usage
 sample_html = """

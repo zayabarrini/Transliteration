@@ -5,12 +5,14 @@ import socketserver
 import json
 from transliteration.transliteration import add_furigana, transliterate
 
+
 # Function to start a live server
 def start_live_server(port=8000):
     handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer(("", port), handler) as httpd:
         print(f"Serving at http://localhost:{port}")
         httpd.serve_forever()
+
 
 # Function to read and parse the JSON file
 def read_json_file(file_path):
@@ -30,7 +32,7 @@ def generate_html_content(input_data):
             print(f"Warning: Failed to transliterate line: {text}")
             transliteration_line = text  # Fallback
         formatted_line = add_furigana(text, transliteration_line, language)
-        
+
         html_content += f"""
         <div class={language}>
             <h1>{language.capitalize()}</h1>
@@ -38,6 +40,7 @@ def generate_html_content(input_data):
         </div>
         """
     return html_content
+
 
 # Main function to process the input file
 def process_file(input_file):
@@ -52,8 +55,9 @@ def process_file(input_file):
         html_template = f.read()
 
     # Insert the generated content into the template
-    updated_html = html_template.replace('<div class="content"></div>', 
-                                       f'<div class="content">{html_content}</div>')
+    updated_html = html_template.replace(
+        '<div class="content"></div>', f'<div class="content">{html_content}</div>'
+    )
 
     # Write the updated HTML back to the file
     with open("output.html", "w", encoding="utf-8") as f:
@@ -61,9 +65,12 @@ def process_file(input_file):
 
     # Start the live server
     start_live_server()
-    
+
+
 # Example usage
-input_file = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/test.json"  # Replace with your input file
+input_file = (
+    "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/test.json"  # Replace with your input file
+)
 process_file(input_file)
 
 # kakasi = pykakasi.kakasi()

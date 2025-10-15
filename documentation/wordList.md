@@ -6,12 +6,12 @@ en-de
 en-ru
 
 # Compor ruby tags
+
 lista en, lista target_language => Ruby tags
 
 # Adicionar ruby tags no md => convert to ebook + pass styles
+
 com en, sem en
-
-
 
 ## Usage
 
@@ -19,8 +19,6 @@ com en, sem en
 2. Ensure the files have the same number of lines and comma-separated words match positionally
 3. Run `WordListRubyTranslation.py`
 4. The results will be saved in `RubyTranslation.md`
-
-
 
 # Ruby Translation Documentation
 

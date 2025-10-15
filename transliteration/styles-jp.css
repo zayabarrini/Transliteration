@@ -1,16 +1,16 @@
 ruby {
-    display: inline-block;
-    position: relative;
-    line-height: 1.5;
-    margin-right: 0.1em;
-    vertical-align: top;
+  display: inline-block;
+  position: relative;
+  line-height: 1.5;
+  margin-right: 0.1em;
+  vertical-align: top;
 }
 
 rt {
-    display: block;
-    font-size: 60%;
-    text-align: center;
-    line-height: 1.2;
-    position: relative;
-    margin-top: -0.2em;
+  display: block;
+  font-size: 60%;
+  text-align: center;
+  line-height: 1.2;
+  position: relative;
+  margin-top: -0.2em;
 }
