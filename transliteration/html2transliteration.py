@@ -3,25 +3,42 @@ from bs4 import BeautifulSoup, NavigableString  # For HTML parsing
 import shutil
 from transliteration.add_css import get_css_file, add_css_link  # Import from our new module
 import os
-from transliteration.transliteration import transliterate, add_furigana, is_latin
+from transliteration.transliteration import transliterate, add_furigana, is_latin, get_pinyin_annotations
+
+def contains_chinese(text):
+    """Check if text contains Chinese characters"""
+    import re
+    chinese_pattern = re.compile(r'[\u4e00-\u9fff]')
+    return bool(chinese_pattern.search(text))
 
 def process_html_content(soup, language):
     """Recursively process all text nodes in the HTML and add transliteration."""
-    for element in soup.descendants:
-        if isinstance(element, NavigableString) and element.strip():
-            # Skip text nodes that are inside script or style tags
-            if element.parent.name in ['script', 'style', 'ruby', 'rt']:
-                continue
+    from bs4 import BeautifulSoup, NavigableString
+    
+    for element in soup.find_all(string=True):
+        if element.parent and element.parent.name in ['script', 'style', 'ruby', 'rt']:
+            continue
             
-            # if(is_latin(element)):
-            #     continue
-            
-            # Transliterate the text content
-            transliterated_text = transliterate(element, language)
-            
-            # Replace the text node with the transliterated text
-            element.replace_with(add_furigana(element, transliterated_text, language))
-
+        text = element.strip()
+        if not text:
+            continue
+        
+        # For Chinese language processing, only apply dual display to text with Chinese characters
+        if language.lower() == "chinese":
+            if contains_chinese(text):
+                # This is Chinese text - apply dual display
+                dual_display = get_pinyin_annotations(text, color_coded=True)
+                element.replace_with(dual_display)
+            else:
+                # This is non-Chinese text - leave it as is or apply simple processing
+                # You can choose to leave it untouched or add minimal processing
+                continue  # Skip processing for non-Chinese text
+        else:
+            # Handle other languages
+            transliterated_text = transliterate(text, language)
+            furigana_content = add_furigana(text, transliterated_text, language)
+            if furigana_content != text:
+                element.replace_with(furigana_content)
 
 # def process_html_content(soup, language, keep_translations=True):
 #     for element in soup.descendants:

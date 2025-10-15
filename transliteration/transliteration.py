@@ -221,36 +221,40 @@ def get_pinyin_annotations(text, color_coded=False):
     # Perform syntax analysis to get word groupings
     syntax_analysis = analyze_chinese_syntax(text)
     
-    # Build the result by processing each word
+    # Build both versions
     result = []
+    clean_version = []  # Initialize for both modes
     
     for word, syntax, pos in syntax_analysis:
         if is_punctuation(word):
-            # Add punctuation directly
+            # Add punctuation directly to both versions
             result.append(word)
+            clean_version.append(word)
         else:
             # Get pinyin for the entire word
             word_pinyin = get_pinyin_for_word(word)
             
+            # Always add to clean version
+            clean_version.append(word)
+            
             if color_coded:
-                # Color-coded mode: join entire word with syntax/POS info
+                # Color-coded mode
                 if word_pinyin and word_pinyin != word:
-                    # result.append(f'<ruby class="{syntax}">{word} {syntax} {pos}<rt>{word_pinyin}</rt></ruby>')
-                    # result.append(f'<ruby class="{syntax}"><rt>{syntax} {pos}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>')
                     result.append(f'<ruby class="{syntax}"><rt>{syntax}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>')
-                    # result.append(f'<ruby class="{syntax}">{word}<rt>{word_pinyin}</rt></ruby>')
-
                 else:
                     result.append(f'<span class="{syntax}">{word}</span>')
             else:
                 # Simple mode: just word with pinyin
                 if word_pinyin and word_pinyin != word:
-                    # For multi-character words, create a single ruby annotation
                     result.append(f'<ruby>{word}<rt>{word_pinyin}</rt></ruby>')
                 else:
                     result.append(word)
     
-    return ''.join(result)
+    # Create the dual display structure
+    clean_div = f'<div class="clean-version">{"".join(clean_version)}</div>'
+    trans_div = f'<div class="transliterated-version">{"".join(result)}</div>'
+    
+    return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
 
 def process_chinese_advanced(text):
     """Advanced processing with full syntax analysis (for detailed breakdown)"""
