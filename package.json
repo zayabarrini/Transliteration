@@ -1,0 +1,20 @@
+{
+  "name": "transliteration-tools",
+  "version": "0.1.0",
+  "description": "Transliteration tools for multiple languages",
+  "scripts": {
+    "format:js": "prettier --write \"**/*.{js,json,css,md,yml,yaml}\"",
+    "format:py": "black . && isort .",
+    "format:all": "npm run format:js && npm run format:py",
+    "lint:js": "eslint . --fix",
+    "check:js": "prettier --check \"**/*.{js,json,css,md,yml,yaml}\"",
+    "check:py": "black --check . && isort --check-only .",
+    "check:all": "npm run check:js && npm run check:py"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0"
+  }
+}
