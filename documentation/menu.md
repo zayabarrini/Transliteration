@@ -57,9 +57,17 @@ WordLists
 
 Split Sentences Bulk + Ebook Versions Bulk
 
-# Inputs
+# Inputs/Outputs
 
-Organize Books and Cinema files by language/theme
-Epub, srt, zip (srt), Text for Translation (web), md, csv
+Epub: Split, Transliteration
+srt, zip (srt), Text for Translation (web), md, csv: Criate Ebook + Text Transliteration
+
+Organize Books and Cinema files by language/theme (OS)
 Output: Epub with translation, transliteration, multilingual composition, Color-coded syntax
 Includes: metadata, Toc
+
+Embed:
+
+- Social Apps
+- Browser
+- Streaming Services
