@@ -50,6 +50,6 @@ if __name__ == "__main__":
     # input_folder = sys.argv[1]
     # output_folder = sys.argv[2] if len(sys.argv) > 2 else None
     # /home/zaya/Documents/Ebooks/Flow/Transliteration/Process
-    input_folder = "/home/zaya/Downloads/a/b"
-    output_folder = "/home/zaya/Downloads/a/b"
+    input_folder = "/home/zaya/Downloads/Zayas/ZayasTransliteration/documentation/Business"
+    output_folder = "/home/zaya/Downloads/Zayas/ZayasTransliteration/documentation/Business"
     process_epub_folder(input_folder, output_folder)

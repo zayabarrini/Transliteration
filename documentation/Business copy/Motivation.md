@@ -1,10 +1,10 @@
 # Personal Progress
 
-- @ReadAloud
-- French: Grammar, (Seminários de Lacan + Revistas de Psicanálise)
-- German: Grammar + db Epubs
-- Russian, Italian, Chinese (color-coded transliteration): db Epubs
-- Arabic, Hindi, Japanese: Zaya-Grammar + db Epubs (Needs color-coded transliteration)
+@ReadAloud
+French: Grammar, (Seminários de Lacan + Revistas de Psicanálise)
+German: Grammar + db Epubs
+Russian, Italian, Chinese (color-coded transliteration): db Epubs
+Arabic, Hindi, Japanese: Zaya-Grammar + db Epubs (Needs color-coded transliteration)
 
 # How international mobility, foreign languages knowledge, institutions knowledge and powerful connections have matter in big powerful disputes
 

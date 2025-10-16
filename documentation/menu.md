@@ -62,12 +62,15 @@ Split Sentences Bulk + Ebook Versions Bulk
 Epub: Split, Transliteration
 srt, zip (srt), Text for Translation (web), md, csv: Criate Ebook + Text Transliteration
 
+Usage: @ReadAloud with regex for languages
+
 Organize Books and Cinema files by language/theme (OS)
 Output: Epub with translation, transliteration, multilingual composition, Color-coded syntax
 Includes: metadata, Toc
 
 Embed:
 
+- @ReadAloud
 - Social Apps
 - Browser
 - Streaming Services
