@@ -1,9 +1,10 @@
 import os
 import sys
 from pathlib import Path
-from transliteration.epubSplit import (
+
+from transliteration.epubSplit import (  # Assuming your processing script is in epubSplit.py
     process_epub,
-)  # Assuming your processing script is in epubSplit.py
+)
 
 
 def process_epub_folder(input_folder, output_folder=None):
@@ -49,6 +50,6 @@ if __name__ == "__main__":
     # input_folder = sys.argv[1]
     # output_folder = sys.argv[2] if len(sys.argv) > 2 else None
     # /home/zaya/Documents/Ebooks/Flow/Transliteration/Process
-    input_folder = "/home/zaya/Downloads/Books-todo/trans/split"
-    output_folder = "/home/zaya/Downloads/Books-todo/trans/split"
+    input_folder = "/home/zaya/Downloads/a/b"
+    output_folder = "/home/zaya/Downloads/a/b"
     process_epub_folder(input_folder, output_folder)

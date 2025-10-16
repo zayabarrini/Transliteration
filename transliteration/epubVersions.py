@@ -1,11 +1,13 @@
-from transliteration.epubTransliteration import SUPPORTED_LANGUAGES
-from transliteration.epub_no_original import process_epub as remove_original
-from transliteration.epubTransliteration import process_epub as transliterate_epub
 import os
+
 import ebooklib
-from ebooklib import epub
 import langdetect
 from bs4 import BeautifulSoup
+from ebooklib import epub
+
+from transliteration.epub_no_original import process_epub as remove_original
+from transliteration.epubTransliteration import SUPPORTED_LANGUAGES
+from transliteration.epubTransliteration import process_epub as transliterate_epub
 
 
 def get_language_from_epub(epub_path: str) -> str:
@@ -157,5 +159,5 @@ def process_folder(folder_path: str):
 
 
 if __name__ == "__main__":
-    process_folder("/home/zaya/Downloads/a")
+    process_folder("/home/zaya/Downloads/a/b")
     # process_folder("/home/zaya/Downloads/Zayas/ZayasTransliteration/tests/ebooks")

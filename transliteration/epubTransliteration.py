@@ -1,9 +1,10 @@
 import os
 import shutil
 import sys
+
 from transliteration.epubManagement import (
-    extract_epub,
     create_epub,
+    extract_epub,
     find_text_folder,
     get_xhtml_files,
 )
@@ -11,8 +12,8 @@ from transliteration.epubManagement import (
 # SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic"]
 SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
 
-from transliteration.html2transliteration import process_folder
 from transliteration.add_metadata_and_cover import add_metadata_and_cover
+from transliteration.html2transliteration import process_folder
 
 
 def get_language_from_filename(filename: str) -> str:
@@ -42,7 +43,7 @@ def process_epub(epub_path: str, language: str) -> str:
     verify_language(language)
 
     extract_to = epub_path.replace(".epub", "_temp")
-    output_path = epub_path.replace(".epub", "_transliterated.epub")
+    output_path = epub_path.replace(".epub", "_transliterated_ccs.epub")
 
     try:
         # Extract EPUB
@@ -54,7 +55,7 @@ def process_epub(epub_path: str, language: str) -> str:
         process_folder(text_folder, language, enable_transliteration=True, epub_folder=extract_to)
 
         # Add metadata and cover
-        add_metadata_and_cover(extract_to, base_name + "_transliterated", language)
+        add_metadata_and_cover(extract_to, base_name + "_transliterated_ccs", language)
 
         # Repackage
         create_epub(extract_to, output_path)
