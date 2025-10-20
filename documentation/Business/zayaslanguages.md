@@ -3,6 +3,10 @@
 Can be embedded into every app
 Google Translation Experience but with Triple Tags (Original, Translation, Transliteration) + Color-coded Syntax + Multilingual support (can display the tags for an array of languages)
 Offer repetition + Machine Learning
+It's color-customizable (It's beautiful)
+It's your own texts, data, whatever you what to say
+It has flow (reading speed)
+It can add multiple layers of languages for parallel learning
 
 # Dependencies
 
