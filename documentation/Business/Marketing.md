@@ -290,3 +290,11 @@ To overcome these challenges, your team's mindset must shift:
 3.  **Focus on Unified Metrics, Not Unified Tools:** Don't try to force one tool everywhere. Instead, define a core set of global KPIs (e.g., WAU, Cost per Paying User, LTV:CAC ratio) and let each region use the best local tools to report on those KPIs, feeding the data into your central warehouse.
 
 By anticipating these technical limitations and building flexible, data-centric solutions, you can turn the chaos of international marketing into a structured, scalable competitive advantage.
+
+# What You'll Do
+
+Build and scale a world-class global product marketing organization through hiring, coaching, training, and establishing and reinforcing PMM excellence standards
+Define key success metrics as part of quarterly product marketing plans; focus on key goals, associated timelines and metrics with weekly reporting in order to transparently measure results and inform decision making
+Craft engaging audience-specific marketing assets and content, including solution briefs, web content, presentations, product briefs that can be utilized globally
+Lead cross-team marketing activities and define key GTM efforts to ensure successful public launches for technology partnerships and product introductions
+Support team in setting clear goals and key results, ensuring communication and visibility across the company with regular progress sharing
