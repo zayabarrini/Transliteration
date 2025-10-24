@@ -1,18 +1,21 @@
 import os
 import shutil
+
 from lxml import etree
+
+from transliteration.add_metadata_and_cover import add_metadata_and_cover
 from transliteration.epubManagement import (
-    extract_epub,
     create_epub,
+    extract_epub,
     find_text_folder,
     get_xhtml_files,
 )
 from transliteration.epubTransliteration import get_language_from_filename
-from transliteration.add_metadata_and_cover import add_metadata_and_cover
-
 
 # Default configuration
-DEFAULT_CONFIG = {"option": 4, "language_to_keep": "en", "reference_has_no_lang": True}
+DEFAULT_CONFIG = {
+        "option": 1,
+    }
 
 # Predefined configurations for common use cases
 # Add to your CONFIG_PRESETS
@@ -115,22 +118,22 @@ def _keep_only_language_after_no_lang(root, language_to_keep: str):
     """
     # Namespace-agnostic approach: find all elements that are paragraphs regardless of namespace
     all_elements = root.xpath('//*[local-name() = "p"]')
-    print(f"Found {len(all_elements)} total paragraph elements")
+    # print(f"Found {len(all_elements)} total paragraph elements")
 
     # Filter by lang attribute
     target_paragraphs = [p for p in all_elements if p.get("lang") == language_to_keep]
     # Find paragraphs without lang attribute (the originals)
     reference_paragraphs = [p for p in all_elements if p.get("lang") is None]
 
-    print(f"Found {len(target_paragraphs)} {language_to_keep} paragraphs")
-    print(f"Found {len(reference_paragraphs)} paragraphs without lang attribute (originals)")
+    # print(f"Found {len(target_paragraphs)} {language_to_keep} paragraphs")
+    # print(f"Found {len(reference_paragraphs)} paragraphs without lang attribute (originals)")
 
     # Debug: print first few paragraphs
     for i, p in enumerate(all_elements[:10]):
         lang = p.get("lang", "No lang")
         class_attr = p.get("class", "No class")
         text_preview = p.text[:50] + "..." if p.text and p.text.strip() else "No text"
-        print(f"  Paragraph {i}: class='{class_attr}', lang='{lang}', text='{text_preview}'")
+        # print(f"  Paragraph {i}: class='{class_attr}', lang='{lang}', text='{text_preview}'")
 
     # For each reference paragraph (no lang), find and mark the immediately following target paragraph to keep
     paragraphs_to_keep = set()
@@ -149,9 +152,9 @@ def _keep_only_language_after_no_lang(root, language_to_keep: str):
                 break
             current_elem = current_elem.getnext()
 
-    print(
-        f"Keeping {len(paragraphs_to_keep)} {language_to_keep} paragraphs (after no-lang originals)"
-    )
+    # print(
+    #     f"Keeping {len(paragraphs_to_keep)} {language_to_keep} paragraphs (after no-lang originals)"
+    # )
 
     removed_count = 0
     for target_para in target_paragraphs:
@@ -161,7 +164,7 @@ def _keep_only_language_after_no_lang(root, language_to_keep: str):
                 parent.remove(target_para)
                 removed_count += 1
 
-    print(f"Removed {removed_count} {language_to_keep} paragraphs")
+    # print(f"Removed {removed_count} {language_to_keep} paragraphs")
 
 
 def _remove_original_before_dir_auto(root):
@@ -192,7 +195,7 @@ def _remove_original_before_dir_auto(root):
 def _remove_all_language_elements(root, language_to_remove: str):
     """Option 2: Remove all elements with specific language"""
     elements_to_remove = root.xpath(f'//*[@lang="{language_to_remove}"]')
-    print(f"Removing all {len(elements_to_remove)} elements with lang='{language_to_remove}'")
+    # print(f"Removing all {len(elements_to_remove)} elements with lang='{language_to_remove}'")
 
     for elem in elements_to_remove:
         parent = elem.getparent()
@@ -204,7 +207,7 @@ def _keep_only_language_after_another(root, language_to_keep: str, language_afte
     """Option 3: Keep only language_to_keep elements that come after language_after elements"""
     # Namespace-agnostic approach: find all elements that are paragraphs regardless of namespace
     all_elements = root.xpath('//*[local-name() = "p"]')
-    print(f"Found {len(all_elements)} total paragraph elements")
+    # print(f"Found {len(all_elements)} total paragraph elements")
 
     # Filter by lang attribute
     target_paragraphs = [p for p in all_elements if p.get("lang") == language_to_keep]
