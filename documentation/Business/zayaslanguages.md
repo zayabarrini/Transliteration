@@ -41,6 +41,7 @@
 
 - Express yourself in another language
 - Your favorite movies, music and quotes
+- Translate your love sentences, favorite quotes, music, literary text. Prepare your baggage of lovable sentences
 
 ## Inspiration: Anki, Duolingo, SmartBook, Pleco
 
