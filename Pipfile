@@ -29,9 +29,7 @@ fugashi = "*"
 konlpy = "*"
 korean-romanizer = "*"
 pinyin = "*"
-ebooklib = "*"
 langdetect = "*"
-chardet = "*"
 pyspellchecker = "*"
 spacy = "*"
 PyMuPDF = "*"
@@ -43,6 +41,10 @@ transliteration-tools = {file = ".", editable = true}
 flake8 = "*"
 black = "*"
 isort = "*"
+ebooklib = "*"
+beautifulsoup4 = "*"
+chardet = "*"
+pyttsx3 = "*"
 
 [dev-packages]
 
