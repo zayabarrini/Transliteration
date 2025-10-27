@@ -35,3 +35,9 @@ Ports:
 5002: Translator by word
 5003: Translator by word - Chinese
 5004: Translator by word - Japanese
+
+# 26/10/25
+
+Ebook metadata customizable
+Menu
+WebApp

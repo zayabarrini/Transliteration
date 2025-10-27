@@ -54,21 +54,25 @@ tmux send-keys -t chinese-session:0.0 "pipenv run python3 -m web.webChineseColor
 # Start Grammar DB services in the other panes
 echo "📚 Starting Grammar DB services..."
 
-# Pane 1: Database only
+# Pane 1: Database only - FIXED: Remove sudo and add better waiting
 echo "🐘 Starting Database..."
 tmux send-keys -t chinese-session:0.1 "echo '=== Starting Grammar DB Database ==='" Enter
 sleep 1
 tmux send-keys -t chinese-session:0.1 "cd backend" Enter
 sleep 1
-tmux send-keys -t chinese-session:0.1 "sudo docker-compose down" Enter
+tmux send-keys -t chinese-session:0.1 "docker-compose down" Enter
+sleep 3
+tmux send-keys -t chinese-session:0.1 "docker-compose up -d" Enter
+sleep 5
+tmux send-keys -t chinese-session:0.1 "echo 'Waiting for database to be ready...'" Enter
+sleep 1
+tmux send-keys -t chinese-session:0.1 "while ! docker-compose exec db pg_isready -U postgres; do sleep 2; done" Enter
 sleep 2
-tmux send-keys -t chinese-session:0.1 "sudo docker-compose up -d" Enter
-sleep 2
-tmux send-keys -t chinese-session:0.1 "echo 'Database running. Waiting for backend...'" Enter
+tmux send-keys -t chinese-session:0.1 "echo '✅ Database is ready!'" Enter
 
-# Pane 2: Backend API only
+# Pane 2: Backend API only - FIXED: Wait longer and check database connection
 echo "🚀 Starting Backend API..."
-sleep 8  # Wait longer for database to be ready
+sleep 15  # Wait much longer for database to be fully ready
 tmux send-keys -t chinese-session:0.2 "echo '=== Starting Grammar DB Backend ==='" Enter
 sleep 1
 tmux send-keys -t chinese-session:0.2 "cd backend" Enter
@@ -77,6 +81,10 @@ tmux send-keys -t chinese-session:0.2 "echo 'Checking if port 8000 is free...'" 
 sleep 1
 tmux send-keys -t chinese-session:0.2 "lsof -ti:8000 | xargs kill -9 2>/dev/null || true" Enter
 sleep 2
+tmux send-keys -t chinese-session:0.2 "echo 'Testing database connection...'" Enter
+sleep 1
+tmux send-keys -t chinese-session:0.2 "pipenv run python -c \"from main import engine; engine.connect(); print('✅ Database connection successful')\"" Enter
+sleep 3
 tmux send-keys -t chinese-session:0.2 "pipenv run uvicorn main:app --reload --port 8000" Enter
 
 # Pane 3: Frontend
@@ -130,7 +138,7 @@ echo ""
 
 # Wait for services to start
 echo "⏳ Waiting for services to initialize..."
-sleep 12
+sleep 20
 
 # Attach to the session
 echo "Attaching to session..."
