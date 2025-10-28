@@ -1,6 +1,6 @@
-import sys
 import os
 import re
+import sys
 from pathlib import Path
 
 language_map = {
@@ -27,8 +27,8 @@ else:
 sys.path.insert(0, str(BASE_DIR))
 # Import modified versions
 try:
-    from modified.modified_kakasi import Kakasi as CustomKakasi
     from modified.modified_hangul import Transliter as CustomTransliter
+    from modified.modified_kakasi import Kakasi as CustomKakasi
     from modified.modified_pyarabic import custom_utf82latin as custom_arabic
 except ImportError:
     # Fallback to original versions if modified not found
@@ -38,11 +38,11 @@ except ImportError:
 
 # Import original libraries
 import pykakasi as original_pykakasi
+import pypinyin
 from hangul_romanize import Transliter as OriginalTransliter
 
 # from pyarabic import trans as original_pyarabic
 from hangul_romanize.rule import academic
-import pypinyin
 
 # Apply monkey patches if custom versions exist
 if CustomKakasi:
@@ -158,10 +158,11 @@ def append_punctuation_to_previous_word(segmented_words):
     return corrected_words
 
 
+import re
+
 import jieba
 import jieba.posseg as pseg
-from pypinyin import pinyin, Style, lazy_pinyin
-import re
+from pypinyin import Style, lazy_pinyin, pinyin
 
 EXCLUDE_CHARS = {
     " ",
@@ -266,7 +267,7 @@ def get_pinyin_for_word(word):
 
 def get_pinyin_annotations(text, color_coded=False):
     """Get pinyin annotations with word-level grouping and optional color-coding"""
-    from pypinyin import lazy_pinyin, Style, load_phrases_dict
+    from pypinyin import Style, lazy_pinyin, load_phrases_dict
 
     # Custom phrase corrections
     load_phrases_dict(

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/ZayasTransliteration/documentation/Business"
+DIRECTORY="/home/zaya/Downloads/Klein-Bottle-Course/txt"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
