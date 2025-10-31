@@ -10,6 +10,8 @@ Menu.md
 
 python_version = "3.12"
 
+[Grammar Rules](https://github.com/zayabarrini/zayas-grammar-db)
+
 # Transliteration issues
 
 ## Arabic
