@@ -12,6 +12,8 @@ Menu.md
 
 python_version = "3.12"
 
+[See Zaya's Books](https://github.com/zayabarrini/zayasbooks)
+
 [Grammar Rules](https://github.com/zayabarrini/zayas-grammar-db)
 
 # Main usage
