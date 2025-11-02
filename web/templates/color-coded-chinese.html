@@ -45,32 +45,40 @@
         </div>
         {% endif %}
         
-        {% if result %}
+        {% if sentences %}
         <div class="result-section">
             <div class="sentence-display">
                 <div class="sentence-title">Original {{ lang_name }} Text:</div>
                 <div class="word-breakdown">
-                    {% for item in result %}
-                        {% if item.is_punctuation %}
-                            <span class="punctuation-token">{{ item.word }}</span>
-                        {% else %}
-                            <ruby>
-                                <rt class="translation">{{ item.translation }}</rt>
-                                <span class="word-token {{ item.syntax }}">{{ item.word }}</span>
-                                <rt class="pinyin">{{ item.transliteration }}</rt>
-                            </ruby>
-                        {% endif %}
+                    {% for sentence in sentences %}
+                        <div class="sentence-line">
+                            {% for item in sentence %}
+                                {% if item.is_punctuation %}
+                                    <span class="punctuation-token">{{ item.word }}</span>
+                                {% else %}
+                                    <ruby>
+                                        <rt class="translation">{{ item.translation }}</rt>
+                                        <span class="word-token {{ item.syntax }}">{{ item.word }}</span>
+                                        <rt class="pinyin">{{ item.transliteration }}</rt>
+                                    </ruby>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     {% endfor %}
                 </div>
                 
                 <div class="translation-display">
                     <span class="translation-label">Full translation word by word:</span>
-                    {% for item in result %}
-                        {% if item.is_punctuation %}
-                            <span class="punctuation-token">{{ item.word }}</span>
-                        {% else %}
-                            {{ item.translation }} 
-                        {% endif %}
+                    {% for sentence in sentences %}
+                        <div class="sentence-line">
+                            {% for item in sentence %}
+                                {% if item.is_punctuation %}
+                                    <span class="punctuation-token">{{ item.word }}</span>
+                                {% else %}
+                                    {{ item.translation }} 
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     {% endfor %}
                 </div>
                 
@@ -91,29 +99,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in result %}
-                        {% if not item.is_punctuation %}
-                        <tr>
-                            <td><strong>{{ item.word }}</strong></td>
-                            <td>{{ item.transliteration }}</td>
-                            <td>{{ item.translation }}</td>
-                            <td>
-                                <code class="pos-tag">{{ item.pos }}</code>
-                            </td>
-                            <td>
-                                <span class="chip {{ item.syntax }}">
-                                    {% if item.syntax == 'S' %}Subject
-                                    {% elif item.syntax == 'O' %}Object
-                                    {% elif item.syntax == 'V' %}Verb
-                                    {% elif item.syntax == 'A' %}Adjunct
-                                    {% elif item.syntax == 'C' %}Conjunction
-                                    {% elif item.syntax == 'P' %}Preposition
-                                    {% else %}Other
-                                    {% endif %}
-                                </span>
-                            </td>
-                        </tr>
-                        {% endif %}
+                    {% for item in table_data %}
+                    <tr>
+                        <td><strong>{{ item.word }}</strong></td>
+                        <td>{{ item.transliteration }}</td>
+                        <td>{{ item.translation }}</td>
+                        <td>
+                            <code class="pos-tag">{{ item.pos }}</code>
+                        </td>
+                        <td>
+                            <span class="chip {{ item.syntax }}">
+                                {% if item.syntax == 'S' %}Subject
+                                {% elif item.syntax == 'O' %}Object
+                                {% elif item.syntax == 'V' %}Verb
+                                {% elif item.syntax == 'A' %}Adjunct
+                                {% elif item.syntax == 'C' %}Conjunction
+                                {% elif item.syntax == 'P' %}Preposition
+                                {% else %}Other
+                                {% endif %}
+                            </span>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

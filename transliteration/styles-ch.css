@@ -117,7 +117,7 @@ ruby.mp rt,
 ruby.q rt,
 ruby.o rt,
 ruby.x rt {
-  font-size: 50%;
+  font-size: 0.6em;
   color: #666;
   font-weight: normal;
 }

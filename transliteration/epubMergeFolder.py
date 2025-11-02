@@ -93,7 +93,7 @@ def prep_epubs_by_pattern(folder_path, file_patterns, merge_order=None, output_s
 
 # Usage examples
 if __name__ == "__main__":
-    folder_path = '/home/zaya/Downloads/Zayas/ZayasBooks/Language/b'
+    folder_path = '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t'
     file_patterns = ['*-db-*.epub']
     
     # Example 1: With merge_order
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         epub_paths, output_path, languages, merge_order = prep_epubs_by_pattern(
             folder_path=folder_path,
             file_patterns=file_patterns,
-            merge_order=['de', 'ru', 'fr', 'it', 'ch'],  # Use 'ch' here
+            merge_order=['de', 'ru', 'ch'],  # Use 'ch' here
             output_suffix="ml"
         )
         merge_multiple_epubs(epub_paths, output_path, languages, merge_order)

@@ -17,6 +17,7 @@ kks = pykakasi.kakasi()
 EXCLUDE_CHARS = {
     " ",
     ".",
+    "·",
     ",",
     "!",
     "?",
@@ -46,6 +47,9 @@ EXCLUDE_CHARS = {
     "～",
     "°",
     "º",
+    "\n",
+    "\r",
+    "\t",
 }
 
 
@@ -54,9 +58,34 @@ def is_punctuation(word):
     return word in EXCLUDE_CHARS
 
 
+def group_into_sentences(result):
+    """Group words into sentences based on punctuation"""
+    sentences = []
+    current_sentence = []
+    
+    for item in result:
+        # Skip newlines and other whitespace punctuation
+        if item['word'] in ['\n', '\r', '\t']:
+            continue
+            
+        current_sentence.append(item)
+        # Check if this is a sentence-ending punctuation
+        if item.get('is_punctuation') and item['word'] in ['.', '。', '!', '！', '?', '？']:
+            sentences.append(current_sentence)
+            current_sentence = []
+    
+    # Add any remaining words as the last sentence
+    if current_sentence:
+        sentences.append(current_sentence)
+    
+    return sentences
+
+
 def analyze_chinese_syntax(text):
     """Improved POS-based syntax analysis for Chinese"""
-    words = list(pseg.cut(text))
+    # Remove extra whitespace including newlines for processing
+    processed_text = ' '.join(text.split())
+    words = list(pseg.cut(processed_text))
     syntax_data = []
 
     for i, (word, pos) in enumerate(words):
@@ -174,7 +203,10 @@ def process_chinese(text):
             }
         )
 
-    return result, full_translation
+    # Group into sentences
+    sentences = group_into_sentences(result)
+    
+    return sentences, full_translation
 
 
 def process_japanese(text):
@@ -215,7 +247,10 @@ def process_japanese(text):
             }
         )
 
-    return result, full_translation
+    # Group into sentences
+    sentences = group_into_sentences(result)
+    
+    return sentences, full_translation
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -226,19 +261,27 @@ def index():
 
         try:
             if language == "chinese":
-                result, full_translation = process_chinese(text)
+                sentences, full_translation = process_chinese(text)
                 lang_name = "Chinese"
             elif language == "japanese":
-                result, full_translation = process_japanese(text)
+                sentences, full_translation = process_japanese(text)
                 lang_name = "Japanese"
             else:
-                result = []
+                sentences = []
                 full_translation = ""
                 lang_name = ""
 
+            # Flatten sentences for the table (excluding punctuation)
+            table_data = []
+            for sentence in sentences:
+                for item in sentence:
+                    if not item['is_punctuation']:
+                        table_data.append(item)
+
             return render_template(
                 "color-coded-chinese.html",
-                result=result,
+                sentences=sentences,
+                table_data=table_data,
                 original_text=text,
                 lang_name=lang_name,
                 full_translation=full_translation,

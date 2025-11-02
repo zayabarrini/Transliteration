@@ -174,8 +174,8 @@ rt.pinyin {
   padding: 4px 8px;
   border-radius: 6px;
   color: white;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 30px;
+  /* font-weight: bold; */
 }
 
 .word-token.P {
@@ -253,4 +253,101 @@ rt.pinyin {
 .no-data {
   color: #999;
   font-style: italic;
+}
+
+/* Add to your existing CSS */
+.word-breakdown {
+  line-height: 2.5;
+  margin-bottom: 1rem;
+}
+
+.punctuation-token {
+  display: inline-block;
+  margin: 0 2px;
+}
+
+/* Ensure proper spacing around ruby elements */
+ruby {
+  margin: 0 2px;
+}
+
+/* Better spacing for translation sections */
+.translation-display {
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+/* Add to your existing CSS */
+.word-breakdown {
+  line-height: 2.5;
+  margin-bottom: 1rem;
+}
+
+.sentence-line {
+  margin-bottom: 1rem;
+  line-height: 2;
+}
+
+.translation-display .sentence-line {
+  display: flex;
+}
+
+.punctuation-token {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: bottom; /* Fix alignment to baseline */
+}
+
+/* Ensure proper spacing and alignment for ruby elements */
+ruby {
+  margin: 0 2px;
+  vertical-align: baseline;
+}
+
+rt {
+  font-size: 0.7em;
+  text-align: center;
+}
+
+rt.translation {
+  color: #666;
+}
+
+rt.pinyin {
+  color: #888;
+  font-weight: bold;
+}
+
+/* Better spacing for translation sections */
+.translation-display {
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.translation-label {
+  color: #333;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Table styles */
+.syntax-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.syntax-table th,
+.syntax-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.syntax-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
 }
