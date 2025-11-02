@@ -1,3 +1,20 @@
+:root {
+  --n: #60a5fa; /* blue for nouns */
+  --v: #f87171; /* red for verbs */
+  --adj: #34d399; /* green for adjectives */
+  --adv: #a78bfa; /* purple for adverbs */
+  --r: #fbbf24; /* yellow for pronouns */
+  --nm: #f97316; /* orange for numerals */
+  --p: #06b6d4; /* cyan for prepositions */
+  --c: #d946ef; /* pink for conjunctions */
+  --ax: #8b5cf6; /* indigo for auxiliary */
+  --mp: #f59e0b; /* amber for modal particles */
+  --q: #10b981; /* emerald for quantifiers */
+  --o: #94a3b8; /* gray for other */
+  --x: #cbd5e1; /* light gray for unknown */
+  --punct: transparent;
+}
+
 body {
   direction: rtl;
   text-align: right;
@@ -11,7 +28,9 @@ ruby {
   margin-left: 0.5em;
   unicode-bidi: isolate !important;
   /* font-size: xx-large; */
-  font-size: 4em;
+  font-size: 2em;
+  /* background: var(--adv);
+  color: #4c1d95; */
 }
 
 rt {

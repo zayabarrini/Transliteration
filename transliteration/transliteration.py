@@ -141,6 +141,8 @@ def append_punctuation_to_previous_word(segmented_words):
         ",",
         "!",
         "?",
+        "[",
+        "]",
     ]
 
     # Initialize a new list to store the corrected tokens
@@ -196,6 +198,8 @@ EXCLUDE_CHARS = {
     "～",
     "°",
     "º",
+    "[",
+    "]",    
 }
 
 
@@ -415,6 +419,8 @@ def get_grammatical_classes_from_pos(pos_tag):
 
 def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False):
     """Get pinyin annotations with optional grammatical class display"""
+    from string import Template
+
     from pypinyin import Style, lazy_pinyin, load_phrases_dict
 
     # Custom phrase corrections
@@ -432,7 +438,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
     for word, syntax, pos in syntax_analysis:
         if is_punctuation(word):
             # Add punctuation directly to both versions
-            result.append(word)
+            result.append(f'<span class="punctuation-token">{word}</span>')
             clean_version.append(word)
         else:
             # Get pinyin for the entire word
@@ -446,21 +452,59 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
 
             if color_coded:
                 if show_grammatical_class:
-                    # Show grammatical class instead of syntax category
+                    # Template for grammatical class display
                     if word_pinyin and word_pinyin != word:
-                        result.append(
-                            f'<ruby class="{syntax}"><rt>{grammatical_class}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>'
+                        template = Template(
+                            '<ruby class="$syntax">'
+                            '<span class="grammatical-class">$grammatical_class</span>'
+                            '<span class="word-token $syntax">$word</span>'
+                            '<rt class="pinyin">$pinyin</rt>'
+                            '</ruby>'
                         )
+                        result.append(template.substitute(
+                            syntax=syntax,
+                            grammatical_class=grammatical_class,
+                            word=word,
+                            pinyin=word_pinyin
+                        ))
                     else:
-                        result.append(f'<span class="{syntax}">{word}<rt>{grammatical_class}</rt></span>')
+                        template = Template(
+                            '<ruby class="$syntax">'
+                            '<span class="grammatical-class">$grammatical_class</span>'
+                            '<span class="word-token $syntax">$word</span>'
+                            '</ruby>'
+                        )
+                        result.append(template.substitute(
+                            syntax=syntax,
+                            grammatical_class=grammatical_class,
+                            word=word
+                        ))
                 else:
-                    # Original color-coded mode
+                    # Template for original color-coded mode
                     if word_pinyin and word_pinyin != word:
-                        result.append(
-                            f'<ruby class="{syntax}"><rt>{syntax}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>'
+                        template = Template(
+                            '<ruby class="$syntax">'
+                            '<span class="syntax-label">$syntax</span>'
+                            '<span class="word-token $syntax">$word</span>'
+                            '<rt class="pinyin">$pinyin</rt>'
+                            '</ruby>'
                         )
+                        result.append(template.substitute(
+                            syntax=syntax,
+                            word=word,
+                            pinyin=word_pinyin
+                        ))
                     else:
-                        result.append(f'<span class="{syntax}">{word}</span>')
+                        template = Template(
+                            '<ruby class="$syntax">'
+                            '<span class="syntax-label">$syntax</span>'
+                            '<span class="word-token $syntax">$word</span>'
+                            '</ruby>'
+                        )
+                        result.append(template.substitute(
+                            syntax=syntax,
+                            word=word
+                        ))
             else:
                 # Simple mode: just word with pinyin
                 if word_pinyin and word_pinyin != word:
@@ -554,6 +598,9 @@ def add_furigana(text, transliteration, language):
     language = language_map.get(language, language)
     if not text:
         return ""
+    filtered_text = filter_language_text(text, language)
+    if not filtered_text:
+        return text  # Return original if no language-specific text
     # tokens = text
     exclude_chars = [
         " ",
@@ -581,8 +628,8 @@ def add_furigana(text, transliteration, language):
     # el
     if language == "korean":
         trans_words = transliteration  # Use the list of tuples directly
-    # else:
-    #    trans_words = transliteration.split()
+    elif language in ["hindi", "arabic", "russian"]:
+       trans_words = transliteration.split()
 
     # if language == "japanese" and is_english(text):
     #     return text
@@ -648,34 +695,40 @@ def add_furigana(text, transliteration, language):
         # return pinyin
         return transliteration
     elif language in ["hindi", "arabic", "russian"]:
-        segmented_words = text.split()
+        # Handle language-specific processing for filtered text
+        if filtered_text != text:
+            # Process only the language-specific parts
+            processed_part = add_furigana(filtered_text, transliteration, language)
+            return text.replace(filtered_text, processed_part)
+        
+        # Original processing logic for pure language text
+        segmented_words = filtered_text.split()
         language_excludes = {
-            "hindi": ["।", "॥", "़", "्"],  # Hindi-specific characters
-            "arabic": ["ـ", "َ", "ُ", "ِ", "ّ", "ْ"],  # Arabic diacritics
-            "russian": ["«", "»", "—", "…"],  # Russian-specific punctuation
+            "hindi": ["।", "॥", "़", "्"],
+            "arabic": ["ـ", "َ", "ُ", "ِ", "ّ", "ْ"],
+            "russian": ["«", "»", "—", "…"],
         }
         exclude_chars = exclude_chars + language_excludes.get(language, [])
+        
+        furigana_text = []
+        trans_index = 0
+        trans_words = transliteration.split() if isinstance(transliteration, str) else transliteration
+        
         for word in segmented_words:
-            # Skip pure punctuation words
             if all(char in exclude_chars for char in word):
                 furigana_text.append(word)
                 continue
 
             if trans_index < len(trans_words):
-                # Get the transliteration for this word
                 translit = trans_words[trans_index]
                 trans_index += 1
+                clean_translit = "".join([c for c in str(translit) if c not in exclude_chars])
 
-                # Remove excluded characters from the transliteration
-                clean_translit = "".join([c for c in translit if c not in exclude_chars])
-
-                # Only apply ruby if we have non-excluded characters
                 if any(c not in exclude_chars for c in word):
                     furigana_text.append(f"<ruby>{word}<rt>{clean_translit}</rt></ruby>")
                 else:
                     furigana_text.append(word)
             else:
-                # Fallback if no transliteration available
                 furigana_text.append(word)
 
         return " ".join(furigana_text)
@@ -693,6 +746,46 @@ def transliterate_chinese(text, mode="color"):
     """
     return get_pinyin_annotations(text, color_coded=(mode == "color"))
 
+LANGUAGE_CHAR_RANGES = {
+    "korean": (0xAC00, 0xD7AF),  # Hangul syllables
+    "arabic": (0x0600, 0x06FF),   # Basic Arabic
+    "russian": (0x0400, 0x04FF),  # Cyrillic
+    "hindi": (0x0900, 0x097F),    # Devanagari (Hindi)
+    "japanese": [(0x3040, 0x309F), (0x30A0, 0x30FF), (0x4E00, 0x9FFF)],  # Hiragana, Katakana, Kanji
+    "chinese": (0x4E00, 0x9FFF),  # Chinese characters
+}
+
+def is_language_text(text, language):
+    """Check if text contains characters from the specified language"""
+    language = language.lower()
+    language = language_map.get(language, language)
+    
+    if language not in LANGUAGE_CHAR_RANGES:
+        return True  # No filtering for unsupported languages
+    
+    ranges = LANGUAGE_CHAR_RANGES[language]
+    if not isinstance(ranges[0], tuple):
+        ranges = [ranges]
+    
+    for char in text:
+        # Allow common punctuation and whitespace
+        if char in ' .,!?。，！？、」「『』（）《》-':
+            continue
+            
+        char_code = ord(char)
+        in_range = any(start <= char_code <= end for start, end in ranges)
+        
+        if in_range:
+            return True  # Found at least one character from this language
+    
+    return False  # No characters from this language found
+
+def filter_language_text(text, language):
+    """Filter text to only process language-specific content, return original for non-matching"""
+    if is_language_text(text, language):
+        return text
+    else:
+        return ""  # Return empty for non-language text to skip processing
 
 # Function to transliterate text
 def transliterate(input_text, language):
@@ -702,6 +795,9 @@ def transliterate(input_text, language):
         return "Input too large"
     if not input_text:
         return ""
+    filtered_text = filter_language_text(input_text, language)
+    if not filtered_text:
+        return input_text  # Return original if no language-specific text found
     if language == "chinese":
         # return ' '.join(pypinyin.lazy_pinyin(input_text, style=pypinyin.Style.TONE))
         return transliterate_chinese(input_text)
@@ -738,36 +834,36 @@ def transliterate(input_text, language):
             from modified.modified_russian import translit as ru_translit
 
             # Transliterate from Cyrillic to Latin
-            return ru_translit(input_text, "ru", reversed=True)
+            return ru_translit(filtered_text, "ru", reversed=True)
         except Exception as e:
             print(f"Error in Russian transliteration: {e}")
-            return input_text
+            return filtered_text
     elif language == "hindi":
-        result = indic_transliterate(input_text, sanscript.DEVANAGARI, sanscript.ITRANS)
+        result = indic_transliterate(filtered_text, sanscript.DEVANAGARI, sanscript.ITRANS)
         return result
     elif language == "arabic":
         # return original_pyarabic.custom_utf82latin(input_text)  # Will use patched version
         from modified.modified_pyarabic import custom_utf82latin as custom_arabic
 
-        return custom_arabic(input_text)
+        return custom_arabic(filtered_text)
     elif language == "korean":
         from modified.modified_hangul import Transliter as KoreanTransliter
 
         try:
             transliter = KoreanTransliter(rule=academic)  # Using academic transliteration rule
-            result = transliter.translit(input_text)
+            result = transliter.translit(filtered_text)
             # Ensure we're returning a list of (char, trans) tuples
             if result and isinstance(result[0], tuple) and len(result[0]) == 2:
                 return result
             else:
                 # Fallback: return characters with themselves as transliteration
-                return [(c, c) for c in input_text]
+                return [(c, c) for c in filtered_text]
         except Exception as e:
             print(f"Korean transliteration error: {e}")
             # Fallback: return characters with themselves as transliteration
-            return [(c, c) for c in input_text]
+            return [(c, c) for c in filtered_text]
     else:
-        return input_text
+        return filtered_text
 
 
 def transliterate_for_subtitles(text, language):

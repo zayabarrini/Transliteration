@@ -1,12 +1,17 @@
-from bs4 import BeautifulSoup, NavigableString  # For HTML parsing
-import shutil
-from transliteration.add_css import get_css_file, add_css_link  # Import from our new module
 import os
+import shutil
+
+from bs4 import BeautifulSoup, NavigableString  # For HTML parsing
+
+from transliteration.add_css import (  # Import from our new module
+    add_css_link,
+    get_css_file,
+)
 from transliteration.transliteration import (
-    transliterate,
     add_furigana,
-    is_latin,
     get_pinyin_annotations,
+    is_latin,
+    transliterate,
 )
 
 

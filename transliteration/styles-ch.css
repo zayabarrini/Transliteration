@@ -1,87 +1,128 @@
-/* styles-ch.css - Simplified POS styles */
+/* styles-ch.css - Updated with new color scheme */
+:root {
+  --n: #60a5fa; /* blue for nouns */
+  --v: #f87171; /* red for verbs */
+  --adj: #34d399; /* green for adjectives */
+  --adv: #a78bfa; /* purple for adverbs */
+  --r: #fbbf24; /* yellow for pronouns */
+  --nm: #f97316; /* orange for numerals */
+  --p: #06b6d4; /* cyan for prepositions */
+  --c: #d946ef; /* pink for conjunctions */
+  --ax: #8b5cf6; /* indigo for auxiliary */
+  --mp: #f59e0b; /* amber for modal particles */
+  --q: #10b981; /* emerald for quantifiers */
+  --o: #94a3b8; /* gray for other */
+  --x: #cbd5e1; /* light gray for unknown */
+  --punct: transparent;
+}
+
 ruby {
   display: inline-flex;
   flex-direction: column-reverse;
   align-items: center;
-  line-height: 1.5;
-  margin-right: 0.1em;
-  vertical-align: top;
-  font-size: 3em;
+  margin: 5px 5px;
+  padding: 5px 10px;
+  /* background-color: #f0f8ff; */
+  border-radius: 4px;
+  text-align: center;
+  line-height: 1.8;
 }
 
 rt {
-  display: block;
-  font-size: 40%; /* Smaller font size as requested */
-  text-align: left;
-  line-height: 1.2;
-  position: relative;
-  margin-top: -0.2em;
+  font-size: 14px;
 }
 
-rt.translation {
-  order: 1;
+/* This is the key - order the elements properly */
+span.grammatical-class {
+  color: #7f8c8d;
+  /* font-weight: bold; */
+  order: 1; /* This puts it at the TOP */
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+span.syntax-label {
+  color: #7f8c8d;
+  /* font-weight: bold; */
+  order: 1; /* This puts it at the TOP */
+  font-size: 14px;
+  margin-bottom: 2px;
 }
 
 rt.pinyin {
-  order: -1;
+  color: #7f8c8d;
+  order: -1; /* This puts it at the BOTTOM */
+  font-size: 14px;
+  margin-top: 2px;
 }
 
-/* Simplified color-coded POS styles */
-.n {
-  background: #60a5fa;
+.word-token {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: rgb(17, 18, 19);
+  font-size: 60px;
+  /* font-weight: bold; */
+  order: 0; /* This keeps the Chinese word in the middle */
+}
+
+/* Color styles for the simplified POS tags with new colors */
+.word-token.n {
+  background: var(--n);
   color: #1e3a8a;
-} /* blue for nouns */
-.v {
-  background: #f87171;
+}
+.word-token.v {
+  background: var(--v);
   color: #7f1d1d;
-} /* red for verbs */
-.adj {
-  background: #34d399;
+}
+.word-token.adj {
+  background: var(--adj);
   color: #065f46;
-} /* green for adjectives */
-.adv {
-  background: #a78bfa;
+}
+.word-token.adv {
+  background: var(--adv);
   color: #4c1d95;
-} /* purple for adverbs */
-.r {
-  background: #fbbf24;
+}
+.word-token.r {
+  background: var(--r);
   color: #78350f;
-} /* yellow for pronouns */
-.nm {
-  background: #f97316;
+}
+.word-token.nm {
+  background: var(--nm);
   color: #7c2d12;
-} /* orange for numerals */
-.p {
-  background: #06b6d4;
+}
+.word-token.p {
+  background: var(--p);
   color: #164e63;
-} /* cyan for prepositions */
-.c {
-  background: #d946ef;
+}
+.word-token.c {
+  background: var(--c);
   color: #701a75;
-} /* pink for conjunctions */
-.ax {
-  background: #8b5cf6;
+}
+.word-token.ax {
+  background: var(--ax);
   color: #4c1d95;
-} /* indigo for auxiliary */
-.mp {
-  background: #f59e0b;
+}
+.word-token.mp {
+  background: var(--mp);
   color: #78350f;
-} /* amber for modal particles */
-.q {
-  background: #10b981;
+}
+.word-token.q {
+  background: var(--q);
   color: #064e3b;
-} /* emerald for quantifiers */
-.o {
-  background: #94a3b8;
+}
+.word-token.o {
+  background: var(--o);
   color: #334155;
-} /* gray for other */
-.x {
-  background: #cbd5e1;
+}
+.word-token.x {
+  background: var(--x);
   color: #475569;
-} /* light gray for unknown */
-.punct {
-  background: transparent;
-  color: #6b7280;
+}
+
+.punctuation-token {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: bottom; /* Fix alignment to baseline */
 }
 
 /* Enhanced styling for color-coded mode */
@@ -103,47 +144,25 @@ ruby.x {
   margin: 0 1px;
 }
 
-/* For the POS text - smaller font size */
-ruby.n rt,
-ruby.v rt,
-ruby.adj rt,
-ruby.adv rt,
-ruby.r rt,
-ruby.nm rt,
-ruby.p rt,
-ruby.c rt,
-ruby.ax rt,
-ruby.mp rt,
-ruby.q rt,
-ruby.o rt,
-ruby.x rt {
-  font-size: 0.6em;
-  color: #666;
-  font-weight: normal;
-}
-
 /* Clean version styling */
 .clean-version {
-  font-size: 1.2em;
+  font-size: 2em;
   margin-bottom: 0.5em;
   padding: 10px;
   background: #f8f9fa;
   border-radius: 5px;
+  display: inline-block;
 }
 
 .transliterated-version {
-  font-size: 0.8em;
+  font-size: 1.2em;
   padding: 10px;
 }
 
 .chinese-dual-display {
   margin: 1em 0;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 15px;
   background: white;
-}
-
-.word-token {
-  font-weight: normal;
 }
