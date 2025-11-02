@@ -204,7 +204,67 @@ def is_punctuation(word):
     return word in EXCLUDE_CHARS
 
 
-def analyze_chinese_syntax(text):
+# def analyze_chinese_syntax(text):
+#     """Improved POS-based syntax analysis for Chinese"""
+#     words = list(pseg.cut(text))
+#     syntax_data = []
+
+#     for i, (word, pos) in enumerate(words):
+#         # Skip punctuation in syntax analysis
+#         if is_punctuation(word):
+#             syntax_data.append((word, "PUNCT", pos))
+#             continue
+
+#         # Enhanced heuristic rules based on POS tags
+#         if pos.startswith("v"):  # Verbs (v, vd, vn, etc.)
+#             category = "V"
+#         elif pos in ["r", "nh", "nr"] and i == 0:  # First person/name often subject
+#             category = "S"
+#         elif pos in ["r", "nh", "nr"] and i > 0 and syntax_data:
+#             # Check previous word to determine if this is subject or object
+#             prev_syntax = syntax_data[-1][1] if syntax_data else ""
+#             if prev_syntax in ["V", "P"]:  # After verb or preposition, likely object
+#                 category = "O"
+#             else:
+#                 category = "S"
+#         elif pos.startswith("n") and i > 0:  # Nouns after first position
+#             prev_syntax = syntax_data[-1][1] if syntax_data else ""
+#             if prev_syntax == "V":  # Object after verb
+#                 category = "O"
+#             elif prev_syntax in ["P", "C"]:  # After preposition/conjunction
+#                 category = "O"
+#             else:
+#                 category = "S" if i == 0 else "O"
+#         elif pos.startswith("n") and i == 0:  # First noun is likely subject
+#             category = "S"
+#         elif pos in ["d", "a", "b"]:  # Adverbs, adjectives, other modifiers
+#             category = "A"
+#         elif pos in ["c", "p", "cc"]:  # Conjunctions, prepositions
+#             category = "C" if pos in ["c", "cc"] else "P"
+#         elif pos in ["u", "y", "e"]:  # Auxiliary, modal particles
+#             category = "P"
+#         elif pos in ["m", "q"]:  # Numbers, quantifiers
+#             category = "A"  # Treat as adjunct/modifier
+#         elif pos in ["f", "s"]:  # Direction, place
+#             category = "A"
+#         else:
+#             category = "X"  # Other
+
+#         syntax_data.append((word, category, pos))
+
+#     return syntax_data
+
+
+def get_pinyin_for_word(word):
+    """Get pinyin for a word, handling multi-character words properly"""
+    if is_punctuation(word):
+        return ""
+
+    # For multi-character words, join the pinyin with spaces
+    pinyin_list = lazy_pinyin(word, style=Style.TONE, neutral_tone_with_five=True, strict=False)
+    return " ".join(pinyin_list)
+
+def analyze_chinese_syntax_old(text):
     """Improved POS-based syntax analysis for Chinese"""
     words = list(pseg.cut(text))
     syntax_data = []
@@ -254,19 +314,107 @@ def analyze_chinese_syntax(text):
 
     return syntax_data
 
+def analyze_chinese_syntax(text):
+    """Return simplified POS tags from pseg"""
+    words = list(pseg.cut(text))
+    syntax_data = []
+    
+    for word, pos in words:
+        # Map jieba POS tags to simplified categories
+        if is_punctuation(word):
+            category = "punct"
+        elif pos.startswith('n'):  # nouns
+            category = "n"
+        elif pos.startswith('v'):  # verbs
+            category = "v" 
+        elif pos.startswith('a'):  # adjectives
+            category = "adj"
+        elif pos.startswith('d'):  # adverbs
+            category = "adv"
+        elif pos.startswith('m'):  # numerals
+            category = "nm"
+        elif pos.startswith('r'):  # pronouns
+            category = "r"
+        elif pos.startswith('p'):  # prepositions
+            category = "p"
+        elif pos.startswith('c'):  # conjunctions
+            category = "c"
+        elif pos.startswith('u'):  # auxiliary
+            category = "ax"
+        elif pos.startswith('y'):  # modal particles
+            category = "mp"
+        elif pos.startswith('q'):  # quantifiers
+            category = "q"
+        elif pos.startswith('e'):  # interjections
+            category = "o"
+        elif pos.startswith('o'):  # onomatopoeia
+            category = "o"
+        else:
+            category = "x"  # other
+            
+        syntax_data.append((word, category, pos))
+    
+    return syntax_data
 
-def get_pinyin_for_word(word):
-    """Get pinyin for a word, handling multi-character words properly"""
-    if is_punctuation(word):
-        return ""
+def get_grammatical_classes_from_pos(pos_tag):
+    """Map jieba POS tags to grammatical classes"""
+    pos_mapping = {
+        # Nouns
+        'n': 'noun', 'nr': 'proper noun', 'ns': 'place noun', 'nt': 'organization noun',
+        'nz': 'other proper noun', 'nl': 'location noun', 'ng': 'nominal morpheme',
+        
+        # Verbs  
+        'v': 'verb', 'vd': 'adverbial verb', 'vn': 'nominal verb', 
+        'vshi': '是 verb', 'vyou': '有 verb', 'vf': 'direction verb',
+        'vx': 'auxiliary verb', 'vi': 'intransitive verb', 'vl': 'linking verb',
+        'vg': 'verb morpheme',
+        
+        # Adjectives
+        'a': 'adjective', 'ad': 'adverbial adjective', 'an': 'nominal adjective',
+        'ag': 'adjective morpheme', 'al': 'adjective-like',
+        
+        # Adverbs
+        'd': 'adverb', 'dg': 'adverb morpheme',
+        
+        # Pronouns
+        'r': 'pronoun', 'rr': 'personal pronoun', 'rz': 'demonstrative pronoun',
+        
+        # Numerals
+        'm': 'numeral', 'mq': 'quantifier numeral',
+        
+        # Quantifiers
+        'q': 'quantifier', 'qv': 'verbal quantifier', 'qt': 'temporal quantifier',
+        
+        # Prepositions
+        'p': 'preposition', 'pba': '把 preposition', 'pbei': '被 preposition',
+        
+        # Conjunctions
+        'c': 'conjunction', 'cc': 'coordinating conjunction',
+        
+        # Auxiliary
+        'u': 'auxiliary', 'uzhe': '着 auxiliary', 'ule': '了/喽 auxiliary',
+        'uguo': '过 auxiliary', 'ude1': '的/底 auxiliary', 'ude2': '地 auxiliary',
+        'ude3': '得 auxiliary', 'usuo': '所 auxiliary', 'udeng': '等/等等 auxiliary',
+        'uyy': '一样/一般 auxiliary', 'udh': '的话 auxiliary',
+        
+        # Particles
+        'y': 'particle', 'yg': 'particle morpheme',
+        
+        # Interjections
+        'e': 'interjection',
+        
+        # Onomatopoeia
+        'o': 'onomatopoeia',
+        
+        # Others
+        'h': 'prefix', 'k': 'suffix', 'x': 'non-morpheme', 'xx': 'unknown',
+        'w': 'punctuation'
+    }
+    
+    return pos_mapping.get(pos_tag.lower(), pos_tag.lower())
 
-    # For multi-character words, join the pinyin with spaces
-    pinyin_list = lazy_pinyin(word, style=Style.TONE, neutral_tone_with_five=True, strict=False)
-    return " ".join(pinyin_list)
-
-
-def get_pinyin_annotations(text, color_coded=False):
-    """Get pinyin annotations with word-level grouping and optional color-coding"""
+def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False):
+    """Get pinyin annotations with optional grammatical class display"""
     from pypinyin import Style, lazy_pinyin, load_phrases_dict
 
     # Custom phrase corrections
@@ -274,12 +422,12 @@ def get_pinyin_annotations(text, color_coded=False):
         {"什么": [["shén"], ["me"]], "怎么": [["zěn"], ["me"]], "明白": [["míng"], ["bai"]]}
     )
 
-    # Perform syntax analysis to get word groupings
+    # Get syntax analysis with actual POS tags
     syntax_analysis = analyze_chinese_syntax(text)
 
     # Build both versions
     result = []
-    clean_version = []  # Initialize for both modes
+    clean_version = []
 
     for word, syntax, pos in syntax_analysis:
         if is_punctuation(word):
@@ -289,18 +437,30 @@ def get_pinyin_annotations(text, color_coded=False):
         else:
             # Get pinyin for the entire word
             word_pinyin = get_pinyin_for_word(word)
+            
+            # Get grammatical class if requested
+            grammatical_class = get_grammatical_classes_from_pos(pos) if show_grammatical_class else ""
 
             # Always add to clean version
             clean_version.append(word)
 
             if color_coded:
-                # Color-coded mode
-                if word_pinyin and word_pinyin != word:
-                    result.append(
-                        f'<ruby class="{syntax}"><rt>{syntax}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>'
-                    )
+                if show_grammatical_class:
+                    # Show grammatical class instead of syntax category
+                    if word_pinyin and word_pinyin != word:
+                        result.append(
+                            f'<ruby class="{syntax}"><rt>{grammatical_class}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>'
+                        )
+                    else:
+                        result.append(f'<span class="{syntax}">{word}<rt>{grammatical_class}</rt></span>')
                 else:
-                    result.append(f'<span class="{syntax}">{word}</span>')
+                    # Original color-coded mode
+                    if word_pinyin and word_pinyin != word:
+                        result.append(
+                            f'<ruby class="{syntax}"><rt>{syntax}</rt><span class="word-token">{word}</span><rt class="pinyin">{word_pinyin}</rt></ruby>'
+                        )
+                    else:
+                        result.append(f'<span class="{syntax}">{word}</span>')
             else:
                 # Simple mode: just word with pinyin
                 if word_pinyin and word_pinyin != word:
@@ -314,6 +474,21 @@ def get_pinyin_annotations(text, color_coded=False):
 
     return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
 
+def get_detailed_pos_analysis(text):
+    """Return detailed POS analysis with grammatical classes"""
+    words = list(pseg.cut(text))
+    analysis = []
+    
+    for word, pos in words:
+        analysis.append({
+            'word': word,
+            'pos': pos,
+            'syntax': get_grammatical_classes_from_pos(pos),
+            'is_punctuation': is_punctuation(word),
+            'pinyin': get_pinyin_for_word(word) if not is_punctuation(word) else ''
+        })
+    
+    return analysis
 
 def process_chinese_advanced(text):
     """Advanced processing with full syntax analysis (for detailed breakdown)"""

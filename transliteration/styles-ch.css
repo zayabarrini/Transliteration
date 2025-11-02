@@ -1,4 +1,4 @@
-/* styles-ebooks.css - Base styles for both modes */
+/* styles-ch.css - Simplified POS styles */
 ruby {
   display: inline-flex;
   flex-direction: column-reverse;
@@ -11,7 +11,7 @@ ruby {
 
 rt {
   display: block;
-  font-size: 60%;
+  font-size: 40%; /* Smaller font size as requested */
   text-align: left;
   line-height: 1.2;
   position: relative;
@@ -26,57 +26,124 @@ rt.pinyin {
   order: -1;
 }
 
-/* Color-coded syntax styles - only applied when using color mode */
-.S {
+/* Simplified color-coded POS styles */
+.n {
   background: #60a5fa;
   color: #1e3a8a;
-} /* soft blue */
-.O {
-  background: #34d399;
-  color: #065f46;
-} /* mint green */
-.V {
+} /* blue for nouns */
+.v {
   background: #f87171;
   color: #7f1d1d;
-} /* coral red */
-.A {
+} /* red for verbs */
+.adj {
+  background: #34d399;
+  color: #065f46;
+} /* green for adjectives */
+.adv {
   background: #a78bfa;
   color: #4c1d95;
-} /* lavender */
-.C {
+} /* purple for adverbs */
+.r {
   background: #fbbf24;
   color: #78350f;
-} /* honey */
-.P {
-  background: #fde68a;
+} /* yellow for pronouns */
+.nm {
+  background: #f97316;
+  color: #7c2d12;
+} /* orange for numerals */
+.p {
+  background: #06b6d4;
+  color: #164e63;
+} /* cyan for prepositions */
+.c {
+  background: #d946ef;
+  color: #701a75;
+} /* pink for conjunctions */
+.ax {
+  background: #8b5cf6;
+  color: #4c1d95;
+} /* indigo for auxiliary */
+.mp {
+  background: #f59e0b;
   color: #78350f;
-} /* light gold */
-.PUNCT {
+} /* amber for modal particles */
+.q {
+  background: #10b981;
+  color: #064e3b;
+} /* emerald for quantifiers */
+.o {
+  background: #94a3b8;
+  color: #334155;
+} /* gray for other */
+.x {
+  background: #cbd5e1;
+  color: #475569;
+} /* light gray for unknown */
+.punct {
   background: transparent;
   color: #6b7280;
 }
 
 /* Enhanced styling for color-coded mode */
-ruby.S,
-ruby.O,
-ruby.V,
-ruby.A,
-ruby.C,
-ruby.P,
-ruby.X {
+ruby.n,
+ruby.v,
+ruby.adj,
+ruby.adv,
+ruby.r,
+ruby.nm,
+ruby.p,
+ruby.c,
+ruby.ax,
+ruby.mp,
+ruby.q,
+ruby.o,
+ruby.x {
   padding: 2px 4px;
   border-radius: 3px;
   margin: 0 1px;
 }
 
-/* For the syntax/pos text in color-coded mode */
-ruby.S rt,
-ruby.O rt,
-ruby.V rt,
-ruby.A rt,
-ruby.C rt,
-ruby.P rt,
-ruby.X rt {
-  font-size: 40%; /* Smaller for the additional text */
+/* For the POS text - smaller font size */
+ruby.n rt,
+ruby.v rt,
+ruby.adj rt,
+ruby.adv rt,
+ruby.r rt,
+ruby.nm rt,
+ruby.p rt,
+ruby.c rt,
+ruby.ax rt,
+ruby.mp rt,
+ruby.q rt,
+ruby.o rt,
+ruby.x rt {
+  font-size: 50%;
   color: #666;
+  font-weight: normal;
+}
+
+/* Clean version styling */
+.clean-version {
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+}
+
+.transliterated-version {
+  font-size: 0.8em;
+  padding: 10px;
+}
+
+.chinese-dual-display {
+  margin: 1em 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  background: white;
+}
+
+.word-token {
+  font-weight: normal;
 }
