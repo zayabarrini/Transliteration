@@ -1,0 +1,246 @@
+/* Unified multilingual styles */
+
+/* Base ruby styles for all languages */
+ruby {
+  display: inline-block;
+  position: relative;
+  line-height: 1.5;
+  margin-right: 0.5em;
+  vertical-align: top;
+  font-size: 2em;
+}
+
+rt {
+  display: block;
+  font-size: 50%;
+  text-align: center;
+  line-height: 1.2;
+  position: relative;
+  margin-top: -0.2em;
+  margin-right: 0.5em !important;
+}
+
+/* Language-specific overrides */
+
+/* Korean specific styles */
+ruby.japanese {
+  margin-right: 0.1em; /* Reduced spacing between Japanese characters */
+  font-size: 2.1em; /* Slightly larger base character */
+  line-height: 1.2;
+}
+
+ruby.japanese rt {
+  font-size: 35%; /* Smaller transliteration */
+  margin-top: -0.1em;
+  margin-right: 0.1em !important;
+  line-height: 1;
+}
+
+/* Korean specific styles */
+ruby.korean {
+  margin-right: 0.1em; /* Reduced spacing between Korean characters */
+  font-size: 1.8em; /* Slightly larger base character */
+  line-height: 1.2;
+}
+
+ruby.korean rt {
+  font-size: 35%; /* Smaller transliteration */
+  margin-top: -0.1em;
+  margin-right: 0.1em !important;
+  line-height: 1;
+}
+
+/* Add margin between Korean words */
+ruby.korean + ruby.korean {
+  margin-left: 0.3em; /* Space between words */
+}
+
+/* Or if you want space after every Korean word (including before punctuation) */
+ruby.korean {
+  margin-right: 0.3em; /* Space after each word */
+}
+
+/* Hindi specific styles */
+ruby.hindi {
+  /* Add any Hindi-specific styles here */
+}
+
+/* Arabic specific styles */
+ruby.arabic {
+  /* Add any Arabic-specific styles here */
+  direction: rtl;
+}
+
+/* Russian specific styles */
+ruby.russian {
+  /* Add any Russian-specific styles here */
+}
+
+/* Chinese specific styles - keep all your existing Chinese styles */
+:root {
+  --n: #60a5fa; /* blue for nouns */
+  --v: #f87171; /* red for verbs */
+  --adj: #34d399; /* green for adjectives */
+  --adv: #a78bfa; /* purple for adverbs */
+  --r: #fbbf24; /* yellow for pronouns */
+  --nm: #f97316; /* orange for numerals */
+  --p: #06b6d4; /* cyan for prepositions */
+  --c: #d946ef; /* pink for conjunctions */
+  --ax: #8b5cf6; /* indigo for auxiliary */
+  --mp: #f59e0b; /* amber for modal particles */
+  --q: #10b981; /* emerald for quantifiers */
+  --o: #94a3b8; /* gray for other */
+  --x: #cbd5e1; /* light gray for unknown */
+  --punct: transparent;
+}
+
+ruby.chinese {
+  display: inline-flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  margin: 5px 5px;
+  padding: 5px 10px;
+  /* background-color: #f0f8ff; */
+  border-radius: 4px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+ruby.chinese rt {
+  font-size: 14px;
+}
+
+/* This is the key - order the elements properly */
+ruby.chinese span.grammatical-class {
+  color: #7f8c8d;
+  /* font-weight: bold; */
+  order: 1; /* This puts it at the TOP */
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+ruby.chinese span.syntax-label {
+  color: #7f8c8d;
+  /* font-weight: bold; */
+  order: 1; /* This puts it at the TOP */
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+ruby.chinese rt.pinyin {
+  color: #7f8c8d;
+  order: -1; /* This puts it at the BOTTOM */
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+ruby.chinese .word-token {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: rgb(17, 18, 19);
+  font-size: 60px;
+  /* font-weight: bold; */
+  order: 0; /* This keeps the Chinese word in the middle */
+}
+
+/* Color styles for the simplified POS tags with new colors */
+ruby.chinese .word-token.n {
+  background: var(--n);
+  color: #1e3a8a;
+}
+ruby.chinese .word-token.v {
+  background: var(--v);
+  color: #7f1d1d;
+}
+ruby.chinese .word-token.adj {
+  background: var(--adj);
+  color: #065f46;
+}
+ruby.chinese .word-token.adv {
+  background: var(--adv);
+  color: #4c1d95;
+}
+ruby.chinese .word-token.r {
+  background: var(--r);
+  color: #78350f;
+}
+ruby.chinese .word-token.nm {
+  background: var(--nm);
+  color: #7c2d12;
+}
+ruby.chinese .word-token.p {
+  background: var(--p);
+  color: #164e63;
+}
+ruby.chinese .word-token.c {
+  background: var(--c);
+  color: #701a75;
+}
+ruby.chinese .word-token.ax {
+  background: var(--ax);
+  color: #4c1d95;
+}
+ruby.chinese .word-token.mp {
+  background: var(--mp);
+  color: #78350f;
+}
+ruby.chinese .word-token.q {
+  background: var(--q);
+  color: #064e3b;
+}
+ruby.chinese .word-token.o {
+  background: var(--o);
+  color: #334155;
+}
+ruby.chinese .word-token.x {
+  background: var(--x);
+  color: #475569;
+}
+
+.punctuation-token {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: bottom; /* Fix alignment to baseline */
+}
+
+/* Enhanced styling for color-coded mode */
+ruby.chinese.n,
+ruby.chinese.v,
+ruby.chinese.adj,
+ruby.chinese.adv,
+ruby.chinese.r,
+ruby.chinese.nm,
+ruby.chinese.p,
+ruby.chinese.c,
+ruby.chinese.ax,
+ruby.chinese.mp,
+ruby.chinese.q,
+ruby.chinese.o,
+ruby.chinese.x {
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin: 0 1px;
+}
+
+/* Clean version styling */
+.clean-version {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.transliterated-version {
+  font-size: 1.2em;
+  padding: 10px;
+}
+
+.chinese-dual-display {
+  margin: 1em 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 15px;
+  background: white;
+}

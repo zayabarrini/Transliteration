@@ -291,37 +291,19 @@ def process_segment(text, language):
     """Process a text segment with the specified language"""
     try:
         if language == "chinese":
-            print("Processing Chinese text segment:", text)
             chinese_result = get_pinyin_annotations(text, color_coded=True)
             from bs4 import BeautifulSoup
-            return BeautifulSoup(chinese_result, 'html.parser')      
-        elif language == "japanese":
-            transliterated = transliterate(text, "japanese")
-            return add_furigana(text, transliterated, "japanese")
-        
-        elif language == "korean":
-            transliterated = transliterate(text, "korean")
-            return add_furigana(text, transliterated, "korean")
-        
-        elif language == "hindi":
-            transliterated = transliterate(text, "hindi")
-            return add_furigana(text, transliterated, "hindi")
-        
-        elif language == "arabic":
-            transliterated = transliterate(text, "arabic")
-            return add_furigana(text, transliterated, "arabic")
-        
-        elif language == "russian":
-            transliterated = transliterate(text, "russian")
-            return add_furigana(text, transliterated, "russian")
-        
+            return BeautifulSoup(chinese_result, 'html.parser')       
         else:
-            return text  # Return original for unsupported languages
+            # For all other languages, use add_furigana which now includes language classes
+            transliterated = transliterate(text, language)
+            furigana_content = add_furigana(text, transliterated, language)
+            return furigana_content
     
     except Exception as e:
         print(f"Error processing {language} text '{text}': {e}")
         return text  # Fallback to original text
-    
+        
 # def process_html_content(soup, language, keep_translations=True):
 #     for element in soup.descendants:
 #         if not (isinstance(element, NavigableString) and element.strip()):
@@ -386,8 +368,8 @@ def process_file(input_file, language, enable_transliteration, epub_folder=None)
 
     # Apply transliteration if enabled
     if enable_transliteration:
-        # process_html_content_multilingual(soup, language)
-        process_html_content(soup, language)
+        process_html_content_multilingual(soup, language)
+        # process_html_content(soup, language)
 
     # Add CSS if epub_folder is provided
     if epub_folder:

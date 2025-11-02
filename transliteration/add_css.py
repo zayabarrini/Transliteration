@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from bs4 import BeautifulSoup
 
 
@@ -19,16 +20,8 @@ def ensure_styles_folder(epub_folder):
 
 def get_css_file(language, epub_folder):
     """Returns the destination path for the CSS file after copying it to the EPUB folder"""
-    css_mapping = {
-        "japanese": "styles-jp.css",
-        "chinese": "styles-ch.css",
-        "arabic": "styles-ar.css",
-        "hindi": "styles-hi.css",
-        "default": "styles.css",
-    }
-
-    # Get the source CSS path
-    css_filename = css_mapping.get(language, css_mapping["default"])
+    # Always use the unified multilingual CSS file
+    css_filename = "styles-multilingual.css"
     source_path = f"/home/zaya/Downloads/Zayas/ZayasTransliteration/transliteration/{css_filename}"
 
     # Determine destination folder

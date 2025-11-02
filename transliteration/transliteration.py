@@ -455,7 +455,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                     # Template for grammatical class display
                     if word_pinyin and word_pinyin != word:
                         template = Template(
-                            '<ruby class="$syntax">'
+                            '<ruby class="chinese $syntax">'
                             '<span class="grammatical-class">$grammatical_class</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '<rt class="pinyin">$pinyin</rt>'
@@ -469,7 +469,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                         ))
                     else:
                         template = Template(
-                            '<ruby class="$syntax">'
+                            '<ruby class="chinese $syntax">'
                             '<span class="grammatical-class">$grammatical_class</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '</ruby>'
@@ -483,7 +483,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                     # Template for original color-coded mode
                     if word_pinyin and word_pinyin != word:
                         template = Template(
-                            '<ruby class="$syntax">'
+                            '<ruby class="chinese $syntax">'
                             '<span class="syntax-label">$syntax</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '<rt class="pinyin">$pinyin</rt>'
@@ -496,7 +496,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                         ))
                     else:
                         template = Template(
-                            '<ruby class="$syntax">'
+                            '<ruby class="chinese $syntax">'
                             '<span class="syntax-label">$syntax</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '</ruby>'
@@ -508,7 +508,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
             else:
                 # Simple mode: just word with pinyin
                 if word_pinyin and word_pinyin != word:
-                    result.append(f"<ruby>{word}<rt>{word_pinyin}</rt></ruby>")
+                    result.append(f'<ruby class="chinese">{word}<rt>{word_pinyin}</rt></ruby>')
                 else:
                     result.append(word)
 
@@ -582,7 +582,7 @@ def process_japanese_segment(text, soup):
         if not original.strip():
             container.append(original)
         else:
-            ruby_tag = soup.new_tag("ruby")
+            ruby_tag = soup.new_tag("ruby", **{"class": "japanese"} )
             ruby_tag.append(original)
             rt_tag = soup.new_tag("rt")
             rt_tag.string = romaji
@@ -592,79 +592,155 @@ def process_japanese_segment(text, soup):
     return container
 
 
+from string import Template
+
+
+def is_korean_char(char):
+    """Check if a character is a Korean Hangul character"""
+    import re
+    korean_pattern = re.compile(r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]')
+    return bool(korean_pattern.match(char))
+
 # Function to add furigana to text
 def add_furigana(text, transliteration, language):
     language = language.lower()
     language = language_map.get(language, language)
     if not text:
         return ""
+    
     filtered_text = filter_language_text(text, language)
     if not filtered_text:
         return text  # Return original if no language-specific text
-    # tokens = text
+    
     exclude_chars = [
-        " ",
-        ".",
-        ",",
-        "!",
-        "?",
-        "。",
-        "，",
-        "-",
-        "！",
-        "？",
-        "、",
-        "「",
-        "」",
-        "『",
-        "』",
-        "（",
-        "）",
-        "《",
-        "》",
+        " ", ".", ",", "!", "?", "。", "，", "-", "！", "？", "、", 
+        "「", "」", "『", "』", "（", "）", "《", "》",
     ]
-    # if language == "japanese":
-    #     trans_words = [item['hepburn'] for item in transliteration]
-    # el
+    
+    # Create a BeautifulSoup object to work with
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup("", "html.parser")
+    
+    # Template for ruby tags with language class
+    ruby_template = Template('<ruby class="$lang">$char<rt>$trans</rt></ruby>')
+    
     if language == "korean":
-        trans_words = transliteration  # Use the list of tuples directly
+        trans_words = transliteration
+        # trans_words should already be a list of (char, trans) tuples
+        if not isinstance(trans_words, list):
+            trans_words = [(c, c) for c in text]
+
+        # Group Korean characters into words (sequences of Hangul characters)
+        current_word = []
+        current_trans = []
+        
+        for char, trans in trans_words:
+            if is_korean_char(char) and char not in exclude_chars:
+                # Continue building the current word
+                current_word.append(char)
+                current_trans.append(trans)
+            else:
+                # Process the current word if it exists
+                if current_word:
+                    word_text = ''.join(current_word)
+                    word_trans = ''.join(current_trans)
+                    # Create ruby tag for the complete word
+                    ruby_html = ruby_template.substitute(lang=language, char=word_text, trans=word_trans)
+                    ruby_soup = BeautifulSoup(ruby_html, 'html.parser')
+                    soup.append(ruby_soup)
+                    current_word = []
+                    current_trans = []
+                
+                # Add non-Korean characters or excluded chars as-is
+                if char in exclude_chars:
+                    soup.append(char)
+                else:
+                    # For non-Korean characters, create individual ruby tags
+                    clean_trans = trans.strip() if trans else char
+                    ruby_html = ruby_template.substitute(lang=language, char=char, trans=clean_trans)
+                    ruby_soup = BeautifulSoup(ruby_html, 'html.parser')
+                    soup.append(ruby_soup)
+        
+        # Don't forget to process any remaining word
+        if current_word:
+            word_text = ''.join(current_word)
+            word_trans = ''.join(current_trans)
+            ruby_html = ruby_template.substitute(lang=language, char=word_text, trans=word_trans)
+            ruby_soup = BeautifulSoup(ruby_html, 'html.parser')
+            soup.append(ruby_soup)
+                
     elif language in ["hindi", "arabic", "russian"]:
-       trans_words = transliteration.split()
+        trans_words = transliteration.split() if isinstance(transliteration, str) else transliteration
+        
+        if filtered_text != text:
+            # Process only the language-specific parts
+            processed_part = add_furigana(filtered_text, transliteration, language)
+            # For mixed content, return as string for replacement
+            return str(processed_part) if hasattr(processed_part, 'prettify') else processed_part
+        
+        # Language-specific excludes
+        language_excludes = {
+            "hindi": ["।", "॥", "़", "्"],
+            "arabic": ["ـ", "َ", "ُ", "ِ", "ّ", "ْ"],
+            "russian": ["«", "»", "—", "…"],
+        }
+        current_excludes = exclude_chars + language_excludes.get(language, [])
+        
+        segmented_words = filtered_text.split()
+        trans_index = 0
+        
+        for word in segmented_words:
+            if all(char in current_excludes for char in word):
+                # Add plain text with space
+                if soup.contents:
+                    soup.append(" ")
+                soup.append(word)
+                continue
 
-    # if language == "japanese" and is_english(text):
-    #     return text
+            if trans_index < len(trans_words):
+                translit = trans_words[trans_index]
+                trans_index += 1
+                clean_translit = "".join([c for c in str(translit) if c not in current_excludes])
 
-    furigana_text = []
-    trans_index = 0
-    if language == "japanese":
-        # Japanese character ranges: Hiragana, Katakana, Kanji, and whitespace
+                if any(c not in current_excludes for c in word):
+                    # Create ruby tag with language class
+                    if soup.contents:
+                        soup.append(" ")
+                    ruby_html = ruby_template.substitute(lang=language, char=word, trans=clean_translit)
+                    ruby_soup = BeautifulSoup(ruby_html, 'html.parser')
+                    soup.append(ruby_soup)
+                else:
+                    if soup.contents:
+                        soup.append(" ")
+                    soup.append(word)
+            else:
+                if soup.contents:
+                    soup.append(" ")
+                soup.append(word)
+                
+    elif language == "chinese":
+        # Chinese is handled separately in get_pinyin_annotations
+        return transliteration
+        
+    elif language == "japanese":
+        # Japanese processing remains the same
         japanese_pattern = re.compile(r"([\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\s]+)")
-
-        # Split text into Japanese and non-Japanese segments
         segments = japanese_pattern.split(text)
 
-        # If no Japanese text found, return original
         if len(segments) == 1:
             return text
-        from bs4 import BeautifulSoup
 
-        soup = BeautifulSoup("", "html.parser")
         result = []
-
         for segment in segments:
             if not segment:
                 continue
 
-            # Check if this segment is Japanese
             if japanese_pattern.fullmatch(segment):
-                # Process Japanese text
                 ruby_segment = process_japanese_segment(segment, soup)
                 result.append(ruby_segment)
             else:
-                # Keep non-Japanese as-is
                 result.append(segment)
 
-        # Combine all segments
         if len(result) == 1:
             return result[0]
         else:
@@ -675,65 +751,8 @@ def add_furigana(text, transliteration, language):
                 else:
                     combined.append(item)
             return combined
-    elif language == "korean":
-        # trans_words should already be a list of (char, trans) tuples
-        # Ensure we have valid data
-        if not isinstance(trans_words, list):
-            trans_words = [(c, c) for c in text]
 
-        for char, trans in trans_words:
-            if char in exclude_chars:
-                furigana_text.append(char)
-            else:
-                # Clean up the transliteration if needed
-                clean_trans = trans.strip()
-                if not clean_trans:
-                    clean_trans = char
-                furigana_text.append(f"<ruby>{char}<rt>{clean_trans}</rt></ruby>")
-    elif language == "chinese":
-        # pinyin = get_pinyin_annotations(text)
-        # return pinyin
-        return transliteration
-    elif language in ["hindi", "arabic", "russian"]:
-        # Handle language-specific processing for filtered text
-        if filtered_text != text:
-            # Process only the language-specific parts
-            processed_part = add_furigana(filtered_text, transliteration, language)
-            return text.replace(filtered_text, processed_part)
-        
-        # Original processing logic for pure language text
-        segmented_words = filtered_text.split()
-        language_excludes = {
-            "hindi": ["।", "॥", "़", "्"],
-            "arabic": ["ـ", "َ", "ُ", "ِ", "ّ", "ْ"],
-            "russian": ["«", "»", "—", "…"],
-        }
-        exclude_chars = exclude_chars + language_excludes.get(language, [])
-        
-        furigana_text = []
-        trans_index = 0
-        trans_words = transliteration.split() if isinstance(transliteration, str) else transliteration
-        
-        for word in segmented_words:
-            if all(char in exclude_chars for char in word):
-                furigana_text.append(word)
-                continue
-
-            if trans_index < len(trans_words):
-                translit = trans_words[trans_index]
-                trans_index += 1
-                clean_translit = "".join([c for c in str(translit) if c not in exclude_chars])
-
-                if any(c not in exclude_chars for c in word):
-                    furigana_text.append(f"<ruby>{word}<rt>{clean_translit}</rt></ruby>")
-                else:
-                    furigana_text.append(word)
-            else:
-                furigana_text.append(word)
-
-        return " ".join(furigana_text)
-
-    return "".join(furigana_text)
+    return soup
 
 
 def transliterate_chinese(text, mode="color"):

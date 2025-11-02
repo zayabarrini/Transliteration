@@ -18,6 +18,8 @@ python_version = "3.12"
 
 # Main usage
 
+![Multilingual Transliteration](documentation/img/ZBL22.png)
+
 ## Epub Versions
 
 ### Transliteration: transliterate_epub(epub_path, language)
