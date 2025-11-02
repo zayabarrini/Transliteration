@@ -22,6 +22,8 @@ python_version = "3.12"
 
 ### Transliteration: transliterate_epub(epub_path, language)
 
+Use process_html_content_multilingual for texts with multiple languages for transliteration
+
 ### merge_multiple_epubs(epub_paths, output_path, languages, merge_order)
 
 Merge different dual translations of the same Epub into one
