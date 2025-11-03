@@ -1,23 +1,27 @@
+import os
 import re
 import shutil
 import sys
+
 from bs4 import BeautifulSoup
+
 from transliteration.epubManagementNew import (
-    extract_epub,
     create_epub,
+    extract_epub,
     find_content_folder,
     get_content_files,
 )
-import os
 
 # Enhanced multilingual sentence splitting regex
 SPLIT_REGEX = re.compile(
     r"""
     (?<!\w\.\w.)          # Don't split after abbreviations like U.S.A.
     (?<![A-Z][a-z]\.)    # Don't split after abbreviations like Dr.
-    (?<=[.!?…:;。！？])     # Split after sentence-ending punctuation (including CJK)
-    (?:\s+|(?=[’”"'»›”])) # Followed by whitespace or closing quotes
+    (?<=[.!?…:;。！？—])   # Split after sentence-ending punctuation (including CJK and em dash)
+    (?:\s+|$)             # Followed by whitespace OR end of string
     (?![.!?…:;。！？])      # But not if it's another sentence ender
+    |                     # OR
+    \s*—\s*            # Split on em dash with optional whitespace
 """,
     re.VERBOSE,
 )

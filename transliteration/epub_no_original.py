@@ -13,11 +13,11 @@ from transliteration.epubManagement import (
 from transliteration.epubTransliteration import get_language_from_filename
 
 # Default configuration
-# DEFAULT_CONFIG = {
-#         "option": 1,
-#     }
+DEFAULT_CONFIG = {
+        "option": 1,
+    }
 
-DEFAULT_CONFIG = {"option": 3, "language_to_keep": "zh", "language_after": "ru"}
+# DEFAULT_CONFIG = {"option": 3, "language_to_keep": "zh", "language_after": "ru"}
 
 # Predefined configurations for common use cases
 # Add to your CONFIG_PRESETS

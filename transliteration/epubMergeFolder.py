@@ -4,6 +4,8 @@ import re
 
 from transliteration.epubMerge import merge_multiple_epubs
 
+# from transliteration.epubMergeStack import merge_multiple_epubs_simple
+
 
 def prep_epubs_by_pattern(folder_path, file_patterns, merge_order=None, output_suffix="ml"):
     """
@@ -102,10 +104,11 @@ if __name__ == "__main__":
         epub_paths, output_path, languages, merge_order = prep_epubs_by_pattern(
             folder_path=folder_path,
             file_patterns=file_patterns,
-            merge_order=['de', 'ru', 'ch'],  # Use 'ch' here
+            merge_order=['ar', 'hi', 'ja'],  # Use 'ch' here
             output_suffix="ml"
         )
-        merge_multiple_epubs(epub_paths, output_path, languages, merge_order)
+        # merge_multiple_epubs(epub_paths, output_path, languages, merge_order)
+        merge_multiple_epubs_simple(epub_paths, output_path, languages, merge_order)
     except ValueError as e:
         print(f"Error: {e}")
     
