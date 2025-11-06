@@ -45,6 +45,9 @@ ebooklib = "*"
 beautifulsoup4 = "*"
 chardet = "*"
 pyttsx3 = "*"
+opencv-python = "*"
+tqdm = "*"
+numpy = "*"
 
 [dev-packages]
 

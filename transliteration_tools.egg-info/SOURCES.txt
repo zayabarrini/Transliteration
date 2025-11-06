@@ -23,14 +23,15 @@ subtitles/zip2zip.py
 subtitles/zip2zipCh.py
 subtitles/zip2zipMultilingual.py
 subtitles/zip2zipMultilingual_old.py
-tests/tests.py
-tests/tests_idea.py
 transliteration/__init__.py
 transliteration/add_css.py
 transliteration/add_metadata_and_cover.py
 transliteration/ch2py.py
 transliteration/epubManagement.py
 transliteration/epubManagementNew.py
+transliteration/epubMerge.py
+transliteration/epubMergeFolder.py
+transliteration/epubMergeStack.py
 transliteration/epubSplit.py
 transliteration/epubSplit150.py
 transliteration/epubSplitKeepTags.py

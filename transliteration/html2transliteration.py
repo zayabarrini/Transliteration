@@ -368,8 +368,8 @@ def process_file(input_file, language, enable_transliteration, epub_folder=None)
 
     # Apply transliteration if enabled
     if enable_transliteration:
-        process_html_content_multilingual(soup, language)
-        # process_html_content(soup, language)
+        # process_html_content_multilingual(soup, language)
+        process_html_content(soup, language)
 
     # Add CSS if epub_folder is provided
     if epub_folder:

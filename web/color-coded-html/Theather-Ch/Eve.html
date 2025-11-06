@@ -1,0 +1,3221 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5007/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Syntax Analyzer</title>
+    <link rel="stylesheet" href="./Eve_files/styles-color-coded-ch.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Syntax Analyzer</h1>
+        
+        <div class="legend">
+            <span class="chip S">Subject (S)</span>
+            <span class="chip O">Object (O)</span>
+            <span class="chip V">Verb (V)</span>
+            <span class="chip A">Adjunct: Time/Place/Manner (A)</span>
+            <span class="chip C">Conjunction/Subordinator (C)</span>
+            <span class="chip P">Preposition/Complement (P)</span>
+            <span class="chip X">Other (X)</span>
+        </div>
+        
+        <div class="input-section">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="text">Enter Text:</label>
+                    <textarea name="text" id="text" placeholder="Enter Chinese text here...">我给了你解释的机会。
+
+你只是当着我的面撒谎。
+
+我不这样做。
+
+我不会让你毁了我。
+
+并在此过程中冒着我整个职业生涯的风险？
+
+你真的以为我会那么做吗？
+
+我不记得这一切感觉有多熟悉？
+
+你不能再这样做了。
+
+你不能利用员工并期望他们留下来。
+
+也许这就是你一直以来的样子，而我只是对此视而不见。
+
+所有的野心只是为了弥补你内心深处知道自己没有什么好东西的事实。
+
+为我期待更多而感到羞耻。</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <select name="language" id="language">
+                        <option value="chinese" selected="">Chinese</option>
+                        <option value="japanese">Japanese</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Analyze Syntax</button>
+            </form>
+        </div>
+        
+        
+        
+        
+        <div class="result-section">
+            <div class="sentence-display">
+                <div class="sentence-title">Original Chinese Text:</div>
+                <div class="word-breakdown">
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Give</rt>
+                                        <span class="word-token P">给</span>
+                                        <rt class="pinyin">gěi</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Got it</rt>
+                                        <span class="word-token X">了</span>
+                                        <rt class="pinyin">le</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">explain</rt>
+                                        <span class="word-token V">解释</span>
+                                        <rt class="pinyin">jiě shì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Chance</rt>
+                                        <span class="word-token O">机会</span>
+                                        <rt class="pinyin">jī huì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">only</rt>
+                                        <span class="word-token C">只是</span>
+                                        <rt class="pinyin">zhǐ shì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">in front of</rt>
+                                        <span class="word-token P">当着</span>
+                                        <rt class="pinyin">dāng zhe</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token O">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">noodle</rt>
+                                        <span class="word-token O">面</span>
+                                        <rt class="pinyin">miàn</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">lie</rt>
+                                        <span class="word-token V">撒谎</span>
+                                        <rt class="pinyin">sā huǎng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">No</rt>
+                                        <span class="word-token A">不</span>
+                                        <rt class="pinyin">bù</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">so</rt>
+                                        <span class="word-token S">这样</span>
+                                        <rt class="pinyin">zhè yàng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Do</rt>
+                                        <span class="word-token V">做</span>
+                                        <rt class="pinyin">zuò</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Won't</rt>
+                                        <span class="word-token V">不会</span>
+                                        <rt class="pinyin">bú huì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">let</rt>
+                                        <span class="word-token V">让</span>
+                                        <rt class="pinyin">ràng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token O">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">destroy</rt>
+                                        <span class="word-token V">毁</span>
+                                        <rt class="pinyin">huǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Got it</rt>
+                                        <span class="word-token X">了</span>
+                                        <rt class="pinyin">le</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">and</rt>
+                                        <span class="word-token C">并</span>
+                                        <rt class="pinyin">bìng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">exist</rt>
+                                        <span class="word-token P">在</span>
+                                        <rt class="pinyin">zài</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">this</rt>
+                                        <span class="word-token O">此</span>
+                                        <rt class="pinyin">cǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">process</rt>
+                                        <span class="word-token O">过程</span>
+                                        <rt class="pinyin">guò chéng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">middle</rt>
+                                        <span class="word-token A">中</span>
+                                        <rt class="pinyin">zhōng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">risk</rt>
+                                        <span class="word-token V">冒</span>
+                                        <rt class="pinyin">mào</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">With</rt>
+                                        <span class="word-token X">着</span>
+                                        <rt class="pinyin">zhe</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">entire</rt>
+                                        <span class="word-token A">整个</span>
+                                        <rt class="pinyin">zhěng gè</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Career</rt>
+                                        <span class="word-token O">职业生涯</span>
+                                        <rt class="pinyin">zhí yè shēng yá</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">risk</rt>
+                                        <span class="word-token O">风险</span>
+                                        <rt class="pinyin">fēng xiǎn</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">real</rt>
+                                        <span class="word-token A">真的</span>
+                                        <rt class="pinyin">zhēn de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Think</rt>
+                                        <span class="word-token C">以为</span>
+                                        <rt class="pinyin">yǐ wéi</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I can</rt>
+                                        <span class="word-token O">我会</span>
+                                        <rt class="pinyin">wǒ huì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">So</rt>
+                                        <span class="word-token S">那么</span>
+                                        <rt class="pinyin">nà me</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Do</rt>
+                                        <span class="word-token V">做</span>
+                                        <rt class="pinyin">zuò</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">?</rt>
+                                        <span class="word-token P">吗</span>
+                                        <rt class="pinyin">ma</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">No</rt>
+                                        <span class="word-token A">不</span>
+                                        <rt class="pinyin">bù</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Remember</rt>
+                                        <span class="word-token V">记得</span>
+                                        <rt class="pinyin">jì de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">this</rt>
+                                        <span class="word-token O">这</span>
+                                        <rt class="pinyin">zhè</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">everything</rt>
+                                        <span class="word-token S">一切</span>
+                                        <rt class="pinyin">yī qiè</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Feel</rt>
+                                        <span class="word-token O">感觉</span>
+                                        <rt class="pinyin">gǎn jué</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">have</rt>
+                                        <span class="word-token V">有</span>
+                                        <rt class="pinyin">yǒu</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">many</rt>
+                                        <span class="word-token A">多</span>
+                                        <rt class="pinyin">duō</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">familiar</rt>
+                                        <span class="word-token V">熟悉</span>
+                                        <rt class="pinyin">shú xī</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">cannot</rt>
+                                        <span class="word-token V">不能</span>
+                                        <rt class="pinyin">bù néng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Again</rt>
+                                        <span class="word-token A">再</span>
+                                        <rt class="pinyin">zài</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">so</rt>
+                                        <span class="word-token S">这样</span>
+                                        <rt class="pinyin">zhè yàng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Do</rt>
+                                        <span class="word-token V">做</span>
+                                        <rt class="pinyin">zuò</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Got it</rt>
+                                        <span class="word-token X">了</span>
+                                        <rt class="pinyin">le</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">cannot</rt>
+                                        <span class="word-token V">不能</span>
+                                        <rt class="pinyin">bù néng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">use</rt>
+                                        <span class="word-token O">利用</span>
+                                        <rt class="pinyin">lì yòng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">staff</rt>
+                                        <span class="word-token O">员工</span>
+                                        <rt class="pinyin">yuán gōng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">and</rt>
+                                        <span class="word-token C">并</span>
+                                        <rt class="pinyin">bìng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">expect</rt>
+                                        <span class="word-token V">期望</span>
+                                        <rt class="pinyin">qī wàng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">them</rt>
+                                        <span class="word-token O">他们</span>
+                                        <rt class="pinyin">tā men</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">stay</rt>
+                                        <span class="word-token V">留下来</span>
+                                        <rt class="pinyin">liú xià lái</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Maybe</rt>
+                                        <span class="word-token A">也许</span>
+                                        <rt class="pinyin">yě xǔ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">this</rt>
+                                        <span class="word-token S">这</span>
+                                        <rt class="pinyin">zhè</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">that is</rt>
+                                        <span class="word-token A">就是</span>
+                                        <rt class="pinyin">jiù shì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token S">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Always</rt>
+                                        <span class="word-token A">一直</span>
+                                        <rt class="pinyin">yì zhí</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">since</rt>
+                                        <span class="word-token A">以来</span>
+                                        <rt class="pinyin">yǐ lái</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">appearance</rt>
+                                        <span class="word-token O">样子</span>
+                                        <rt class="pinyin">yàng zi</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">，</span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">and</rt>
+                                        <span class="word-token C">而</span>
+                                        <rt class="pinyin">ér</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token S">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">only</rt>
+                                        <span class="word-token C">只是</span>
+                                        <rt class="pinyin">zhǐ shì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">In this regard</rt>
+                                        <span class="word-token A">对此</span>
+                                        <rt class="pinyin">duì cǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">turn a blind eye</rt>
+                                        <span class="word-token X">视而不见</span>
+                                        <rt class="pinyin">shì ér bù jiàn</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">all</rt>
+                                        <span class="word-token A">所有</span>
+                                        <rt class="pinyin">suǒ yǒu</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">ambition</rt>
+                                        <span class="word-token O">野心</span>
+                                        <rt class="pinyin">yě xīn</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">only</rt>
+                                        <span class="word-token C">只是</span>
+                                        <rt class="pinyin">zhǐ shì</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">for</rt>
+                                        <span class="word-token P">为了</span>
+                                        <rt class="pinyin">wèi le</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">make up</rt>
+                                        <span class="word-token V">弥补</span>
+                                        <rt class="pinyin">mí bǔ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">you</rt>
+                                        <span class="word-token O">你</span>
+                                        <rt class="pinyin">nǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">deep inside</rt>
+                                        <span class="word-token X">内心深处</span>
+                                        <rt class="pinyin">nèi xīn shēn chù</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Know</rt>
+                                        <span class="word-token V">知道</span>
+                                        <rt class="pinyin">zhī dào</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Own</rt>
+                                        <span class="word-token O">自己</span>
+                                        <rt class="pinyin">zì jǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">No</rt>
+                                        <span class="word-token V">没有</span>
+                                        <rt class="pinyin">méi yǒu</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">What</rt>
+                                        <span class="word-token O">什么</span>
+                                        <rt class="pinyin">shén me</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">good</rt>
+                                        <span class="word-token A">好</span>
+                                        <rt class="pinyin">hǎo</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">thing</rt>
+                                        <span class="word-token O">东西</span>
+                                        <rt class="pinyin">dōng xī</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">of</rt>
+                                        <span class="word-token X">的</span>
+                                        <rt class="pinyin">de</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">fact</rt>
+                                        <span class="word-token O">事实</span>
+                                        <rt class="pinyin">shì shí</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">for</rt>
+                                        <span class="word-token P">为</span>
+                                        <rt class="pinyin">wèi</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">I</rt>
+                                        <span class="word-token O">我</span>
+                                        <rt class="pinyin">wǒ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">expectations</rt>
+                                        <span class="word-token V">期待</span>
+                                        <rt class="pinyin">qī dài</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">Even</rt>
+                                        <span class="word-token A">更</span>
+                                        <rt class="pinyin">gèng</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">many</rt>
+                                        <span class="word-token A">多</span>
+                                        <rt class="pinyin">duō</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">and</rt>
+                                        <span class="word-token C">而</span>
+                                        <rt class="pinyin">ér</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">feel</rt>
+                                        <span class="word-token V">感到</span>
+                                        <rt class="pinyin">gǎn dào</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <ruby>
+                                        <rt class="translation">shame</rt>
+                                        <span class="word-token A">羞耻</span>
+                                        <rt class="pinyin">xiū chǐ</rt>
+                                    </ruby>
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                </div>
+                
+                <div class="translation-display">
+                    <span class="translation-label">Full translation word by word:</span>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    Give 
+                                
+                            
+                                
+                                    Got it 
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    explain 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    Chance 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    only 
+                                
+                            
+                                
+                                    in front of 
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    noodle 
+                                
+                            
+                                
+                                    lie 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    No 
+                                
+                            
+                                
+                                    so 
+                                
+                            
+                                
+                                    Do 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    Won't 
+                                
+                            
+                                
+                                    let 
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    destroy 
+                                
+                            
+                                
+                                    Got it 
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    and 
+                                
+                            
+                                
+                                    exist 
+                                
+                            
+                                
+                                    this 
+                                
+                            
+                                
+                                    process 
+                                
+                            
+                                
+                                    middle 
+                                
+                            
+                                
+                                    risk 
+                                
+                            
+                                
+                                    With 
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    entire 
+                                
+                            
+                                
+                                    Career 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    risk 
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    real 
+                                
+                            
+                                
+                                    Think 
+                                
+                            
+                                
+                                    I can 
+                                
+                            
+                                
+                                    So 
+                                
+                            
+                                
+                                    Do 
+                                
+                            
+                                
+                                    ? 
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    No 
+                                
+                            
+                                
+                                    Remember 
+                                
+                            
+                                
+                                    this 
+                                
+                            
+                                
+                                    everything 
+                                
+                            
+                                
+                                    Feel 
+                                
+                            
+                                
+                                    have 
+                                
+                            
+                                
+                                    many 
+                                
+                            
+                                
+                                    familiar 
+                                
+                            
+                                
+                                    <span class="punctuation-token">？</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    cannot 
+                                
+                            
+                                
+                                    Again 
+                                
+                            
+                                
+                                    so 
+                                
+                            
+                                
+                                    Do 
+                                
+                            
+                                
+                                    Got it 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    cannot 
+                                
+                            
+                                
+                                    use 
+                                
+                            
+                                
+                                    staff 
+                                
+                            
+                                
+                                    and 
+                                
+                            
+                                
+                                    expect 
+                                
+                            
+                                
+                                    them 
+                                
+                            
+                                
+                                    stay 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    Maybe 
+                                
+                            
+                                
+                                    this 
+                                
+                            
+                                
+                                    that is 
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    Always 
+                                
+                            
+                                
+                                    since 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    appearance 
+                                
+                            
+                                
+                                    <span class="punctuation-token">，</span>
+                                
+                            
+                                
+                                    and 
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    only 
+                                
+                            
+                                
+                                    In this regard 
+                                
+                            
+                                
+                                    turn a blind eye 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    all 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    ambition 
+                                
+                            
+                                
+                                    only 
+                                
+                            
+                                
+                                    for 
+                                
+                            
+                                
+                                    make up 
+                                
+                            
+                                
+                                    you 
+                                
+                            
+                                
+                                    deep inside 
+                                
+                            
+                                
+                                    Know 
+                                
+                            
+                                
+                                    Own 
+                                
+                            
+                                
+                                    No 
+                                
+                            
+                                
+                                    What 
+                                
+                            
+                                
+                                    good 
+                                
+                            
+                                
+                                    thing 
+                                
+                            
+                                
+                                    of 
+                                
+                            
+                                
+                                    fact 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                        <div class="sentence-line">
+                            
+                                
+                                    <span class="punctuation-token"> </span>
+                                
+                            
+                                
+                                    for 
+                                
+                            
+                                
+                                    I 
+                                
+                            
+                                
+                                    expectations 
+                                
+                            
+                                
+                                    Even 
+                                
+                            
+                                
+                                    many 
+                                
+                            
+                                
+                                    and 
+                                
+                            
+                                
+                                    feel 
+                                
+                            
+                                
+                                    shame 
+                                
+                            
+                                
+                                    <span class="punctuation-token">。</span>
+                                
+                            
+                        </div>
+                    
+                </div>
+                
+                <div class="translation-display">
+                    <span class="translation-label">Full translation:</span>
+                    I gave you a chance to explain.
+
+You just lied to my face.
+
+I don't do that.
+
+I won't let you destroy me.
+
+And risking my entire career in the process?
+
+Do you really think I would do that?
+
+I don’t remember how familiar this all felt?
+
+You can't do this anymore.
+
+You can't take advantage of employees and expect them to stay.
+
+Maybe this is how you've always been and I'm just blind to it.
+
+All ambition is just to make up for the fact that deep down you know you have nothing good to offer.
+
+Shame on me for expecting more.
+                </div>
+            </div>
+            
+            <table class="syntax-table">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Pinyin</th>
+                        <th>Translation</th>
+                        <th>POS Tag</th>
+                        <th>Syntax Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>给</strong></td>
+                        <td>gěi</td>
+                        <td>Give</td>
+                        <td>
+                            <code class="pos-tag">p</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>了</strong></td>
+                        <td>le</td>
+                        <td>Got it</td>
+                        <td>
+                            <code class="pos-tag">ul</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>解释</strong></td>
+                        <td>jiě shì</td>
+                        <td>explain</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>机会</strong></td>
+                        <td>jī huì</td>
+                        <td>Chance</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>只是</strong></td>
+                        <td>zhǐ shì</td>
+                        <td>only</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>当着</strong></td>
+                        <td>dāng zhe</td>
+                        <td>in front of</td>
+                        <td>
+                            <code class="pos-tag">p</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>面</strong></td>
+                        <td>miàn</td>
+                        <td>noodle</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>撒谎</strong></td>
+                        <td>sā huǎng</td>
+                        <td>lie</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>不</strong></td>
+                        <td>bù</td>
+                        <td>No</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>这样</strong></td>
+                        <td>zhè yàng</td>
+                        <td>so</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>做</strong></td>
+                        <td>zuò</td>
+                        <td>Do</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>不会</strong></td>
+                        <td>bú huì</td>
+                        <td>Won't</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>让</strong></td>
+                        <td>ràng</td>
+                        <td>let</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>毁</strong></td>
+                        <td>huǐ</td>
+                        <td>destroy</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>了</strong></td>
+                        <td>le</td>
+                        <td>Got it</td>
+                        <td>
+                            <code class="pos-tag">ul</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>并</strong></td>
+                        <td>bìng</td>
+                        <td>and</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>在</strong></td>
+                        <td>zài</td>
+                        <td>exist</td>
+                        <td>
+                            <code class="pos-tag">p</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>此</strong></td>
+                        <td>cǐ</td>
+                        <td>this</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>过程</strong></td>
+                        <td>guò chéng</td>
+                        <td>process</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>中</strong></td>
+                        <td>zhōng</td>
+                        <td>middle</td>
+                        <td>
+                            <code class="pos-tag">f</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>冒</strong></td>
+                        <td>mào</td>
+                        <td>risk</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>着</strong></td>
+                        <td>zhe</td>
+                        <td>With</td>
+                        <td>
+                            <code class="pos-tag">uz</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>整个</strong></td>
+                        <td>zhěng gè</td>
+                        <td>entire</td>
+                        <td>
+                            <code class="pos-tag">b</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>职业生涯</strong></td>
+                        <td>zhí yè shēng yá</td>
+                        <td>Career</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>风险</strong></td>
+                        <td>fēng xiǎn</td>
+                        <td>risk</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>真的</strong></td>
+                        <td>zhēn de</td>
+                        <td>real</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>以为</strong></td>
+                        <td>yǐ wéi</td>
+                        <td>Think</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我会</strong></td>
+                        <td>wǒ huì</td>
+                        <td>I can</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>那么</strong></td>
+                        <td>nà me</td>
+                        <td>So</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>做</strong></td>
+                        <td>zuò</td>
+                        <td>Do</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>吗</strong></td>
+                        <td>ma</td>
+                        <td>?</td>
+                        <td>
+                            <code class="pos-tag">y</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>不</strong></td>
+                        <td>bù</td>
+                        <td>No</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>记得</strong></td>
+                        <td>jì de</td>
+                        <td>Remember</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>这</strong></td>
+                        <td>zhè</td>
+                        <td>this</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>一切</strong></td>
+                        <td>yī qiè</td>
+                        <td>everything</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>感觉</strong></td>
+                        <td>gǎn jué</td>
+                        <td>Feel</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>有</strong></td>
+                        <td>yǒu</td>
+                        <td>have</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>多</strong></td>
+                        <td>duō</td>
+                        <td>many</td>
+                        <td>
+                            <code class="pos-tag">m</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>熟悉</strong></td>
+                        <td>shú xī</td>
+                        <td>familiar</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>不能</strong></td>
+                        <td>bù néng</td>
+                        <td>cannot</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>再</strong></td>
+                        <td>zài</td>
+                        <td>Again</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>这样</strong></td>
+                        <td>zhè yàng</td>
+                        <td>so</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>做</strong></td>
+                        <td>zuò</td>
+                        <td>Do</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>了</strong></td>
+                        <td>le</td>
+                        <td>Got it</td>
+                        <td>
+                            <code class="pos-tag">ul</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>不能</strong></td>
+                        <td>bù néng</td>
+                        <td>cannot</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>利用</strong></td>
+                        <td>lì yòng</td>
+                        <td>use</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>员工</strong></td>
+                        <td>yuán gōng</td>
+                        <td>staff</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>并</strong></td>
+                        <td>bìng</td>
+                        <td>and</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>期望</strong></td>
+                        <td>qī wàng</td>
+                        <td>expect</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>他们</strong></td>
+                        <td>tā men</td>
+                        <td>them</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>留下来</strong></td>
+                        <td>liú xià lái</td>
+                        <td>stay</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>也许</strong></td>
+                        <td>yě xǔ</td>
+                        <td>Maybe</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>这</strong></td>
+                        <td>zhè</td>
+                        <td>this</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>就是</strong></td>
+                        <td>jiù shì</td>
+                        <td>that is</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>一直</strong></td>
+                        <td>yì zhí</td>
+                        <td>Always</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>以来</strong></td>
+                        <td>yǐ lái</td>
+                        <td>since</td>
+                        <td>
+                            <code class="pos-tag">f</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>样子</strong></td>
+                        <td>yàng zi</td>
+                        <td>appearance</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>而</strong></td>
+                        <td>ér</td>
+                        <td>and</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip S">
+                                Subject
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>只是</strong></td>
+                        <td>zhǐ shì</td>
+                        <td>only</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>对此</strong></td>
+                        <td>duì cǐ</td>
+                        <td>In this regard</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>视而不见</strong></td>
+                        <td>shì ér bù jiàn</td>
+                        <td>turn a blind eye</td>
+                        <td>
+                            <code class="pos-tag">i</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>所有</strong></td>
+                        <td>suǒ yǒu</td>
+                        <td>all</td>
+                        <td>
+                            <code class="pos-tag">b</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>野心</strong></td>
+                        <td>yě xīn</td>
+                        <td>ambition</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>只是</strong></td>
+                        <td>zhǐ shì</td>
+                        <td>only</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>为了</strong></td>
+                        <td>wèi le</td>
+                        <td>for</td>
+                        <td>
+                            <code class="pos-tag">p</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>弥补</strong></td>
+                        <td>mí bǔ</td>
+                        <td>make up</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>你</strong></td>
+                        <td>nǐ</td>
+                        <td>you</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>内心深处</strong></td>
+                        <td>nèi xīn shēn chù</td>
+                        <td>deep inside</td>
+                        <td>
+                            <code class="pos-tag">i</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>知道</strong></td>
+                        <td>zhī dào</td>
+                        <td>Know</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>自己</strong></td>
+                        <td>zì jǐ</td>
+                        <td>Own</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>没有</strong></td>
+                        <td>méi yǒu</td>
+                        <td>No</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>什么</strong></td>
+                        <td>shén me</td>
+                        <td>What</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>好</strong></td>
+                        <td>hǎo</td>
+                        <td>good</td>
+                        <td>
+                            <code class="pos-tag">a</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>东西</strong></td>
+                        <td>dōng xī</td>
+                        <td>thing</td>
+                        <td>
+                            <code class="pos-tag">ns</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>的</strong></td>
+                        <td>de</td>
+                        <td>of</td>
+                        <td>
+                            <code class="pos-tag">uj</code>
+                        </td>
+                        <td>
+                            <span class="chip X">
+                                Other
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>事实</strong></td>
+                        <td>shì shí</td>
+                        <td>fact</td>
+                        <td>
+                            <code class="pos-tag">n</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>为</strong></td>
+                        <td>wèi</td>
+                        <td>for</td>
+                        <td>
+                            <code class="pos-tag">p</code>
+                        </td>
+                        <td>
+                            <span class="chip P">
+                                Preposition
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>我</strong></td>
+                        <td>wǒ</td>
+                        <td>I</td>
+                        <td>
+                            <code class="pos-tag">r</code>
+                        </td>
+                        <td>
+                            <span class="chip O">
+                                Object
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>期待</strong></td>
+                        <td>qī dài</td>
+                        <td>expectations</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>更</strong></td>
+                        <td>gèng</td>
+                        <td>Even</td>
+                        <td>
+                            <code class="pos-tag">d</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>多</strong></td>
+                        <td>duō</td>
+                        <td>many</td>
+                        <td>
+                            <code class="pos-tag">m</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>而</strong></td>
+                        <td>ér</td>
+                        <td>and</td>
+                        <td>
+                            <code class="pos-tag">c</code>
+                        </td>
+                        <td>
+                            <span class="chip C">
+                                Conjunction
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>感到</strong></td>
+                        <td>gǎn dào</td>
+                        <td>feel</td>
+                        <td>
+                            <code class="pos-tag">v</code>
+                        </td>
+                        <td>
+                            <span class="chip V">
+                                Verb
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>羞耻</strong></td>
+                        <td>xiū chǐ</td>
+                        <td>shame</td>
+                        <td>
+                            <code class="pos-tag">a</code>
+                        </td>
+                        <td>
+                            <span class="chip A">
+                                Adjunct
+                                
+                            </span>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+
+</body></html>

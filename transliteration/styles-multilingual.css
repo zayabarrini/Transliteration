@@ -70,6 +70,11 @@ ruby.arabic {
   /* Add any Arabic-specific styles here */
   direction: rtl;
 }
+p.arabic {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Amiri', 'Scheherazade', serif;
+}
 
 /* Russian specific styles */
 ruby.russian {
