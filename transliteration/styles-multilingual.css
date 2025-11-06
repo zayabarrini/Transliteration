@@ -70,7 +70,8 @@ ruby.arabic {
   /* Add any Arabic-specific styles here */
   direction: rtl;
 }
-p.arabic {
+
+p[lang='ar'] {
   direction: rtl;
   text-align: right;
   font-family: 'Amiri', 'Scheherazade', serif;
