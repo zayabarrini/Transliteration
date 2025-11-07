@@ -9,6 +9,8 @@ tmux kill-session -t chinese-session 2>/dev/null && echo "✅ Tmux session stopp
 pkill -f "uvicorn main:app" 2>/dev/null && echo "✅ Backend stopped"
 pkill -f "npm run dev" 2>/dev/null && echo "✅ Frontend stopped"
 pkill -f "python3 -m web.webChineseColor-coded" 2>/dev/null && echo "✅ Chinese Analyzer stopped"
+pkill -f "python3 -m web.webTranslator" 2>/dev/null && echo "✅ Web Translator stopped"
+pkill -f "python3 -m web.webTranslator2Language" 2>/dev/null && echo "✅ Web Translator 2 Language stopped"
 
 # Stop docker containers
 cd /home/zaya/Downloads/Zayas/zayas-grammar-db/backend

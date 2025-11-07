@@ -1,28 +1,311 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Text Translator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles3.css') }}">
-</head>
-<body>
-    <div class="input-form">
-        <h1>Text Translator</h1>
-        <form method="POST">
-            <textarea name="text" placeholder="Enter text to translate" required>{{ input_text }}</textarea>
-            <button type="submit">Translate</button>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --dark: #1e1e2c;
+        --light: #f8f9fa;
+        --success: #4cc9f0;
+        --warning: #f72585;
+        --gray: #adb5bd;
+        --gray-light: #e9ecef;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --radius: 12px;
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--dark);
+        min-height: 100vh;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: var(--gray);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .translator-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 30px;
+        margin-bottom: 40px;
+        transition: var(--transition);
+      }
+
+      .translator-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .input-group {
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 1.1rem;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 150px;
+        padding: 15px;
+        border: 2px solid var(--gray-light);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        resize: vertical;
+        transition: var(--transition);
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+
+      .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+      }
+
+      .btn:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .results-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      .language-block {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .language-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .language-block::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: var(--primary);
+      }
+
+      .language-block h3 {
+        color: var(--primary);
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .language-block h3 i {
+        color: var(--primary-light);
+      }
+
+      .original {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--dark);
+        padding: 10px;
+        background: var(--gray-light);
+        border-radius: 8px;
+        min-height: 80px;
+      }
+
+      ruby {
+        ruby-position: under;
+      }
+
+      rt {
+        font-size: 0.7rem;
+        color: var(--gray);
+      }
+
+      .error {
+        color: var(--warning);
+        font-weight: 500;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(67, 97, 238, 0.2);
+        border-left: 4px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 50px;
+        padding: 20px;
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
+
+      .language-flag {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      @media (max-width: 768px) {
+        .results-section {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        .translator-card {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-language"></i> Text Translator</h1>
+        <p class="subtitle">
+          Translate your text into multiple languages with word-by-word breakdown
+        </p>
+      </header>
+
+      <div class="translator-card">
+        <form method="POST" id="translation-form">
+          <div class="input-group">
+            <label for="text-input"><i class="fas fa-keyboard"></i> Enter text to translate:</label>
+            <textarea id="text-input" name="text" placeholder="Type your text here..." required>
+{{ input_text }}</textarea
+            >
+          </div>
+          <button type="submit" class="btn">
+            <i class="fas fa-exchange-alt"></i> Translate Text
+          </button>
         </form>
-    </div>
-    
-    {% if results %}
-    <div class="result">
-        <h2>Translation Results</h2>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Translating your text...</p>
+      </div>
+
+      {% if results %}
+      <div class="results-section">
         {% for result in results %}
         <div class="language-block">
-            <h3>{{ result.language }}</h3>
-            <div class="original">{{ result.translation|safe }}</div>
+          <h3><i class="fas fa-globe-americas"></i> {{ result.language }}</h3>
+          <div class="original">{{ result.translation|safe }}</div>
         </div>
         {% endfor %}
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
-</body>
+
+    <footer>
+      <p>Text Translator &copy; 2023 | Powered by Google Translate API</p>
+    </footer>
+
+    <script>
+      document.getElementById('translation-form').addEventListener('submit', function () {
+        document.getElementById('loading').style.display = 'block';
+      });
+    </script>
+  </body>
 </html>

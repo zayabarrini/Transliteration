@@ -458,7 +458,7 @@ def prep_and_merge_simple(folder_path, file_patterns, merge_order=None, output_s
 
 # Usage example
 if __name__ == "__main__":
-    folder_path = '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t'
+    folder_path = '/home/zaya/Downloads/Zayas/ZayasBooks/t'
     file_patterns = ['*-db-*.epub']
     
     # Example with simple merging

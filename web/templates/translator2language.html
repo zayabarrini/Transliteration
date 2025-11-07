@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2language.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="translator-card">
+            <div class="header">
+                <h1>🌍 Text Translator</h1>
+                <p>Translate text with word-by-word breakdown and full sentence translations</p>
+            </div>
+            
+            <form method="POST" class="translator-form">
+                <div class="form-group">
+                    <label for="text">Text to translate:</label>
+                    <textarea name="text" id="text" placeholder="Enter text to translate..." required>{{ input_text }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="target_lang">Target Language:</label>
+                    <select name="target_lang" id="target_lang" required>
+                        <option value="">Select a language...</option>
+                        {% for lang in languages %}
+                        <option value="{{ lang.code }}" {% if selected_lang == lang.code %}selected{% endif %}>
+                            {{ lang.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="translate-btn">
+                    <span>Translate Text</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 5L4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M14 19L4 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M20 12L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M17 16L20 19L17 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 8L20 5L17 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+            
+            {% if result %}
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Translation Result</h2>
+                    <span class="language-badge">{{ result.language }}</span>
+                </div>
+                
+                <!-- Word-by-word breakdown -->
+                <div class="translation-breakdown">
+                    <h3>Word-by-Word Breakdown</h3>
+                    <div class="breakdown-content">
+                        {% for sentence in result.sentences %}
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words">
+                                {{ sentence.word_by_word|safe }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Full sentence translations -->
+                <div class="full-translations">
+                    <h3>Full Sentence Translations</h3>
+                    <div class="translations-list">
+                        {% for sentence in result.sentences %}
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                {{ sentence.original }}
+                            </div>
+                            <div class="translated-sentence">
+                                {{ sentence.full_translation }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

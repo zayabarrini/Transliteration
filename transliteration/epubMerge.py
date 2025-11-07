@@ -343,16 +343,16 @@ def debug_paragraph_structure(file_path: str, lang: str):
 # Usage examples:
 if __name__ == "__main__":
     epub_paths = [
-        '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-db-de.epub',
-        '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-db-ru.epub',
-        '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-db-fr.epub',
-        '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-db-it.epub',
-        '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-db-ch.epub'
+        '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-db-de.epub',
+        '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-db-ru.epub',
+        '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-db-fr.epub',
+        '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-db-it.epub',
+        '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-db-ch.epub'
     ]
 
     languages = ['de', 'ru', 'fr', 'it', 'zh']  
     merge_order = ['de', 'ru', 'fr', 'it', 'zh']  
-    output_path = '/home/zaya/Downloads/Zayas/ZayasBooks/Language/t/Quotes-Favorite-Movies-ml-de-ru-fr-it-ch.epub'
+    output_path = '/home/zaya/Downloads/Zayas/ZayasBooks/t/Quotes-Favorite-Movies-ml-de-ru-fr-it-ch.epub'
     
     # Optional: Debug the structure first
     # for epub_path, lang in zip(epub_paths, languages):

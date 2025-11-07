@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayaweb/a"
+DIRECTORY="/home/zaya/Downloads/Drag-Race"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
