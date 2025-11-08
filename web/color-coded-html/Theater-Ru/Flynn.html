@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5006/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="./Flynn_files/styles2language.css">
+    <link href="./Flynn_files/css2" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="translator-card">
+            <div class="header">
+                <h1>🌍 Text Translator</h1>
+                <p>Translate text with word-by-word breakdown and full sentence translations</p>
+            </div>
+            
+            <form method="POST" class="translator-form">
+                <div class="form-group">
+                    <label for="text">Text to translate:</label>
+                    <textarea name="text" id="text" placeholder="Enter text to translate..." required="">Frank
+Эта Лорел.
+
+Она всегда сует голову туда, куда ей не место.
+
+Задавать вопросы, которые ее не касаются.
+
+В ту ночь она солгала мне о трофее, украла кольцо королевы бала и даже предположила, что я убил Ребекку.
+
+Flynn, Отец Флинн
+Что вы делаете, когда не уверены?
+
+Это тема моей сегодняшней проповеди.
+
+В прошлом году, когда был убит президент Кеннеди, кто из нас не испытал глубочайшей дезориентации?
+
+Отчаяние?
+
+В какую сторону? Что теперь?
+
+Что я говорю своим детям?
+
+Что я говорю себе?
+
+Это было время, когда люди сидели вместе, связанные общим чувством безнадежности.
+
+Но подумайте об этом.
+
+Ваша связь с ближним была вашим отчаянием.
+
+Это был общественный опыт.
+
+Это было ужасно, но мы были в этом вместе.
+
+Насколько же хуже тогда одинокому мужчине, одинокой женщине, постигнутой личным несчастьем?
+
+«Никто не знает, что я болен». «Никто не знает, что я потерял своего последнего настоящего друга».
+
+«Никто не знает, что я сделал что-то не так».
+
+Представьте себе изоляцию.
+
+Теперь ты видишь мир как из окна.
+
+По одну сторону стекла счастливые, беззаботные люди, а по другую — вы.
+
+Сегодня в церкви есть те, кто точно знает кризис веры, который я описываю, и я хочу вам сказать:
+
+сомнение может быть столь же мощной и устойчивой связью, как и уверенность.
+
+Когда вы потерялись, вы не одиноки.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="target_lang">Target Language:</label>
+                    <select name="target_lang" id="target_lang" required="">
+                        <option value="">Select a language...</option>
+                        
+                        <option value="en">
+                            English
+                        </option>
+                        
+                        <option value="es">
+                            Spanish
+                        </option>
+                        
+                        <option value="fr">
+                            French
+                        </option>
+                        
+                        <option value="de" selected="">
+                            German
+                        </option>
+                        
+                        <option value="it">
+                            Italian
+                        </option>
+                        
+                        <option value="pt">
+                            Portuguese
+                        </option>
+                        
+                        <option value="ru">
+                            Russian
+                        </option>
+                        
+                        <option value="ja">
+                            Japanese
+                        </option>
+                        
+                        <option value="ko">
+                            Korean
+                        </option>
+                        
+                        <option value="zh-cn">
+                            Chinese (Simplified)
+                        </option>
+                        
+                        <option value="ar">
+                            Arabic
+                        </option>
+                        
+                        <option value="hi">
+                            Hindi
+                        </option>
+                        
+                        <option value="tr">
+                            Turkish
+                        </option>
+                        
+                        <option value="nl">
+                            Dutch
+                        </option>
+                        
+                        <option value="sv">
+                            Swedish
+                        </option>
+                        
+                        <option value="pl">
+                            Polish
+                        </option>
+                        
+                        <option value="vi">
+                            Vietnamese
+                        </option>
+                        
+                        <option value="th">
+                            Thai
+                        </option>
+                        
+                        <option value="id">
+                            Indonesian
+                        </option>
+                        
+                        <option value="he">
+                            Hebrew
+                        </option>
+                        
+                    </select>
+                </div>
+                
+                <button type="submit" class="translate-btn">
+                    <span>Translate Text</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 5L4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M14 19L4 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M20 12L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M17 16L20 19L17 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M17 8L20 5L17 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </form>
+            
+            
+            <!-- Floating Invert Button -->
+            
+            
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Translation Result</h2>
+                    <div class="header-controls">
+                        <span class="language-badge">German</span>
+                    </div>
+                </div>
+                
+                <!-- Word-by-word breakdown -->
+                <div class="translation-breakdown">
+                    <h3>Word-by-Word Breakdown</h3>
+                    <div class="breakdown-content">
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Frank<rt>Frank</rt></ruby> <ruby class="word-ruby">Das<rt>Эта</rt></ruby> <ruby class="word-ruby">Lorbeer.<rt>Лорел.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Sie<rt>Она</rt></ruby> <ruby class="word-ruby">Stets<rt>всегда</rt></ruby> <ruby class="word-ruby">Talg<rt>сует</rt></ruby> <ruby class="word-ruby">Kopf<rt>голову</rt></ruby> <ruby class="word-ruby">Dort,<rt>туда,</rt></ruby> <ruby class="word-ruby">Wo<rt>куда</rt></ruby> <ruby class="word-ruby">ihr<rt>ей</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Ort.<rt>место.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Satz<rt>Задавать</rt></ruby> <ruby class="word-ruby">Fragen,<rt>вопросы,</rt></ruby> <ruby class="word-ruby">welche<rt>которые</rt></ruby> <ruby class="word-ruby">ihr<rt>ее</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">berühren.<rt>касаются.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">IN<rt>В</rt></ruby> <ruby class="word-ruby">Dort<rt>ту</rt></ruby> <ruby class="word-ruby">Nacht<rt>ночь</rt></ruby> <ruby class="word-ruby">sie<rt>она</rt></ruby> <ruby class="word-ruby">gelogen<rt>солгала</rt></ruby> <ruby class="word-ruby">mir<rt>мне</rt></ruby> <ruby class="word-ruby">O<rt>о</rt></ruby> <ruby class="word-ruby">Trophäe<rt>трофее,</rt></ruby> <ruby class="word-ruby">Stola<rt>украла</rt></ruby> <ruby class="word-ruby">Ring<rt>кольцо</rt></ruby> <ruby class="word-ruby">Königinnen<rt>королевы</rt></ruby> <ruby class="word-ruby">Kind<rt>бала</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">sogar<rt>даже</rt></ruby> <ruby class="word-ruby">empfohlen<rt>предположила,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">getötet<rt>убил</rt></ruby> <ruby class="word-ruby">Rebekka.<rt>Ребекку.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Flynn,<rt>Flynn,</rt></ruby> <ruby class="word-ruby">Vater<rt>Отец</rt></ruby> <ruby class="word-ruby">Flynn<rt>Флинн</rt></ruby> <ruby class="word-ruby">Was<rt>Что</rt></ruby> <ruby class="word-ruby">Du<rt>вы</rt></ruby> <ruby class="word-ruby">Tun<rt>делаете,</rt></ruby> <ruby class="word-ruby">Wann<rt>когда</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Bist du sicher?<rt>уверены?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">Thema<rt>тема</rt></ruby> <ruby class="word-ruby">Mein<rt>моей</rt></ruby> <ruby class="word-ruby">heute<rt>сегодняшней</rt></ruby> <ruby class="word-ruby">Predigten.<rt>проповеди.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">IN<rt>В</rt></ruby> <ruby class="word-ruby">Vergangenheit<rt>прошлом</rt></ruby> <ruby class="word-ruby">Jahr,<rt>году,</rt></ruby> <ruby class="word-ruby">Wann<rt>когда</rt></ruby> <ruby class="word-ruby">War<rt>был</rt></ruby> <ruby class="word-ruby">getötet<rt>убит</rt></ruby> <ruby class="word-ruby">Präsident<rt>президент</rt></ruby> <ruby class="word-ruby">Kennedy,<rt>Кеннеди,</rt></ruby> <ruby class="word-ruby">WHO<rt>кто</rt></ruby> <ruby class="word-ruby">aus<rt>из</rt></ruby> <ruby class="word-ruby">uns<rt>нас</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">erfahren<rt>испытал</rt></ruby> <ruby class="word-ruby">am tiefsten<rt>глубочайшей</rt></ruby> <ruby class="word-ruby">Orientierungslosigkeit?<rt>дезориентации?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Verzweiflung?<rt>Отчаяние?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">IN<rt>В</rt></ruby> <ruby class="word-ruby">welcher<rt>какую</rt></ruby> <ruby class="word-ruby">Seite?<rt>сторону?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Was<rt>Что</rt></ruby> <ruby class="word-ruby">Jetzt?<rt>теперь?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Was<rt>Что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Ich sage<rt>говорю</rt></ruby> <ruby class="word-ruby">sein<rt>своим</rt></ruby> <ruby class="word-ruby">Kinder?<rt>детям?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Was<rt>Что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Ich sage<rt>говорю</rt></ruby> <ruby class="word-ruby">sich?<rt>себе?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">War<rt>было</rt></ruby> <ruby class="word-ruby">Zeit,<rt>время,</rt></ruby> <ruby class="word-ruby">Wann<rt>когда</rt></ruby> <ruby class="word-ruby">Menschen<rt>люди</rt></ruby> <ruby class="word-ruby">saß<rt>сидели</rt></ruby> <ruby class="word-ruby">zusammen,<rt>вместе,</rt></ruby> <ruby class="word-ruby">verwandt<rt>связанные</rt></ruby> <ruby class="word-ruby">allgemein<rt>общим</rt></ruby> <ruby class="word-ruby">Gefühl<rt>чувством</rt></ruby> <ruby class="word-ruby">Hoffnungslosigkeit.<rt>безнадежности.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Aber<rt>Но</rt></ruby> <ruby class="word-ruby">Denken Sie darüber nach<rt>подумайте</rt></ruby> <ruby class="word-ruby">um<rt>об</rt></ruby> <ruby class="word-ruby">Das.<rt>этом.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Dein<rt>Ваша</rt></ruby> <ruby class="word-ruby">Verbindung<rt>связь</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">Nachbarn<rt>ближним</rt></ruby> <ruby class="word-ruby">War<rt>была</rt></ruby> <ruby class="word-ruby">dein<rt>вашим</rt></ruby> <ruby class="word-ruby">verzweifeln.<rt>отчаянием.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">War<rt>был</rt></ruby> <ruby class="word-ruby">öffentlich<rt>общественный</rt></ruby> <ruby class="word-ruby">Erfahrung.<rt>опыт.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">War<rt>было</rt></ruby> <ruby class="word-ruby">schrecklich<rt>ужасно,</rt></ruby> <ruby class="word-ruby">Aber<rt>но</rt></ruby> <ruby class="word-ruby">Wir<rt>мы</rt></ruby> <ruby class="word-ruby">war<rt>были</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Das<rt>этом</rt></ruby> <ruby class="word-ruby">zusammen.<rt>вместе.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Wie viel<rt>Насколько</rt></ruby> <ruby class="word-ruby">Dasselbe<rt>же</rt></ruby> <ruby class="word-ruby">schlechter<rt>хуже</rt></ruby> <ruby class="word-ruby">Dann<rt>тогда</rt></ruby> <ruby class="word-ruby">einsam<rt>одинокому</rt></ruby> <ruby class="word-ruby">zu einem Mann<rt>мужчине,</rt></ruby> <ruby class="word-ruby">einsam<rt>одинокой</rt></ruby> <ruby class="word-ruby">Frau,<rt>женщине,</rt></ruby> <ruby class="word-ruby">verstanden<rt>постигнутой</rt></ruby> <ruby class="word-ruby">persönlich<rt>личным</rt></ruby> <ruby class="word-ruby">Unglück?<rt>несчастьем?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">"Niemand<rt>«Никто</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">weiß<rt>знает,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">krank".<rt>болен».</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">"Niemand<rt>«Никто</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">weiß<rt>знает,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">verloren<rt>потерял</rt></ruby> <ruby class="word-ruby">sein<rt>своего</rt></ruby> <ruby class="word-ruby">zuletzt<rt>последнего</rt></ruby> <ruby class="word-ruby">gegenwärtig<rt>настоящего</rt></ruby> <ruby class="word-ruby">Freund.“<rt>друга».</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">"Niemand<rt>«Никто</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">weiß<rt>знает,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">tat<rt>сделал</rt></ruby> <ruby class="word-ruby">etwas<rt>что-то</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Also".<rt>так».</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Vorstellen<rt>Представьте</rt></ruby> <ruby class="word-ruby">für mich selbst<rt>себе</rt></ruby> <ruby class="word-ruby">Isolierung.<rt>изоляцию.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Jetzt<rt>Теперь</rt></ruby> <ruby class="word-ruby">Du<rt>ты</rt></ruby> <ruby class="word-ruby">Du siehst<rt>видишь</rt></ruby> <ruby class="word-ruby">Welt<rt>мир</rt></ruby> <ruby class="word-ruby">Wie<rt>как</rt></ruby> <ruby class="word-ruby">aus<rt>из</rt></ruby> <ruby class="word-ruby">Fenster.<rt>окна.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Po<rt>По</rt></ruby> <ruby class="word-ruby">eins<rt>одну</rt></ruby> <ruby class="word-ruby">Seite<rt>сторону</rt></ruby> <ruby class="word-ruby">Glas<rt>стекла</rt></ruby> <ruby class="word-ruby">Glücklich,<rt>счастливые,</rt></ruby> <ruby class="word-ruby">sorglos<rt>беззаботные</rt></ruby> <ruby class="word-ruby">Menschen,<rt>люди,</rt></ruby> <ruby class="word-ruby">A<rt>а</rt></ruby> <ruby class="word-ruby">von<rt>по</rt></ruby> <ruby class="word-ruby">ein anderer<rt>другую</rt></ruby> <ruby class="word-ruby">None<rt>—</rt></ruby> <ruby class="word-ruby">Du.<rt>вы.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Heute<rt>Сегодня</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Kirche<rt>церкви</rt></ruby> <ruby class="word-ruby">Es gibt<rt>есть</rt></ruby> <ruby class="word-ruby">Sie<rt>те,</rt></ruby> <ruby class="word-ruby">WHO<rt>кто</rt></ruby> <ruby class="word-ruby">genau<rt>точно</rt></ruby> <ruby class="word-ruby">weiß<rt>знает</rt></ruby> <ruby class="word-ruby">Krise<rt>кризис</rt></ruby> <ruby class="word-ruby">Glaube<rt>веры,</rt></ruby> <ruby class="word-ruby">welche<rt>который</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Ich beschreibe<rt>описываю,</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Wollen<rt>хочу</rt></ruby> <ruby class="word-ruby">zu dir<rt>вам</rt></ruby> <ruby class="word-ruby">sagen:<rt>сказать:</rt></ruby> <ruby class="word-ruby">zweifeln<rt>сомнение</rt></ruby> <ruby class="word-ruby">Vielleicht<rt>может</rt></ruby> <ruby class="word-ruby">Sei<rt>быть</rt></ruby> <ruby class="word-ruby">Also<rt>столь</rt></ruby> <ruby class="word-ruby">Dasselbe<rt>же</rt></ruby> <ruby class="word-ruby">mächtig<rt>мощной</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">nachhaltig<rt>устойчивой</rt></ruby> <ruby class="word-ruby">Kommunikation,<rt>связью,</rt></ruby> <ruby class="word-ruby">Wie<rt>как</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Vertrauen.<rt>уверенность.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Wann<rt>Когда</rt></ruby> <ruby class="word-ruby">Du<rt>вы</rt></ruby> <ruby class="word-ruby">ging verloren<rt>потерялись,</rt></ruby> <ruby class="word-ruby">Du<rt>вы</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">allein.<rt>одиноки.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Full sentence translations -->
+                <div class="full-translations">
+                    <h3>Full Sentence Translations</h3>
+                    <div class="translations-list">
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Frank
+Эта Лорел.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Frank
+Dieser Lorbeer.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Она всегда сует голову туда, куда ей не место.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Sie steckt ihren Kopf immer dort hin, wo er nicht hingehört.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Задавать вопросы, которые ее не касаются.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Stellen Sie Fragen, die sie nicht betreffen.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> В ту ночь она солгала мне о трофее, украла кольцо королевы бала и даже предположила, что я убил Ребекку.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> In dieser Nacht hat sie mich wegen der Trophäe angelogen, den Ring der Ballkönigin gestohlen und sogar vorgeschlagen, dass ich Rebecca getötet habe.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Flynn, Отец Флинн
+Что вы делаете, когда не уверены?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Flynn, Pater Flynn
+Was tun, wenn man sich nicht sicher ist?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это тема моей сегодняшней проповеди.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Dies ist das Thema meiner heutigen Predigt.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> В прошлом году, когда был убит президент Кеннеди, кто из нас не испытал глубочайшей дезориентации?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Wer von uns erlebte letztes Jahr, als Präsident Kennedy ermordet wurde, nicht eine tiefgreifende Orientierungslosigkeit?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Отчаяние?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Verzweiflung?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> В какую сторону?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> In welche Richtung?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Что теперь?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Was nun?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Что я говорю своим детям?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Was sage ich meinen Kindern?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Что я говорю себе?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Was sage ich mir?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это было время, когда люди сидели вместе, связанные общим чувством безнадежности.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es war eine Zeit, in der die Menschen zusammensaßen, verbunden durch das gemeinsame Gefühl der Hoffnungslosigkeit.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Но подумайте об этом.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Aber denken Sie darüber nach.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Ваша связь с ближним была вашим отчаянием.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Deine Verbindung zu deinen Mitmenschen war deine Verzweiflung.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это был общественный опыт.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es war ein gesellschaftliches Erlebnis.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это было ужасно, но мы были в этом вместе.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es war schrecklich, aber wir saßen zusammen da drin.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Насколько же хуже тогда одинокому мужчине, одинокой женщине, постигнутой личным несчастьем?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Wie viel schlimmer ist es dann für einen einsamen Mann, eine einsame Frau, die von persönlichem Unglück heimgesucht wird?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> «Никто не знает, что я болен».
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> „Niemand weiß, dass ich krank bin.“
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> «Никто не знает, что я потерял своего последнего настоящего друга».
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> „Niemand weiß, dass ich meinen letzten wahren Freund verloren habe.“
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> «Никто не знает, что я сделал что-то не так».
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> „Niemand weiß, dass ich etwas falsch gemacht habe.“
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Представьте себе изоляцию.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Stellen Sie sich Isolation vor.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Теперь ты видишь мир как из окна.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Jetzt sehen Sie die Welt wie aus einem Fenster.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> По одну сторону стекла счастливые, беззаботные люди, а по другую — вы.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Auf der einen Seite des Glases stehen glückliche, unbeschwerte Menschen und auf der anderen Seite Sie.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Сегодня в церкви есть те, кто точно знает кризис веры, который я описываю, и я хочу вам сказать:
+
+сомнение может быть столь же мощной и устойчивой связью, как и уверенность.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es gibt heute in der Kirche diejenigen, die die Glaubenskrise, die ich beschreibe, genau kennen, und ich möchte Ihnen sagen:
+
+Zweifel können eine ebenso starke und dauerhafte Verbindung sein wie Gewissheit.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Когда вы потерялись, вы не одиноки.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Wenn du verloren bist, bist du nicht allein.
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <button class="floating-invert-btn" id="floatingInvertBtn" title="Toggle word display">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M16 18L18 18C20.2091 18 22 16.2091 22 14C22 11.7909 20.2091 10 18 10L6 10C3.79086 10 2 11.7909 2 14C2 16.2091 3.79086 18 6 18L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 6L6 6C3.79086 6 2 7.79086 2 10C2 12.2091 3.79086 14 6 14L18 14C20.2091 14 22 12.2091 22 10C22 7.79086 20.2091 6 18 6L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 2L16 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            <span class="btn-text">Invert</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingInvertBtn = document.getElementById('floatingInvertBtn');
+            const sentenceWords = document.querySelectorAll('.sentence-words');
+            
+            floatingInvertBtn.addEventListener('click', function() {
+                sentenceWords.forEach(container => {
+                    container.classList.toggle('ruby-normal');
+                    container.classList.toggle('ruby-inverted');
+                });
+                
+                // Update button text
+                const isInverted = sentenceWords[0].classList.contains('ruby-inverted');
+                const btnText = this.querySelector('.btn-text');
+                btnText.textContent = isInverted ? 'Normal' : 'Invert';
+                
+                // Add animation feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Hide floating button when printing
+            window.addEventListener('beforeprint', function() {
+                floatingInvertBtn.style.display = 'none';
+            });
+            
+            window.addEventListener('afterprint', function() {
+                floatingInvertBtn.style.display = 'flex';
+            });
+        });
+    </script>
+
+</body></html>

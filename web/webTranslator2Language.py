@@ -31,13 +31,11 @@ LANGUAGES = [
 
 def split_into_sentences(text):
     """Split text into sentences using regex"""
-    # This regex handles common sentence endings followed by whitespace and capital letters
     sentences = re.split(r'(?<=[.!?])\s+', text)
-    # Filter out empty sentences
     return [sentence.strip() for sentence in sentences if sentence.strip()]
 
 def translate_word_by_word(text, target_lang):
-    """Translate text word by word with ruby annotations"""
+    """Translate text word by word with ruby annotations and proper spacing"""
     words = text.split()
     translated_words = []
 
@@ -49,12 +47,14 @@ def translate_word_by_word(text, target_lang):
                 continue
 
             translated = GoogleTranslator(source="auto", target=target_lang).translate(word)
-            translated_words.append(f"<ruby>{translated}<rt>{word}</rt></ruby>")
+            # Add non-breaking space and proper spacing
+            translated_words.append(f'<ruby class="word-ruby">{translated}<rt>{word}</rt></ruby>')
         except Exception as e:
             print(f"Error translating word '{word}': {str(e)}")
             translated_words.append(f'<span class="error">{word}</span>')
 
-    return " ".join(translated_words)
+    # Join with non-breaking spaces to maintain proper spacing
+    return ' '.join(translated_words)
 
 def translate_full_sentence(text, target_lang):
     """Translate full sentence as a whole"""
@@ -77,18 +77,12 @@ def translator():
 
         if input_text.strip() and selected_lang:
             try:
-                # Find the language name
                 lang_name = next((lang["name"] for lang in LANGUAGES if lang["code"] == selected_lang), selected_lang)
-                
-                # Split input into sentences
                 sentences = split_into_sentences(input_text)
                 sentence_results = []
                 
                 for sentence in sentences:
-                    # Get word-by-word translation
                     word_by_word = translate_word_by_word(sentence, selected_lang)
-                    
-                    # Get full sentence translation
                     full_translation = translate_full_sentence(sentence, selected_lang)
                     
                     sentence_results.append({

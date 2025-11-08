@@ -44,10 +44,15 @@
             </form>
             
             {% if result %}
+            <!-- Floating Invert Button -->
+            
+            
             <div class="result-section">
                 <div class="result-header">
                     <h2>Translation Result</h2>
-                    <span class="language-badge">{{ result.language }}</span>
+                    <div class="header-controls">
+                        <span class="language-badge">{{ result.language }}</span>
+                    </div>
                 </div>
                 
                 <!-- Word-by-word breakdown -->
@@ -56,7 +61,7 @@
                     <div class="breakdown-content">
                         {% for sentence in result.sentences %}
                         <div class="sentence-breakdown">
-                            <div class="sentence-words">
+                            <div class="sentence-words ruby-normal">
                                 {{ sentence.word_by_word|safe }}
                             </div>
                         </div>
@@ -71,10 +76,10 @@
                         {% for sentence in result.sentences %}
                         <div class="sentence-translation">
                             <div class="original-sentence">
-                                {{ sentence.original }}
+                                <strong>Original:</strong> {{ sentence.original }}
                             </div>
                             <div class="translated-sentence">
-                                {{ sentence.full_translation }}
+                                <strong>Translated:</strong> {{ sentence.full_translation }}
                             </div>
                         </div>
                         {% endfor %}
@@ -83,6 +88,48 @@
             </div>
             {% endif %}
         </div>
+        <button class="floating-invert-btn" id="floatingInvertBtn" title="Toggle word display">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M16 18L18 18C20.2091 18 22 16.2091 22 14C22 11.7909 20.2091 10 18 10L6 10C3.79086 10 2 11.7909 2 14C2 16.2091 3.79086 18 6 18L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 6L6 6C3.79086 6 2 7.79086 2 10C2 12.2091 3.79086 14 6 14L18 14C20.2091 14 22 12.2091 22 10C22 7.79086 20.2091 6 18 6L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 2L16 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="btn-text">Invert</span>
+        </button>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingInvertBtn = document.getElementById('floatingInvertBtn');
+            const sentenceWords = document.querySelectorAll('.sentence-words');
+            
+            floatingInvertBtn.addEventListener('click', function() {
+                sentenceWords.forEach(container => {
+                    container.classList.toggle('ruby-normal');
+                    container.classList.toggle('ruby-inverted');
+                });
+                
+                // Update button text
+                const isInverted = sentenceWords[0].classList.contains('ruby-inverted');
+                const btnText = this.querySelector('.btn-text');
+                btnText.textContent = isInverted ? 'Normal' : 'Invert';
+                
+                // Add animation feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Hide floating button when printing
+            window.addEventListener('beforeprint', function() {
+                floatingInvertBtn.style.display = 'none';
+            });
+            
+            window.addEventListener('afterprint', function() {
+                floatingInvertBtn.style.display = 'flex';
+            });
+        });
+    </script>
 </body>
 </html>

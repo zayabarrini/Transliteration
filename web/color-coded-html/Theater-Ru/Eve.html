@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5006/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="./Eve_files/styles2language.css">
+    <link href="./Eve_files/css2" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="translator-card">
+            <div class="header">
+                <h1>🌍 Text Translator</h1>
+                <p>Translate text with word-by-word breakdown and full sentence translations</p>
+            </div>
+            
+            <form method="POST" class="translator-form">
+                <div class="form-group">
+                    <label for="text">Text to translate:</label>
+                    <textarea name="text" id="text" placeholder="Enter text to translate..." required="">Я дал вам возможность объяснить это.
+
+Ты только что солгал мне в лицо.
+
+Я этого не делаю.
+
+Я не позволю тебе погубить меня.
+
+И рискнуть при этом всей своей карьерой?
+
+Ты правда думал, что я это сделаю?
+
+Что я не запомню, насколько все это знакомо?
+
+Ты больше не сможешь этого делать.
+
+Вы не можете использовать людей и ожидать, что они останутся рядом.
+
+Может быть, это все, кем ты всегда был, а я просто был слеп к этому.
+
+Все амбиции просто компенсировать тот факт, что глубоко внутри ты знал, что внутри тебя нет ничего хорошего.
+
+Мне стыдно, что я ожидал большего.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="target_lang">Target Language:</label>
+                    <select name="target_lang" id="target_lang" required="">
+                        <option value="">Select a language...</option>
+                        
+                        <option value="en">
+                            English
+                        </option>
+                        
+                        <option value="es">
+                            Spanish
+                        </option>
+                        
+                        <option value="fr">
+                            French
+                        </option>
+                        
+                        <option value="de" selected="">
+                            German
+                        </option>
+                        
+                        <option value="it">
+                            Italian
+                        </option>
+                        
+                        <option value="pt">
+                            Portuguese
+                        </option>
+                        
+                        <option value="ru">
+                            Russian
+                        </option>
+                        
+                        <option value="ja">
+                            Japanese
+                        </option>
+                        
+                        <option value="ko">
+                            Korean
+                        </option>
+                        
+                        <option value="zh-cn">
+                            Chinese (Simplified)
+                        </option>
+                        
+                        <option value="ar">
+                            Arabic
+                        </option>
+                        
+                        <option value="hi">
+                            Hindi
+                        </option>
+                        
+                        <option value="tr">
+                            Turkish
+                        </option>
+                        
+                        <option value="nl">
+                            Dutch
+                        </option>
+                        
+                        <option value="sv">
+                            Swedish
+                        </option>
+                        
+                        <option value="pl">
+                            Polish
+                        </option>
+                        
+                        <option value="vi">
+                            Vietnamese
+                        </option>
+                        
+                        <option value="th">
+                            Thai
+                        </option>
+                        
+                        <option value="id">
+                            Indonesian
+                        </option>
+                        
+                        <option value="he">
+                            Hebrew
+                        </option>
+                        
+                    </select>
+                </div>
+                
+                <button type="submit" class="translate-btn">
+                    <span>Translate Text</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 5L4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M14 19L4 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M20 12L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M17 16L20 19L17 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M17 8L20 5L17 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </form>
+            
+            
+            <!-- Floating Invert Button -->
+            
+            
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Translation Result</h2>
+                    <div class="header-controls">
+                        <span class="language-badge">German</span>
+                    </div>
+                </div>
+                
+                <!-- Word-by-word breakdown -->
+                <div class="translation-breakdown">
+                    <h3>Word-by-Word Breakdown</h3>
+                    <div class="breakdown-content">
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">gab<rt>дал</rt></ruby> <ruby class="word-ruby">zu dir<rt>вам</rt></ruby> <ruby class="word-ruby">Gelegenheit<rt>возможность</rt></ruby> <ruby class="word-ruby">erklären<rt>объяснить</rt></ruby> <ruby class="word-ruby">Das.<rt>это.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Du<rt>Ты</rt></ruby> <ruby class="word-ruby">nur<rt>только</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">gelogen<rt>солгал</rt></ruby> <ruby class="word-ruby">mir<rt>мне</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Gesicht.<rt>лицо.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">Das<rt>этого</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Ich tue.<rt>делаю.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Ich werde zulassen<rt>позволю</rt></ruby> <ruby class="word-ruby">Du<rt>тебе</rt></ruby> <ruby class="word-ruby">zerstören<rt>погубить</rt></ruby> <ruby class="word-ruby">Mich.<rt>меня.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">UND<rt>И</rt></ruby> <ruby class="word-ruby">Nutzen Sie die Chance<rt>рискнуть</rt></ruby> <ruby class="word-ruby">bei<rt>при</rt></ruby> <ruby class="word-ruby">Das<rt>этом</rt></ruby> <ruby class="word-ruby">alle<rt>всей</rt></ruby> <ruby class="word-ruby">sein<rt>своей</rt></ruby> <ruby class="word-ruby">Karriere?<rt>карьерой?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Du<rt>Ты</rt></ruby> <ruby class="word-ruby">Wahrheit<rt>правда</rt></ruby> <ruby class="word-ruby">Gedanke,<rt>думал,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">werde ich?<rt>сделаю?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Was<rt>Что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Ich werde mich erinnern<rt>запомню,</rt></ruby> <ruby class="word-ruby">wie viel<rt>насколько</rt></ruby> <ruby class="word-ruby">Alle<rt>все</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">vertraut?<rt>знакомо?</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Du<rt>Ты</rt></ruby> <ruby class="word-ruby">mehr<rt>больше</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">du kannst<rt>сможешь</rt></ruby> <ruby class="word-ruby">Das<rt>этого</rt></ruby> <ruby class="word-ruby">Tun.<rt>делать.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Du<rt>Вы</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">du kannst<rt>можете</rt></ruby> <ruby class="word-ruby">verwenden<rt>использовать</rt></ruby> <ruby class="word-ruby">Menschen<rt>людей</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">erwarten,<rt>ожидать,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">Sie<rt>они</rt></ruby> <ruby class="word-ruby">wird bleiben<rt>останутся</rt></ruby> <ruby class="word-ruby">nahe.<rt>рядом.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Vielleicht<rt>Может</rt></ruby> <ruby class="word-ruby">Sei,<rt>быть,</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">Alle,<rt>все,</rt></ruby> <ruby class="word-ruby">weniger<rt>кем</rt></ruby> <ruby class="word-ruby">Du<rt>ты</rt></ruby> <ruby class="word-ruby">Stets<rt>всегда</rt></ruby> <ruby class="word-ruby">War,<rt>был,</rt></ruby> <ruby class="word-ruby">A<rt>а</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Nur<rt>просто</rt></ruby> <ruby class="word-ruby">War<rt>был</rt></ruby> <ruby class="word-ruby">blind<rt>слеп</rt></ruby> <ruby class="word-ruby">Zu<rt>к</rt></ruby> <ruby class="word-ruby">Das.<rt>этому.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Alle<rt>Все</rt></ruby> <ruby class="word-ruby">Ambitionen<rt>амбиции</rt></ruby> <ruby class="word-ruby">Nur<rt>просто</rt></ruby> <ruby class="word-ruby">kompensieren<rt>компенсировать</rt></ruby> <ruby class="word-ruby">Das<rt>тот</rt></ruby> <ruby class="word-ruby">Tatsache,<rt>факт,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">tief<rt>глубоко</rt></ruby> <ruby class="word-ruby">innen<rt>внутри</rt></ruby> <ruby class="word-ruby">Du<rt>ты</rt></ruby> <ruby class="word-ruby">wusste<rt>знал,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">innen<rt>внутри</rt></ruby> <ruby class="word-ruby">Du<rt>тебя</rt></ruby> <ruby class="word-ruby">NEIN<rt>нет</rt></ruby> <ruby class="word-ruby">Nichts<rt>ничего</rt></ruby> <ruby class="word-ruby">Gut.<rt>хорошего.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-normal">
+                                <ruby class="word-ruby">Mir<rt>Мне</rt></ruby> <ruby class="word-ruby">beschämt,<rt>стыдно,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">erwartet<rt>ожидал</rt></ruby> <ruby class="word-ruby">mehr.<rt>большего.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Full sentence translations -->
+                <div class="full-translations">
+                    <h3>Full Sentence Translations</h3>
+                    <div class="translations-list">
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я дал вам возможность объяснить это.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich habe Ihnen die Gelegenheit gegeben, dies zu erklären.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Ты только что солгал мне в лицо.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Du hast mir gerade ins Gesicht gelogen.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я этого не делаю.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Das mache ich nicht.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я не позволю тебе погубить меня.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich lasse nicht zu, dass du mich ruinierst.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> И рискнуть при этом всей своей карьерой?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Und Ihre gesamte Karriere riskieren?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Ты правда думал, что я это сделаю?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Hast du wirklich geglaubt, dass ich das tun würde?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Что я не запомню, насколько все это знакомо?
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Woran werde ich mich nicht erinnern, wie vertraut mir das alles ist?
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Ты больше не сможешь этого делать.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Dies wird Ihnen nicht mehr möglich sein.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Вы не можете использовать людей и ожидать, что они останутся рядом.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Man kann Menschen nicht ausnutzen und erwarten, dass sie bleiben.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Может быть, это все, кем ты всегда был, а я просто был слеп к этому.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Vielleicht ist das alles, was du schon immer warst, und ich war einfach blind dafür.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Все амбиции просто компенсировать тот факт, что глубоко внутри ты знал, что внутри тебя нет ничего хорошего.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Der ganze Ehrgeiz besteht einfach darin, die Tatsache zu kompensieren, dass du tief im Inneren wusstest, dass in dir nichts Gutes ist.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Мне стыдно, что я ожидал большего.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich schäme mich, dass ich mehr erwartet habe.
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <button class="floating-invert-btn" id="floatingInvertBtn" title="Toggle word display">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M16 18L18 18C20.2091 18 22 16.2091 22 14C22 11.7909 20.2091 10 18 10L6 10C3.79086 10 2 11.7909 2 14C2 16.2091 3.79086 18 6 18L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 6L6 6C3.79086 6 2 7.79086 2 10C2 12.2091 3.79086 14 6 14L18 14C20.2091 14 22 12.2091 22 10C22 7.79086 20.2091 6 18 6L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 2L16 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            <span class="btn-text">Invert</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingInvertBtn = document.getElementById('floatingInvertBtn');
+            const sentenceWords = document.querySelectorAll('.sentence-words');
+            
+            floatingInvertBtn.addEventListener('click', function() {
+                sentenceWords.forEach(container => {
+                    container.classList.toggle('ruby-normal');
+                    container.classList.toggle('ruby-inverted');
+                });
+                
+                // Update button text
+                const isInverted = sentenceWords[0].classList.contains('ruby-inverted');
+                const btnText = this.querySelector('.btn-text');
+                btnText.textContent = isInverted ? 'Normal' : 'Invert';
+                
+                // Add animation feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Hide floating button when printing
+            window.addEventListener('beforeprint', function() {
+                floatingInvertBtn.style.display = 'none';
+            });
+            
+            window.addEventListener('afterprint', function() {
+                floatingInvertBtn.style.display = 'flex';
+            });
+        });
+    </script>
+
+</body></html>

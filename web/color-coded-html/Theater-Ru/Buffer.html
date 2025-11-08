@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5006/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="./Buffer_files/styles2language.css">
+    <link href="./Buffer_files/css2" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="translator-card">
+            <div class="header">
+                <h1>🌍 Text Translator</h1>
+                <p>Translate text with word-by-word breakdown and full sentence translations</p>
+            </div>
+            
+            <form method="POST" class="translator-form">
+                <div class="form-group">
+                    <label for="text">Text to translate:</label>
+                    <textarea name="text" id="text" placeholder="Enter text to translate..." required="">«Привет, я Зая Баррини.
+
+Я хотел поделиться чем-то, чему я недавно научился и что неожиданно изменило мое представление о инженерном лидерстве:
+
+Мандаринский китайский.
+
+Теперь я столкнулся с настоящей стеной с традиционным способом обучения.
+
+вы знаете, просто повторяя символы снова и снова или тренируя карточки.
+
+Это казалось хаотичным, и мой мозг изо всех сил пытался найти закономерности.
+
+Итак, я решил построить систему.
+
+Я начал раскрашивать символы в зависимости от их грамматических классов.
+
+Внезапно то, что было стеной черно-белых символов, превратилось в структурированную визуальную карту.
+
+Я создал свой собственный «синтаксис» для понимания, и мгновенно то, что казалось непосильным, стало управляемым и даже приятным.
+
+И здесь это напрямую связано с моей философией инженерного менеджмента.
+
+Наша роль как лидеров — быть системными архитекторами для наших команд.
+
+Мы постоянно сталкиваемся со сложными, неоднозначными задачами
+
+обширная дорожная карта продукта, устаревшая система, которую необходимо распутать, или новая техническая стратегия.
+
+Наша задача не в том, чтобы получить ответы на все вопросы, а в том, чтобы создать структуру и ясность, которые позволят нашим командам справляться с этой сложностью, не перегружая себя.
+
+Мы строим визуализации, налаживаем четкие процессы и создаем ритмы общения, которые превращают хаос в целенаправленную и эффективную работу.
+
+Я даже применил это к своему плейлисту с китайскими альбомами EXO, раскрашивая песни по темам и энергетике.
+
+Это превратило пассивное слушание в активный, систематический инструмент обучения.
+
+Это доказало мне, что этот принцип «структурированной ясности» универсален.
+
+Итак, большой урок для меня заключался в следующем:
+
+Изучаете ли вы язык, составляете плейлист или возглавляете команду инженеров, цель одна и та же.
+
+Хорошее лидерство – это проектирование систем и сред, в которых сложное кажется простым.
+
+Речь идет о снижении когнитивной нагрузки, чтобы блестящие люди могли выполнять свою самую творческую и эффективную работу.
+
+Это образ мышления
+
+один из системного мыслителя и создателя ясности
+
+и я очень рад возможности занять должность технического менеджера в Buffer».</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="target_lang">Target Language:</label>
+                    <select name="target_lang" id="target_lang" required="">
+                        <option value="">Select a language...</option>
+                        
+                        <option value="en">
+                            English
+                        </option>
+                        
+                        <option value="es">
+                            Spanish
+                        </option>
+                        
+                        <option value="fr">
+                            French
+                        </option>
+                        
+                        <option value="de" selected="">
+                            German
+                        </option>
+                        
+                        <option value="it">
+                            Italian
+                        </option>
+                        
+                        <option value="pt">
+                            Portuguese
+                        </option>
+                        
+                        <option value="ru">
+                            Russian
+                        </option>
+                        
+                        <option value="ja">
+                            Japanese
+                        </option>
+                        
+                        <option value="ko">
+                            Korean
+                        </option>
+                        
+                        <option value="zh-cn">
+                            Chinese (Simplified)
+                        </option>
+                        
+                        <option value="ar">
+                            Arabic
+                        </option>
+                        
+                        <option value="hi">
+                            Hindi
+                        </option>
+                        
+                        <option value="tr">
+                            Turkish
+                        </option>
+                        
+                        <option value="nl">
+                            Dutch
+                        </option>
+                        
+                        <option value="sv">
+                            Swedish
+                        </option>
+                        
+                        <option value="pl">
+                            Polish
+                        </option>
+                        
+                        <option value="vi">
+                            Vietnamese
+                        </option>
+                        
+                        <option value="th">
+                            Thai
+                        </option>
+                        
+                        <option value="id">
+                            Indonesian
+                        </option>
+                        
+                        <option value="he">
+                            Hebrew
+                        </option>
+                        
+                    </select>
+                </div>
+                
+                <button type="submit" class="translate-btn">
+                    <span>Translate Text</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 5L4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M14 19L4 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M20 12L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M17 16L20 19L17 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M17 8L20 5L17 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </form>
+            
+            
+            <!-- Floating Invert Button -->
+            
+            
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Translation Result</h2>
+                    <div class="header-controls">
+                        <span class="language-badge">German</span>
+                    </div>
+                </div>
+                
+                <!-- Word-by-word breakdown -->
+                <div class="translation-breakdown">
+                    <h3>Word-by-Word Breakdown</h3>
+                    <div class="breakdown-content">
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">"Hallo,<rt>«Привет,</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Zaya<rt>Зая</rt></ruby> <ruby class="word-ruby">Barry.<rt>Баррини.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">gesucht<rt>хотел</rt></ruby> <ruby class="word-ruby">Aktie<rt>поделиться</rt></ruby> <ruby class="word-ruby">etwas<rt>чем-то,</rt></ruby> <ruby class="word-ruby">Warum<rt>чему</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">kürzlich<rt>недавно</rt></ruby> <ruby class="word-ruby">gelernt<rt>научился</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">plötzlich<rt>неожиданно</rt></ruby> <ruby class="word-ruby">geändert<rt>изменило</rt></ruby> <ruby class="word-ruby">Mein<rt>мое</rt></ruby> <ruby class="word-ruby">Leistung<rt>представление</rt></ruby> <ruby class="word-ruby">O<rt>о</rt></ruby> <ruby class="word-ruby">Maschinenbau<rt>инженерном</rt></ruby> <ruby class="word-ruby">Führung:<rt>лидерстве:</rt></ruby> <ruby class="word-ruby">Mandarin<rt>Мандаринский</rt></ruby> <ruby class="word-ruby">Chinesisch.<rt>китайский.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Jetzt<rt>Теперь</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">kollidierte<rt>столкнулся</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">Das<rt>настоящей</rt></ruby> <ruby class="word-ruby">Wand<rt>стеной</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">traditionell<rt>традиционным</rt></ruby> <ruby class="word-ruby">Weg<rt>способом</rt></ruby> <ruby class="word-ruby">Ausbildung.<rt>обучения.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Du<rt>вы</rt></ruby> <ruby class="word-ruby">Du weisst<rt>знаете,</rt></ruby> <ruby class="word-ruby">Nur<rt>просто</rt></ruby> <ruby class="word-ruby">wiederholen<rt>повторяя</rt></ruby> <ruby class="word-ruby">Symbol<rt>символы</rt></ruby> <ruby class="word-ruby">wieder<rt>снова</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">wieder<rt>снова</rt></ruby> <ruby class="word-ruby">oder<rt>или</rt></ruby> <ruby class="word-ruby">Ausbildung<rt>тренируя</rt></ruby> <ruby class="word-ruby">Karten.<rt>карточки.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">es schien<rt>казалось</rt></ruby> <ruby class="word-ruby">chaotisch,<rt>хаотичным,</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Mein<rt>мой</rt></ruby> <ruby class="word-ruby">Gehirn<rt>мозг</rt></ruby> <ruby class="word-ruby">iso<rt>изо</rt></ruby> <ruby class="word-ruby">alle<rt>всех</rt></ruby> <ruby class="word-ruby">Kräfte<rt>сил</rt></ruby> <ruby class="word-ruby">versucht<rt>пытался</rt></ruby> <ruby class="word-ruby">finden<rt>найти</rt></ruby> <ruby class="word-ruby">Muster.<rt>закономерности.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Also,<rt>Итак,</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">entschieden<rt>решил</rt></ruby> <ruby class="word-ruby">bauen<rt>построить</rt></ruby> <ruby class="word-ruby">System<rt>систему.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">begonnen<rt>начал</rt></ruby> <ruby class="word-ruby">malen<rt>раскрашивать</rt></ruby> <ruby class="word-ruby">Symbol<rt>символы</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Abhängigkeiten<rt>зависимости</rt></ruby> <ruby class="word-ruby">aus<rt>от</rt></ruby> <ruby class="word-ruby">eine Menge<rt>их</rt></ruby> <ruby class="word-ruby">grammatikalisch<rt>грамматических</rt></ruby> <ruby class="word-ruby">Klassen.<rt>классов.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Plötzlich<rt>Внезапно</rt></ruby> <ruby class="word-ruby">Das,<rt>то,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">War<rt>было</rt></ruby> <ruby class="word-ruby">Wand<rt>стеной</rt></ruby> <ruby class="word-ruby">schwarz und weiß<rt>черно-белых</rt></ruby> <ruby class="word-ruby">Charaktere,<rt>символов,</rt></ruby> <ruby class="word-ruby">verwandelte sich in<rt>превратилось</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">strukturiert<rt>структурированную</rt></ruby> <ruby class="word-ruby">visuell<rt>визуальную</rt></ruby> <ruby class="word-ruby">Karte.<rt>карту.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">erstellt<rt>создал</rt></ruby> <ruby class="word-ruby">meins<rt>свой</rt></ruby> <ruby class="word-ruby">eigen<rt>собственный</rt></ruby> <ruby class="word-ruby">"Syntax"<rt>«синтаксис»</rt></ruby> <ruby class="word-ruby">für<rt>для</rt></ruby> <ruby class="word-ruby">Verständnis,<rt>понимания,</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">sofort<rt>мгновенно</rt></ruby> <ruby class="word-ruby">Das,<rt>то,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">es schien<rt>казалось</rt></ruby> <ruby class="word-ruby">unerträglich<rt>непосильным,</rt></ruby> <ruby class="word-ruby">wurde<rt>стало</rt></ruby> <ruby class="word-ruby">überschaubar<rt>управляемым</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">sogar<rt>даже</rt></ruby> <ruby class="word-ruby">angenehm.<rt>приятным.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">UND<rt>И</rt></ruby> <ruby class="word-ruby">Hier<rt>здесь</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">direkt<rt>напрямую</rt></ruby> <ruby class="word-ruby">verbunden<rt>связано</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">Mein<rt>моей</rt></ruby> <ruby class="word-ruby">Philosophie<rt>философией</rt></ruby> <ruby class="word-ruby">Maschinenbau<rt>инженерного</rt></ruby> <ruby class="word-ruby">Management.<rt>менеджмента.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Unser<rt>Наша</rt></ruby> <ruby class="word-ruby">Rolle<rt>роль</rt></ruby> <ruby class="word-ruby">Wie<rt>как</rt></ruby> <ruby class="word-ruby">Führer<rt>лидеров</rt></ruby> <ruby class="word-ruby">None<rt>—</rt></ruby> <ruby class="word-ruby">Sei<rt>быть</rt></ruby> <ruby class="word-ruby">systemisch<rt>системными</rt></ruby> <ruby class="word-ruby">Architekten<rt>архитекторами</rt></ruby> <ruby class="word-ruby">für<rt>для</rt></ruby> <ruby class="word-ruby">unser<rt>наших</rt></ruby> <ruby class="word-ruby">Mannschaften<rt>команд.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Wir<rt>Мы</rt></ruby> <ruby class="word-ruby">ständig<rt>постоянно</rt></ruby> <ruby class="word-ruby">wir kollidieren<rt>сталкиваемся</rt></ruby> <ruby class="word-ruby">mit<rt>со</rt></ruby> <ruby class="word-ruby">Komplex,<rt>сложными,</rt></ruby> <ruby class="word-ruby">mehrdeutig<rt>неоднозначными</rt></ruby> <ruby class="word-ruby">Aufgaben<rt>задачами</rt></ruby> <ruby class="word-ruby">umfangreich<rt>обширная</rt></ruby> <ruby class="word-ruby">Straße<rt>дорожная</rt></ruby> <ruby class="word-ruby">Karte<rt>карта</rt></ruby> <ruby class="word-ruby">das Produkt,<rt>продукта,</rt></ruby> <ruby class="word-ruby">veraltet<rt>устаревшая</rt></ruby> <ruby class="word-ruby">System,<rt>система,</rt></ruby> <ruby class="word-ruby">welche<rt>которую</rt></ruby> <ruby class="word-ruby">notwendig<rt>необходимо</rt></ruby> <ruby class="word-ruby">entwirren,<rt>распутать,</rt></ruby> <ruby class="word-ruby">oder<rt>или</rt></ruby> <ruby class="word-ruby">neu<rt>новая</rt></ruby> <ruby class="word-ruby">technisch<rt>техническая</rt></ruby> <ruby class="word-ruby">Strategie.<rt>стратегия.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Unser<rt>Наша</rt></ruby> <ruby class="word-ruby">Aufgabe<rt>задача</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Volumen,<rt>том,</rt></ruby> <ruby class="word-ruby">Zu<rt>чтобы</rt></ruby> <ruby class="word-ruby">erhalten<rt>получить</rt></ruby> <ruby class="word-ruby">Antworten<rt>ответы</rt></ruby> <ruby class="word-ruby">An<rt>на</rt></ruby> <ruby class="word-ruby">Alle<rt>все</rt></ruby> <ruby class="word-ruby">Fragen,<rt>вопросы,</rt></ruby> <ruby class="word-ruby">A<rt>а</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Volumen,<rt>том,</rt></ruby> <ruby class="word-ruby">Zu<rt>чтобы</rt></ruby> <ruby class="word-ruby">erstellen<rt>создать</rt></ruby> <ruby class="word-ruby">Struktur<rt>структуру</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Klarheit,<rt>ясность,</rt></ruby> <ruby class="word-ruby">welche<rt>которые</rt></ruby> <ruby class="word-ruby">erlauben<rt>позволят</rt></ruby> <ruby class="word-ruby">unsere<rt>нашим</rt></ruby> <ruby class="word-ruby">Mannschaften<rt>командам</rt></ruby> <ruby class="word-ruby">bewältigen<rt>справляться</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">Das<rt>этой</rt></ruby> <ruby class="word-ruby">Komplexität,<rt>сложностью,</rt></ruby> <ruby class="word-ruby">Nicht<rt>не</rt></ruby> <ruby class="word-ruby">Überlastung<rt>перегружая</rt></ruby> <ruby class="word-ruby">ich selbst.<rt>себя.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Wir<rt>Мы</rt></ruby> <ruby class="word-ruby">wir bauen<rt>строим</rt></ruby> <ruby class="word-ruby">Visualisierung,<rt>визуализации,</rt></ruby> <ruby class="word-ruby">wir etablieren<rt>налаживаем</rt></ruby> <ruby class="word-ruby">klar<rt>четкие</rt></ruby> <ruby class="word-ruby">Prozesse<rt>процессы</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">erstellen<rt>создаем</rt></ruby> <ruby class="word-ruby">Rhythmen<rt>ритмы</rt></ruby> <ruby class="word-ruby">Kommunikation,<rt>общения,</rt></ruby> <ruby class="word-ruby">welche<rt>которые</rt></ruby> <ruby class="word-ruby">drehen<rt>превращают</rt></ruby> <ruby class="word-ruby">Chaos<rt>хаос</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">gezielt<rt>целенаправленную</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">wirksam<rt>эффективную</rt></ruby> <ruby class="word-ruby">arbeiten.<rt>работу.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">ICH<rt>Я</rt></ruby> <ruby class="word-ruby">sogar<rt>даже</rt></ruby> <ruby class="word-ruby">angewandt<rt>применил</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">Zu<rt>к</rt></ruby> <ruby class="word-ruby">zu seinem<rt>своему</rt></ruby> <ruby class="word-ruby">Wiedergabeliste<rt>плейлисту</rt></ruby> <ruby class="word-ruby">mit<rt>с</rt></ruby> <ruby class="word-ruby">chinesisch<rt>китайскими</rt></ruby> <ruby class="word-ruby">Alben<rt>альбомами</rt></ruby> <ruby class="word-ruby">EXO,<rt>EXO,</rt></ruby> <ruby class="word-ruby">Färbung<rt>раскрашивая</rt></ruby> <ruby class="word-ruby">Lieder<rt>песни</rt></ruby> <ruby class="word-ruby">von<rt>по</rt></ruby> <ruby class="word-ruby">Themen<rt>темам</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Energie.<rt>энергетике.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">drehte sich um<rt>превратило</rt></ruby> <ruby class="word-ruby">passiv<rt>пассивное</rt></ruby> <ruby class="word-ruby">Anhörung<rt>слушание</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">aktiv,<rt>активный,</rt></ruby> <ruby class="word-ruby">systematisch<rt>систематический</rt></ruby> <ruby class="word-ruby">Werkzeug<rt>инструмент</rt></ruby> <ruby class="word-ruby">Ausbildung.<rt>обучения.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">bewiesen<rt>доказало</rt></ruby> <ruby class="word-ruby">mir,<rt>мне,</rt></ruby> <ruby class="word-ruby">Was<rt>что</rt></ruby> <ruby class="word-ruby">Das<rt>этот</rt></ruby> <ruby class="word-ruby">Prinzip<rt>принцип</rt></ruby> <ruby class="word-ruby">„strukturiert<rt>«структурированной</rt></ruby> <ruby class="word-ruby">Klarheit"<rt>ясности»</rt></ruby> <ruby class="word-ruby">Universal.<rt>универсален.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Also,<rt>Итак,</rt></ruby> <ruby class="word-ruby">groß<rt>большой</rt></ruby> <ruby class="word-ruby">Lektion<rt>урок</rt></ruby> <ruby class="word-ruby">für<rt>для</rt></ruby> <ruby class="word-ruby">Mich<rt>меня</rt></ruby> <ruby class="word-ruby">War<rt>заключался</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">die folgende:<rt>следующем:</rt></ruby> <ruby class="word-ruby">Studieren<rt>Изучаете</rt></ruby> <ruby class="word-ruby">ob<rt>ли</rt></ruby> <ruby class="word-ruby">Du<rt>вы</rt></ruby> <ruby class="word-ruby">Sprache,<rt>язык,</rt></ruby> <ruby class="word-ruby">bilden<rt>составляете</rt></ruby> <ruby class="word-ruby">Wiedergabeliste<rt>плейлист</rt></ruby> <ruby class="word-ruby">oder<rt>или</rt></ruby> <ruby class="word-ruby">Du führst<rt>возглавляете</rt></ruby> <ruby class="word-ruby">Team<rt>команду</rt></ruby> <ruby class="word-ruby">Ingenieure,<rt>инженеров,</rt></ruby> <ruby class="word-ruby">Ziel<rt>цель</rt></ruby> <ruby class="word-ruby">eins<rt>одна</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Und<rt>та</rt></ruby> <ruby class="word-ruby">Dasselbe.<rt>же.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Gut<rt>Хорошее</rt></ruby> <ruby class="word-ruby">Führung<rt>лидерство</rt></ruby> <ruby class="word-ruby">None<rt>–</rt></ruby> <ruby class="word-ruby">Das<rt>это</rt></ruby> <ruby class="word-ruby">Design<rt>проектирование</rt></ruby> <ruby class="word-ruby">System<rt>систем</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">unter<rt>сред,</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">welche<rt>которых</rt></ruby> <ruby class="word-ruby">Komplex<rt>сложное</rt></ruby> <ruby class="word-ruby">Scheint<rt>кажется</rt></ruby> <ruby class="word-ruby">einfach.<rt>простым.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Rede<rt>Речь</rt></ruby> <ruby class="word-ruby">Kommen<rt>идет</rt></ruby> <ruby class="word-ruby">O<rt>о</rt></ruby> <ruby class="word-ruby">verringern<rt>снижении</rt></ruby> <ruby class="word-ruby">kognitiv<rt>когнитивной</rt></ruby> <ruby class="word-ruby">Lasten,<rt>нагрузки,</rt></ruby> <ruby class="word-ruby">Zu<rt>чтобы</rt></ruby> <ruby class="word-ruby">glänzend<rt>блестящие</rt></ruby> <ruby class="word-ruby">Menschen<rt>люди</rt></ruby> <ruby class="word-ruby">könnte<rt>могли</rt></ruby> <ruby class="word-ruby">erfüllen<rt>выполнять</rt></ruby> <ruby class="word-ruby">Mein<rt>свою</rt></ruby> <ruby class="word-ruby">am meisten<rt>самую</rt></ruby> <ruby class="word-ruby">kreativ<rt>творческую</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">wirksam<rt>эффективную</rt></ruby> <ruby class="word-ruby">arbeiten.<rt>работу.</rt></ruby>
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-breakdown">
+                            <div class="sentence-words ruby-inverted">
+                                <ruby class="word-ruby">Das<rt>Это</rt></ruby> <ruby class="word-ruby">Bild<rt>образ</rt></ruby> <ruby class="word-ruby">Denken<rt>мышления</rt></ruby> <ruby class="word-ruby">eins<rt>один</rt></ruby> <ruby class="word-ruby">aus<rt>из</rt></ruby> <ruby class="word-ruby">systemisch<rt>системного</rt></ruby> <ruby class="word-ruby">Denker<rt>мыслителя</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">Schöpfer<rt>создателя</rt></ruby> <ruby class="word-ruby">Klarheit<rt>ясности</rt></ruby> <ruby class="word-ruby">Und<rt>и</rt></ruby> <ruby class="word-ruby">ICH<rt>я</rt></ruby> <ruby class="word-ruby">Sehr<rt>очень</rt></ruby> <ruby class="word-ruby">arbeiten<rt>рад</rt></ruby> <ruby class="word-ruby">Möglichkeiten<rt>возможности</rt></ruby> <ruby class="word-ruby">Klassen<rt>занять</rt></ruby> <ruby class="word-ruby">Berufsbezeichnung<rt>должность</rt></ruby> <ruby class="word-ruby">technisch<rt>технического</rt></ruby> <ruby class="word-ruby">Manager<rt>менеджера</rt></ruby> <ruby class="word-ruby">V<rt>в</rt></ruby> <ruby class="word-ruby">Puffer".<rt>Buffer».</rt></ruby>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Full sentence translations -->
+                <div class="full-translations">
+                    <h3>Full Sentence Translations</h3>
+                    <div class="translations-list">
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> «Привет, я Зая Баррини.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> „Hallo, ich bin Zaya Barrini.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я хотел поделиться чем-то, чему я недавно научился и что неожиданно изменило мое представление о инженерном лидерстве:
+
+Мандаринский китайский.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich wollte etwas mitteilen, was ich kürzlich gelernt habe und das meine Einstellung zu technischer Führung unerwartet verändert hat:
+
+Mandarin-Chinesisch.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Теперь я столкнулся с настоящей стеной с традиционным способом обучения.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Jetzt stoße ich mit der traditionellen Art des Unterrichtens auf eine echte Hürde.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> вы знаете, просто повторяя символы снова и снова или тренируя карточки.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Sie wissen schon, Symbole immer wieder zu wiederholen oder Karteikarten zu üben.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это казалось хаотичным, и мой мозг изо всех сил пытался найти закономерности.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es fühlte sich chaotisch an und mein Gehirn hatte Mühe, Muster zu finden.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Итак, я решил построить систему.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Also beschloss ich, ein System aufzubauen.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я начал раскрашивать символы в зависимости от их грамматических классов.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich fing an, die Charaktere entsprechend ihrer Grammatikklassen einzufärben.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Внезапно то, что было стеной черно-белых символов, превратилось в структурированную визуальную карту.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Plötzlich wurde aus einer Wand aus schwarzen und weißen Symbolen eine strukturierte visuelle Karte.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я создал свой собственный «синтаксис» для понимания, и мгновенно то, что казалось непосильным, стало управляемым и даже приятным.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich habe meine eigene „Syntax“ zum Verständnis erstellt, und sofort wurde das, was überwältigend schien, überschaubar und sogar unterhaltsam.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> И здесь это напрямую связано с моей философией инженерного менеджмента.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Und hier steht dies in direktem Zusammenhang mit meiner Philosophie des Ingenieurmanagements.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Наша роль как лидеров — быть системными архитекторами для наших команд.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Unsere Rolle als Führungskräfte besteht darin, Systemarchitekten für unsere Teams zu sein.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Мы постоянно сталкиваемся со сложными, неоднозначными задачами
+
+обширная дорожная карта продукта, устаревшая система, которую необходимо распутать, или новая техническая стратегия.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Wir stehen ständig vor komplexen, mehrdeutigen Aufgaben
+
+eine umfangreiche Produkt-Roadmap, ein Altsystem, das entwirrt werden muss, oder eine neue Technologiestrategie.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Наша задача не в том, чтобы получить ответы на все вопросы, а в том, чтобы создать структуру и ясность, которые позволят нашим командам справляться с этой сложностью, не перегружая себя.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Unsere Aufgabe besteht nicht darin, alle Antworten zu haben, sondern die Struktur und Klarheit zu schaffen, die es unseren Teams ermöglicht, diese Komplexität zu bewältigen, ohne überfordert zu werden.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Мы строим визуализации, налаживаем четкие процессы и создаем ритмы общения, которые превращают хаос в целенаправленную и эффективную работу.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Wir erstellen Visualisierungen, etablieren klare Prozesse und schaffen Kommunikationsrhythmen, die Chaos in zielgerichtete und effektive Arbeit verwandeln.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Я даже применил это к своему плейлисту с китайскими альбомами EXO, раскрашивая песни по темам и энергетике.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Ich habe dies sogar auf meine EXO-Chinese-Album-Playlist angewendet und die Songs nach Thema und Energie gefärbt.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это превратило пассивное слушание в активный, систематический инструмент обучения.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Dadurch wurde das passive Zuhören zu einem aktiven, systematischen Lerninstrument.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это доказало мне, что этот принцип «структурированной ясности» универсален.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Dies bewies für mich, dass dieses Prinzip der „strukturierten Klarheit“ universell ist.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Итак, большой урок для меня заключался в следующем:
+
+Изучаете ли вы язык, составляете плейлист или возглавляете команду инженеров, цель одна и та же.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Die große Lektion für mich war also diese:
+
+Egal, ob Sie eine Sprache lernen, eine Playlist erstellen oder ein Team von Ingenieuren leiten, das Ziel ist dasselbe.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Хорошее лидерство – это проектирование систем и сред, в которых сложное кажется простым.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Bei guter Führung geht es darum, Systeme und Umgebungen zu entwerfen, die das Komplexe einfach erscheinen lassen.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Речь идет о снижении когнитивной нагрузки, чтобы блестящие люди могли выполнять свою самую творческую и эффективную работу.
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es geht darum, die kognitive Belastung zu reduzieren, damit brillante Menschen ihre kreativste und effektivste Arbeit leisten können.
+                            </div>
+                        </div>
+                        
+                        <div class="sentence-translation">
+                            <div class="original-sentence">
+                                <strong>Original:</strong> Это образ мышления
+
+один из системного мыслителя и создателя ясности
+
+и я очень рад возможности занять должность технического менеджера в Buffer».
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translated:</strong> Es ist eine Denkweise
+
+einer der Systemdenker und Schöpfer der Klarheit
+
+und ich freue mich sehr über die Gelegenheit, die Position des technischen Managers bei Buffer zu übernehmen.“
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <button class="floating-invert-btn" id="floatingInvertBtn" title="Toggle word display" style="transform: scale(1);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M16 18L18 18C20.2091 18 22 16.2091 22 14C22 11.7909 20.2091 10 18 10L6 10C3.79086 10 2 11.7909 2 14C2 16.2091 3.79086 18 6 18L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 6L6 6C3.79086 6 2 7.79086 2 10C2 12.2091 3.79086 14 6 14L18 14C20.2091 14 22 12.2091 22 10C22 7.79086 20.2091 6 18 6L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M8 2L16 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            <span class="btn-text">Normal</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingInvertBtn = document.getElementById('floatingInvertBtn');
+            const sentenceWords = document.querySelectorAll('.sentence-words');
+            
+            floatingInvertBtn.addEventListener('click', function() {
+                sentenceWords.forEach(container => {
+                    container.classList.toggle('ruby-normal');
+                    container.classList.toggle('ruby-inverted');
+                });
+                
+                // Update button text
+                const isInverted = sentenceWords[0].classList.contains('ruby-inverted');
+                const btnText = this.querySelector('.btn-text');
+                btnText.textContent = isInverted ? 'Normal' : 'Invert';
+                
+                // Add animation feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Hide floating button when printing
+            window.addEventListener('beforeprint', function() {
+                floatingInvertBtn.style.display = 'none';
+            });
+            
+            window.addEventListener('afterprint', function() {
+                floatingInvertBtn.style.display = 'flex';
+            });
+        });
+    </script>
+
+</body></html>
