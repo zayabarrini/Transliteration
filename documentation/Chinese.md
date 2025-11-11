@@ -16,3 +16,14 @@ cd grammar-db
 
 start Google Translate on chrome with chinese source select
 open Calibre: Chinese-trans-css.epub
+
+- Since for chinese there's data to include the syntax and pos along with the transliteration and translation,
+  maybe use spans with rt to compose for chinese:
+
+```
+  "word": word,
+  "transliteration": pinyin_word,
+  "translation": translation,
+  "syntax": syntax,
+  "pos": pos,
+```

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Transliterator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2transliteration.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web Transliterator</h1>
+            <p>Break down sentences with word-by-word translation and transliteration</p>
+        </header>
+
+        <main>
+            <form method="POST" class="input-form">
+                <div class="form-group">
+                    <label for="text">Enter text to transliterate:</label>
+                    <textarea id="text" name="text" rows="6" placeholder="Enter text in any supported language..." required>{{ input_text }}</textarea>
+                </div>
+                
+                <div class="language-selection">
+                    <div class="form-group">
+                        <label for="source_lang">Source Language (to transliterate):</label>
+                        <select id="source_lang" name="source_lang" required>
+                            <option value="">Select source language</option>
+                            {% for lang in source_languages %}
+                            <option value="{{ lang.code }}" {% if selected_source_lang == lang.code %}selected{% endif %}>
+                                {{ lang.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="target_lang">Target Language (to translate to):</label>
+                        <select id="target_lang" name="target_lang" required>
+                            <option value="">Select target language</option>
+                            {% for lang in target_languages %}
+                            <option value="{{ lang.code }}" {% if selected_target_lang == lang.code %}selected{% endif %}>
+                                {{ lang.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary">Transliterate & Translate</button>
+            </form>
+
+            {% if result %}
+            <button class="floating-invert-btn" id="floatingInvertBtn" title="Toggle word display">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 18L18 18C20.2091 18 22 16.2091 22 14C22 11.7909 20.2091 10 18 10L6 10C3.79086 10 2 11.7909 2 14C2 16.2091 3.79086 18 6 18L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 6L6 6C3.79086 6 2 7.79086 2 10C2 12.2091 3.79086 14 6 14L18 14C20.2091 14 22 12.2091 22 10C22 7.79086 20.2091 6 18 6L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 2L16 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="btn-text">Invert</span>
+            </button>
+
+            <div class="results-section" dir="{{ result.text_direction }}">
+                <h2>Results: {{ result.source_language_name }} → {{ result.target_language_name }}</h2>
+                
+                {% for sentence in result.sentences %}
+                <div class="sentence-result">
+                    <div class="sentence-header">
+                        <h3>Sentence Analysis</h3>
+                    </div>
+                    
+                    <!-- Word Breakdown -->
+                    <div class="breakdown-section">
+                        <h4>Word-by-Word Breakdown</h4>
+                        <div class="word-breakdown">
+                            {% for item in sentence.word_breakdown %}
+                                {% if item.processable %}
+                                    {% if result.source_language == 'zh-CN' and item.syntax %}
+                                    <div class="chinese-word" data-syntax="{{ item.syntax }}" data-pos="{{ item.pos }}">
+                                        <ruby>
+                                            {{ item.word }}
+                                            <rt class="translation">{{ item.translation }}</rt>
+                                            <rt class="transliteration">{{ item.transliteration }}</rt>
+                                        </ruby>
+                                        {% if item.grammatical_class %}
+                                        <span class="grammatical-info" title="Part of Speech: {{ item.pos }} | Syntax: {{ item.syntax }}">{{ item.grammatical_class }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <ruby>
+                                        {{ item.word }}
+                                        <rt class="translation">{{ item.translation }}</rt>
+                                        <rt class="transliteration">{{ item.transliteration }}</rt>
+                                    </ruby>
+                                    {% endif %}
+                                {% else %}
+                                <span class="non-processable">{{ item.word }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Full Sentence -->
+                    <div class="full-sentence-section">
+                        <div class="sentence-pair">
+                            <div class="original-sentence">
+                                <strong>Original ({{ result.source_language_name }}):</strong> {{ sentence.original }}
+                            </div>
+                            <div class="translated-sentence">
+                                <strong>Translation ({{ result.target_language_name }}):</strong> {{ sentence.full_translation }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if result.error %}
+                <div class="error-message">
+                    <p>Error: {{ result.error }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>Transliterate from: Japanese, Chinese, Korean, Hindi, Arabic, Russian | Translate to: Multiple languages</p>
+        </footer>
+    </div>
+
+    <script>
+        // Auto-resize textarea
+        const textarea = document.getElementById('text');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Add loading state
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.textContent = 'Processing...';
+            button.disabled = true;
+        });
+
+        // Set default target language to English if not set
+        document.addEventListener('DOMContentLoaded', function() {
+            const targetLangSelect = document.getElementById('target_lang');
+            if (targetLangSelect && !targetLangSelect.value) {
+                const englishOption = targetLangSelect.querySelector('option[value="en"]');
+                if (englishOption) {
+                    englishOption.selected = true;
+                }
+            }
+        });
+
+        // Invert button functionality - FIXED
+        let currentOrder = 0; // Move outside the click handler
+
+        const invertBtn = document.getElementById('floatingInvertBtn');
+        if (invertBtn) {
+            // Initialize with current order from data attribute if exists
+            const savedOrder = invertBtn.getAttribute('data-order');
+            if (savedOrder !== null) {
+                currentOrder = parseInt(savedOrder);
+            }
+            
+            // Apply initial order
+            applyDisplayOrder(currentOrder);
+            updateButtonText(currentOrder);
+
+            invertBtn.addEventListener('click', function() {
+                // Cycle to next order
+                currentOrder = (currentOrder + 1) % 4;
+                this.setAttribute('data-order', currentOrder);
+                
+                console.log('Toggling display order: ', currentOrder);
+                
+                // Apply the new display order
+                applyDisplayOrder(currentOrder);
+                updateButtonText(currentOrder);
+            });
+        }
+
+        function applyDisplayOrder(order) {
+            const wordBreakdowns = document.querySelectorAll('.word-breakdown');
+            
+            wordBreakdowns.forEach(breakdown => {
+                const rubies = breakdown.querySelectorAll('ruby');
+                rubies.forEach(ruby => {
+                    const translationRt = ruby.querySelector('.translation');
+                    const transliterationRt = ruby.querySelector('.transliteration');
+                    
+                    if (translationRt && transliterationRt) {
+                        // Reset all styles first
+                        translationRt.style.order = '';
+                        transliterationRt.style.order = '';
+                        translationRt.style.fontSize = '';
+                        transliterationRt.style.fontSize = '';
+                        translationRt.style.fontWeight = '';
+                        transliterationRt.style.fontWeight = '';
+                        
+                        // Apply the selected order
+                        switch(order) {
+                            case 0: // Default: translation above, transliteration below
+                                translationRt.style.order = '-1';
+                                transliterationRt.style.order = '1';
+                                translationRt.style.fontSize = '0.8em';
+                                transliterationRt.style.fontSize = '0.9em';
+                                transliterationRt.style.fontWeight = '600';
+                                break;
+                            case 1: // Inverted: transliteration above, translation below
+                                translationRt.style.order = '1';
+                                transliterationRt.style.order = '-1';
+                                translationRt.style.fontSize = '0.9em';
+                                transliterationRt.style.fontSize = '0.8em';
+                                translationRt.style.fontWeight = '600';
+                                break;
+                            case 2: // Both above - center text larger
+                                translationRt.style.order = '-2';
+                                transliterationRt.style.order = '-1';
+                                translationRt.style.fontSize = '0.8em';
+                                transliterationRt.style.fontSize = '0.8em';
+                                // Make the main word larger when both annotations are above
+                                ruby.style.fontSize = '1.1em';
+                                break;
+                            case 3: // Both below - center text larger
+                                translationRt.style.order = '1';
+                                transliterationRt.style.order = '2';
+                                translationRt.style.fontSize = '0.8em';
+                                transliterationRt.style.fontSize = '0.8em';
+                                // Make the main word larger when both annotations are below
+                                ruby.style.fontSize = '1.1em';
+                                break;
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateButtonText(order) {
+            const orderTexts = ['Default', 'Inverted', 'Both Above', 'Both Below'];
+            const btnText = invertBtn.querySelector('.btn-text');
+            if (btnText) {
+                btnText.textContent = orderTexts[order];
+            }
+        }
+    </script>
+</body>
+</html>

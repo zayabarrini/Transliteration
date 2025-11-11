@@ -156,6 +156,14 @@ select {
   font-weight: 500;
 }
 
+.rtl-language {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.cjk-language {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
 /* Floating Invert Button */
 .floating-invert-btn {
   position: fixed;
@@ -187,97 +195,74 @@ select {
   transform: translateY(-1px);
 }
 
-/* Ruby annotation styling with perfect center alignment */
+/* Ruby annotation styling - FIXED inversion */
 .word-ruby {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0 4px;
+  display: inline-block;
+  margin: 0 2px;
   vertical-align: middle;
-  position: relative;
-  line-height: 1.2;
 }
 
-/* Normal mode: Big original word (base), small translation (annotation) */
-.ruby-normal .word-ruby {
-  font-size: 1.4rem;
+/* Normal mode: Big original word, small translation */
+.ruby-normal .word-ruby ruby {
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #000000;
 }
 
 .ruby-normal .word-ruby rt {
-  font-size: 0.9rem;
-  color: #6b7280;
+  font-size: 0.8rem;
+  color: #000000;
   font-weight: 500;
-  opacity: 0.9;
-  margin-top: 2px;
+  opacity: 0.8;
 }
 
-/* Inverted mode: Big translation (base), small original word (annotation) */
-.ruby-inverted .word-ruby {
-  font-size: 0.9rem;
+/* Inverted mode: Big translation, small original word */
+.ruby-inverted .word-ruby ruby {
+  font-size: 0.8rem;
   font-weight: 600;
   color: #059669;
 }
 
 .ruby-inverted .word-ruby rt {
-  font-size: 1.4rem;
-  color: #6b7280;
+  font-size: 1.3rem;
+  color: #000000;
   font-weight: 500;
-  opacity: 0.8;
-  margin-top: 2px;
+  opacity: 0.9;
 }
 
-/* Ensure perfect center alignment for both modes */
-.word-ruby ruby {
-  display: inline-flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1;
-}
-
-.word-ruby rt {
-  order: -1;
-  margin-bottom: 2px;
-}
-
-.ruby-inverted .word-ruby ruby {
-  flex-direction: column;
-}
-
-.ruby-inverted .word-ruby rt {
-  order: 1;
-  margin-bottom: 0;
-  margin-top: 2px;
-}
-
-/* Proper spacing between ruby elements */
+/* Proper spacing and alignment */
 .sentence-words {
-  word-spacing: 3px;
-  letter-spacing: 0.3px;
-  text-align: justify;
+  word-spacing: 2px;
+  letter-spacing: 0.2px;
   line-height: 2;
+  text-align: left;
 }
 
-.sentence-words .word-ruby {
-  margin: 0 4px;
-  padding: 2px 1px;
+/* RTL language support */
+.rtl {
+  direction: rtl;
+  text-align: right;
 }
 
-/* Translation Breakdown Styles */
+.rtl .sentence-words {
+  text-align: right;
+}
+
+/* CJK language support */
+.cjk-language {
+  font-family: 'Inter', 'Noto Sans CJK', sans-serif;
+}
+
+/* Combined translation breakdown */
 .translation-breakdown {
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
-.translation-breakdown h3,
-.full-translations h3 {
+.translation-breakdown h3 {
   color: #374151;
   font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding-bottom: 8px;
   border-bottom: 2px solid #e5e7eb;
 }
@@ -289,62 +274,61 @@ select {
   overflow: hidden;
 }
 
-.sentence-breakdown {
-  padding: 20px;
+.sentence-group {
   border-bottom: 1px solid #f1f5f9;
 }
 
-.sentence-breakdown:last-child {
+.sentence-group:last-child {
   border-bottom: none;
 }
 
-.sentence-words {
-  /* font-size: 1.1rem; */
-  line-height: 1.8;
-  text-align: justify;
-}
-
-/* Full Translations Styles */
-.full-translations {
-  margin-top: 30px;
-}
-
-.translations-list {
-  background: white;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  overflow: hidden;
+.sentence-breakdown {
+  padding: 20px 20px 10px 20px;
+  background: #fafafa;
 }
 
 .sentence-translation {
-  font-size: large;
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.sentence-translation:last-child {
-  border-bottom: none;
+  padding: 10px 20px 20px 20px;
+  /* display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px; */
 }
 
 .original-sentence {
-  margin-bottom: 12px;
-  padding: 12px;
+  padding: 15px;
   background: #f8fafc;
   border-radius: 8px;
   border-left: 4px solid #4f46e5;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .translated-sentence {
-  padding: 12px;
+  padding: 15px;
   background: #f0fdf4;
   border-radius: 8px;
   border-left: 4px solid #10b981;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-.original-sentence strong,
-.translated-sentence strong {
-  color: #374151;
-  font-weight: 600;
+/* Sentence numbering */
+.sentence-group::before {
+  content: 'Sentence ' counter(sentence);
+  counter-increment: sentence;
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin: 15px 20px 0 20px;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.breakdown-content {
+  counter-reset: sentence;
 }
 
 .error {
@@ -354,27 +338,6 @@ select {
   border-radius: 4px;
   font-weight: 500;
   border: 1px solid #fecaca;
-}
-
-/* Sentence numbering */
-.sentence-breakdown::before,
-.sentence-translation::before {
-  content: 'Sentence ' counter(sentence);
-  counter-increment: sentence;
-  display: block;
-  font-size: 0.8rem;
-  color: #6b7280;
-  font-weight: 500;
-  margin-bottom: 10px;
-  background: #f1f5f9;
-  padding: 4px 8px;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.breakdown-content,
-.translations-list {
-  counter-reset: sentence;
 }
 
 /* Responsive design */
@@ -414,57 +377,54 @@ select {
     justify-content: space-between;
   }
 
-  .sentence-words {
-    font-size: 1rem;
+  .sentence-breakdown {
+    padding: 15px 15px 8px 15px;
   }
 
-  .sentence-breakdown,
   .sentence-translation {
-    padding: 15px;
+    padding: 8px 15px 15px 15px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .ruby-normal .word-ruby,
-  .ruby-inverted .word-ruby {
-    font-size: 2.4rem;
-    margin: 0 3px;
+  .ruby-normal .word-ruby ruby {
+    font-size: 1.1rem;
   }
 
-  .ruby-normal .word-ruby rt,
+  .ruby-normal .word-ruby rt {
+    font-size: 0.7rem;
+  }
+
+  .ruby-inverted .word-ruby ruby {
+    font-size: 0.7rem;
+  }
+
   .ruby-inverted .word-ruby rt {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
   }
 
   /* Adjust floating button for mobile */
   .floating-invert-btn {
-    bottom: 30px;
-    right: 30px;
-    padding: 14px 18px;
-    font-size: 1rem;
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 16px;
+    font-size: 0.9rem;
   }
 
   .floating-invert-btn .btn-text {
     display: none;
   }
-
-  .floating-invert-btn:hover .btn-text {
-    display: inline;
-  }
 }
 
 @media (max-width: 480px) {
   .floating-invert-btn {
-    bottom: 25px;
-    right: 25px;
+    bottom: 15px;
+    right: 15px;
     padding: 12px 14px;
   }
 }
 
 /* Loading animation */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
 .loading::after {
   content: '';
   display: inline-block;
@@ -484,11 +444,6 @@ select {
   100% {
     transform: rotate(360deg);
   }
-}
-
-/* Scroll behavior for long content */
-html {
-  scroll-behavior: smooth;
 }
 
 /* Hide floating button when printing */

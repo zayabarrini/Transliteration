@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/Drag-Race/SurvivorAuS08E07"
+DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/Zips/Cinema-Comedy"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
@@ -182,6 +182,17 @@ except Exception as e:
 
             # Remove hash symbols
             s/#//g;
+
+            # This implements the Python SPLIT_REGEX pattern
+            s{
+                (?<!\w\.\w.)                    # Don'\''t split after abbreviations like U.S.A.
+                (?<![A-Z][a-z]\.)              # Don'\''t split after abbreviations like Dr.
+                (?<=[.!?…:;。！？—])             # Split after sentence-ending punctuation
+                (?:\s+|$)                       # Followed by whitespace OR end of string  
+                (?![.!?…:;。！？])                # But not if it'\''s another sentence ender
+                |                               # OR
+                \s*—\s*                         # Split on em dash with optional whitespace
+            }{\n\n}gx;
 
             # THE KEY PART: Convert single newlines to double newlines (Vim equivalent)
             # This is the Perl equivalent of: %s/\([^\n]\)\n\([^\n]\)/\1\r\r\2/g

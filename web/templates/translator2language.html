@@ -51,35 +51,28 @@
                 <div class="result-header">
                     <h2>Translation Result</h2>
                     <div class="header-controls">
-                        <span class="language-badge">{{ result.language }}</span>
+                        <span class="language-badge {{ result.language_class }}">{{ result.language }}</span>
                     </div>
                 </div>
                 
-                <!-- Word-by-word breakdown -->
+                <!-- Combined translation breakdown -->
                 <div class="translation-breakdown">
-                    <h3>Word-by-Word Breakdown</h3>
+                    <h3>Translation Breakdown</h3>
                     <div class="breakdown-content">
                         {% for sentence in result.sentences %}
-                        <div class="sentence-breakdown">
-                            <div class="sentence-words ruby-normal">
-                                {{ sentence.word_by_word|safe }}
+                        <div class="sentence-group">
+                            <div class="sentence-breakdown">
+                                <div class="sentence-words ruby-normal {{ result.text_direction }}">
+                                    {{ sentence.word_by_word|safe }}
+                                </div>
                             </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                
-                <!-- Full sentence translations -->
-                <div class="full-translations">
-                    <h3>Full Sentence Translations</h3>
-                    <div class="translations-list">
-                        {% for sentence in result.sentences %}
-                        <div class="sentence-translation">
-                            <div class="original-sentence">
-                                <strong>Original:</strong> {{ sentence.original }}
-                            </div>
-                            <div class="translated-sentence">
-                                <strong>Translated:</strong> {{ sentence.full_translation }}
+                            <div class="sentence-translation">
+                                <div class="original-sentence">
+                                    {{ sentence.original }}
+                                </div>
+                                <div class="translated-sentence {{ result.text_direction }}">
+                                    {{ sentence.full_translation }}
+                                </div>
                             </div>
                         </div>
                         {% endfor %}

@@ -310,11 +310,11 @@ rt {
 }
 
 rt.translation {
-  color: #666;
+  color: #0e0d0d;
 }
 
 rt.pinyin {
-  color: #888;
+  color: #0f0e0e;
   font-weight: bold;
 }
 
