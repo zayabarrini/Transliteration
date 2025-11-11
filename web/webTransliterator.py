@@ -14,15 +14,32 @@ from transliteration import (
 
 app = Flask(__name__)
 
-# Source languages (languages we transliterate FROM)
-SOURCE_LANGUAGES = [
-    {"code": "ja", "name": "Japanese", "direction": "ltr"},
-    {"code": "ko", "name": "Korean", "direction": "ltr"},
-    {"code": "zh-CN", "name": "Chinese", "direction": "ltr"},
-    {"code": "hi", "name": "Hindi", "direction": "ltr"},
-    {"code": "ar", "name": "Arabic", "direction": "rtl"},
-    {"code": "ru", "name": "Russian", "direction": "ltr"},
-]
+# Language character ranges for detection
+LANGUAGE_CHAR_RANGES = {
+    "korean": [(0xAC00, 0xD7AF)],  # Hangul syllables
+    "arabic": [(0x0600, 0x06FF)],   # Basic Arabic
+    "russian": [(0x0400, 0x04FF)],  # Cyrillic
+    "hindi": [(0x0900, 0x097F)],    # Devanagari (Hindi)
+    "japanese": [
+        (0x3040, 0x309F),  # Hiragana
+        (0x30A0, 0x30FF),  # Katakana  
+        (0x4E00, 0x9FFF),  # Kanji/Chinese characters
+    ],
+    "chinese": [(0x4E00, 0x9FFF)],  # Chinese characters
+}
+
+# Language priority for ambiguous characters (Chinese/Japanese share Kanji)
+LANGUAGE_PRIORITY = ["chinese", "japanese", "korean", "hindi", "arabic", "russian"]
+
+# Language code mapping for translation
+LANGUAGE_CODE_MAP = {
+    "japanese": "ja",
+    "chinese": "zh-CN", 
+    "korean": "ko",
+    "hindi": "hi",
+    "arabic": "ar",
+    "russian": "ru"
+}
 
 # Target languages (languages we translate TO)
 TARGET_LANGUAGES = [
@@ -50,9 +67,100 @@ TARGET_LANGUAGES = [
     {"code": "id", "name": "Indonesian", "direction": "ltr"}
 ]
 
+def detect_language_char(char):
+    """Detect which language a character belongs to"""
+    char_code = ord(char)
+    
+    # Skip common punctuation and whitespace
+    if char in ' .,!?。，！？、」「『』（）《》-—–…':
+        return "punctuation"
+    
+    for lang, ranges in LANGUAGE_CHAR_RANGES.items():
+        for start, end in ranges:
+            if isinstance(start, tuple):  # Multiple ranges
+                for r_start, r_end in ranges:
+                    if r_start <= char_code <= r_end:
+                        return lang
+            else:  # Single range
+                if start <= char_code <= end:
+                    return lang
+    
+    return "latin"  # Default to latin for unrecognized characters
+
+def detect_language_text(text):
+    """Detect the primary language of a text block"""
+    if not text.strip():
+        return "unknown"
+    
+    char_languages = []
+    for char in text:
+        lang = detect_language_char(char)
+        if lang not in ["punctuation", "latin"]:
+            char_languages.append(lang)
+    
+    if not char_languages:
+        return "latin"  # No special characters found, treat as latin
+    
+    # Count language occurrences
+    from collections import Counter
+    lang_counts = Counter(char_languages)
+    
+    # Handle Chinese/Japanese ambiguity with better heuristics
+    if "japanese" in lang_counts and "chinese" in lang_counts:
+        # If there are Japanese-specific characters, prioritize Japanese
+        if contains_japanese_specific_chars(text):
+            return "japanese"
+        # Default to the majority
+        elif lang_counts["japanese"] > lang_counts["chinese"]:
+            return "japanese"
+        else:
+            return "chinese"
+    
+    # For single language or clear majority
+    primary_lang = lang_counts.most_common(1)[0][0]
+    
+    # Double-check Chinese/Japanese if detected
+    if primary_lang == "japanese" and not contains_japanese_specific_chars(text) and contains_chinese_specific_patterns(text):
+        return "chinese"
+    elif primary_lang == "chinese" and contains_japanese_specific_chars(text):
+        return "japanese"
+    
+    return primary_lang
+
+def contains_japanese_specific_chars(text):
+    """Check for Japanese-specific characters"""
+    # Hiragana and Katakana are uniquely Japanese
+    hiragana_range = (0x3040, 0x309F)
+    katakana_range = (0x30A0, 0x30FF)
+    # Japanese punctuation and symbols
+    japanese_punct = "・「」『』〜"
+    
+    for char in text:
+        code = ord(char)
+        if (hiragana_range[0] <= code <= hiragana_range[1] or 
+            katakana_range[0] <= code <= katakana_range[1] or
+            char in japanese_punct):
+            return True
+    return False
+
+def contains_chinese_specific_patterns(text):
+    """Check for Chinese-specific patterns"""
+    # Chinese punctuation
+    chinese_punct = "。，！？《》【】"
+    # Common Chinese characters not typically used in Japanese
+    chinese_specific_chars = "这那为个说国们着么"
+    
+    if any(punct in text for punct in chinese_punct):
+        return True
+    
+    if any(char in text for char in chinese_specific_chars):
+        return True
+    
+    return False
+
 def split_into_sentences(text):
     """Split text into sentences"""
-    sentences = re.split(r'(?<=[.!?。！؟؟])\s+', text)
+    sentences = re.split(r'(?<=[.!?。！？])\s+', text)
     return [sentence.strip() for sentence in sentences if sentence.strip()]
 
 def should_process_word(word):
@@ -65,14 +173,14 @@ def should_process_word(word):
         return False
     return True
 
-def process_word_breakdown(text, source_lang, target_lang):
+def process_word_breakdown(text, detected_lang, target_lang):
     """Process text for word-by-word breakdown with translation and transliteration"""
-    if source_lang == "zh-CN":
+    if detected_lang == "chinese":
         return process_chinese_breakdown(text, target_lang)
-    elif source_lang == "ja":
+    elif detected_lang == "japanese":
         return process_japanese_breakdown(text, target_lang)
     else:
-        return process_other_language_breakdown(text, source_lang, target_lang)
+        return process_other_language_breakdown(text, detected_lang, target_lang)
 
 def process_japanese_breakdown(text, target_lang):
     """Process Japanese text using pykakasi segmentation for both transliteration and translation"""
@@ -168,7 +276,7 @@ def process_chinese_breakdown(text, target_lang):
     
     return result
 
-def process_other_language_breakdown(text, source_lang, target_lang):
+def process_other_language_breakdown(text, detected_lang, target_lang):
     """Process other languages word by word"""
     result = []
     
@@ -188,15 +296,16 @@ def process_other_language_breakdown(text, source_lang, target_lang):
         
         # Get translation
         try:
-            translation = GoogleTranslator(source=source_lang, target=target_lang).translate(token)
+            source_code = LANGUAGE_CODE_MAP.get(detected_lang, detected_lang)
+            translation = GoogleTranslator(source=source_code, target=target_lang).translate(token)
         except Exception as e:
             translation = f"[Error: {str(e)}]"
         
         # Get transliteration
         try:
-            transliteration_result = transliterate(token, source_lang)
+            transliteration_result = transliterate(token, detected_lang)
             
-            if source_lang == "ko" and isinstance(transliteration_result, list):
+            if detected_lang == "korean" and isinstance(transliteration_result, list):
                 transliteration = " ".join([trans for char, trans in transliteration_result])
             else:
                 transliteration = str(transliteration_result)
@@ -213,59 +322,64 @@ def process_other_language_breakdown(text, source_lang, target_lang):
     
     return result
 
-def translate_full_sentence(text, source_lang, target_lang):
+def translate_full_sentence(text, detected_lang, target_lang):
     """Translate full sentence"""
     try:
-        # Handle Chinese language code properly
-        if source_lang == "zh-CN":
-            source_lang = "zh-CN"
-        translated = GoogleTranslator(source=source_lang, target=target_lang).translate(text)
+        source_code = LANGUAGE_CODE_MAP.get(detected_lang, detected_lang)
+        translated = GoogleTranslator(source=source_code, target=target_lang).translate(text)
         return translated
     except Exception as e:
         return f"Translation error: {str(e)}"
 
 def get_language_direction(lang_code):
     """Get text direction for language"""
-    # Check source languages first
-    lang = next((l for l in SOURCE_LANGUAGES if l["code"] == lang_code), None)
-    if not lang:
-        # Check target languages
-        lang = next((l for l in TARGET_LANGUAGES if l["code"] == lang_code), None)
+    # Check if it's a detected language name
+    if lang_code in LANGUAGE_CHAR_RANGES:
+        if lang_code in ["arabic"]:
+            return "rtl"
+        return "ltr"
+    
+    # Check target languages
+    lang = next((l for l in TARGET_LANGUAGES if l["code"] == lang_code), None)
     return lang["direction"] if lang else "ltr"
 
 @app.route("/", methods=["GET", "POST"])
 def transliterator():
     input_text = ""
     result = None
-    selected_source_lang = ""
     selected_target_lang = "en"  # Default to English
 
     if request.method == "POST":
         input_text = request.form["text"]
-        selected_source_lang = request.form["source_lang"]
         selected_target_lang = request.form["target_lang"]
 
-        if input_text.strip() and selected_source_lang and selected_target_lang:
+        if input_text.strip() and selected_target_lang:
             try:
+                # Detect language from input text
+                detected_lang = detect_language_text(input_text)
+                
                 sentences = split_into_sentences(input_text)
                 sentence_results = []
                 
                 for sentence in sentences:
-                    word_breakdown = process_word_breakdown(sentence, selected_source_lang, selected_target_lang)
-                    full_translation = translate_full_sentence(sentence, selected_source_lang, selected_target_lang)
+                    # Detect language for each sentence (in case of mixed content)
+                    sentence_lang = detect_language_text(sentence)
+                    word_breakdown = process_word_breakdown(sentence, sentence_lang, selected_target_lang)
+                    full_translation = translate_full_sentence(sentence, sentence_lang, selected_target_lang)
                     
                     sentence_results.append({
                         "original": sentence,
                         "word_breakdown": word_breakdown,
-                        "full_translation": full_translation
+                        "full_translation": full_translation,
+                        "detected_language": sentence_lang
                     })
                 
                 result = {
-                    "source_language": selected_source_lang,
+                    "detected_language": detected_lang,
                     "target_language": selected_target_lang,
-                    "source_language_name": next((lang["name"] for lang in SOURCE_LANGUAGES if lang["code"] == selected_source_lang), selected_source_lang),
+                    "detected_language_name": detected_lang.title(),
                     "target_language_name": next((lang["name"] for lang in TARGET_LANGUAGES if lang["code"] == selected_target_lang), selected_target_lang),
-                    "text_direction": get_language_direction(selected_source_lang),
+                    "text_direction": get_language_direction(detected_lang),
                     "sentences": sentence_results
                 }
                 
@@ -273,7 +387,7 @@ def transliterator():
                 print(f"Error processing text: {str(e)}")
                 result = {
                     "error": str(e),
-                    "source_language": selected_source_lang,
+                    "detected_language": "unknown",
                     "target_language": selected_target_lang,
                     "text_direction": "ltr",
                     "sentences": []
@@ -283,9 +397,7 @@ def transliterator():
         "translator2transliteration.html", 
         input_text=input_text, 
         result=result,
-        source_languages=SOURCE_LANGUAGES,
         target_languages=TARGET_LANGUAGES,
-        selected_source_lang=selected_source_lang,
         selected_target_lang=selected_target_lang
     )
 
@@ -294,16 +406,19 @@ def api_transliterate():
     """API endpoint for transliteration only"""
     data = request.json
     text = data.get("text", "")
-    language = data.get("language", "")
     
-    if not text or not language:
-        return jsonify({"error": "Text and language are required"}), 400
+    if not text:
+        return jsonify({"error": "Text is required"}), 400
     
     try:
-        result = transliterate(text, language)
-        return jsonify({"transliteration": str(result)})
+        detected_lang = detect_language_text(text)
+        result = transliterate(text, detected_lang)
+        return jsonify({
+            "transliteration": str(result),
+            "detected_language": detected_lang
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5007)
+    app.run(debug=True, port=5009)

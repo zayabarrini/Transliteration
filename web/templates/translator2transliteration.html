@@ -11,39 +11,26 @@
         <header>
             <h1>Web Transliterator</h1>
             <p>Break down sentences with word-by-word translation and transliteration</p>
+            <p class="subtitle">Automatically detects: Japanese, Chinese, Korean, Hindi, Arabic, Russian</p>
         </header>
 
         <main>
             <form method="POST" class="input-form">
                 <div class="form-group">
                     <label for="text">Enter text to transliterate:</label>
-                    <textarea id="text" name="text" rows="6" placeholder="Enter text in any supported language..." required>{{ input_text }}</textarea>
+                    <textarea id="text" name="text" rows="6" placeholder="Enter text in any supported language (Japanese, Chinese, Korean, Hindi, Arabic, Russian)..." required>{{ input_text }}</textarea>
                 </div>
                 
-                <div class="language-selection">
-                    <div class="form-group">
-                        <label for="source_lang">Source Language (to transliterate):</label>
-                        <select id="source_lang" name="source_lang" required>
-                            <option value="">Select source language</option>
-                            {% for lang in source_languages %}
-                            <option value="{{ lang.code }}" {% if selected_source_lang == lang.code %}selected{% endif %}>
-                                {{ lang.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="target_lang">Target Language (to translate to):</label>
-                        <select id="target_lang" name="target_lang" required>
-                            <option value="">Select target language</option>
-                            {% for lang in target_languages %}
-                            <option value="{{ lang.code }}" {% if selected_target_lang == lang.code %}selected{% endif %}>
-                                {{ lang.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="target_lang">Translate to:</label>
+                    <select id="target_lang" name="target_lang" required>
+                        <option value="">Select target language</option>
+                        {% for lang in target_languages %}
+                        <option value="{{ lang.code }}" {% if selected_target_lang == lang.code %}selected{% endif %}>
+                            {{ lang.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
                 <button type="submit" class="btn-primary">Transliterate & Translate</button>
@@ -60,21 +47,22 @@
             </button>
 
             <div class="results-section" dir="{{ result.text_direction }}">
-                <h2>Results: {{ result.source_language_name }} → {{ result.target_language_name }}</h2>
+                <h2>Results: {{ result.detected_language_name }} → {{ result.target_language_name }}</h2>
+                <p class="detection-info">Detected language: {{ result.detected_language_name }}</p>
                 
                 {% for sentence in result.sentences %}
                 <div class="sentence-result">
                     <div class="sentence-header">
-                        <h3>Sentence Analysis</h3>
+                        <h3>Sentence Analysis {% if sentence.detected_language != result.detected_language %}({{ sentence.detected_language.title() }}){% endif %}</h3>
                     </div>
                     
                     <!-- Word Breakdown -->
                     <div class="breakdown-section">
-                        <h4>Word-by-Word Breakdown</h4>
+                        <!-- <h4>Word-by-Word Breakdown</h4> -->
                         <div class="word-breakdown">
                             {% for item in sentence.word_breakdown %}
                                 {% if item.processable %}
-                                    {% if result.source_language == 'zh-CN' and item.syntax %}
+                                    {% if sentence.detected_language == 'chinese' and item.syntax %}
                                     <div class="chinese-word" data-syntax="{{ item.syntax }}" data-pos="{{ item.pos }}">
                                         <ruby>
                                             {{ item.word }}
@@ -123,7 +111,7 @@
         </main>
 
         <footer>
-            <p>Transliterate from: Japanese, Chinese, Korean, Hindi, Arabic, Russian | Translate to: Multiple languages</p>
+            <p>Automatically detects: Japanese, Chinese, Korean, Hindi, Arabic, Russian | Translates to: Multiple languages</p>
         </footer>
     </div>
 
@@ -200,6 +188,7 @@
                         transliterationRt.style.fontSize = '';
                         translationRt.style.fontWeight = '';
                         transliterationRt.style.fontWeight = '';
+                        ruby.style.fontSize = '';
                         
                         // Apply the selected order
                         switch(order) {
