@@ -103,10 +103,10 @@
                     <div class="full-sentence-section">
                         <div class="sentence-pair">
                             <div class="original-sentence">
-                                <strong>Original ({{ result.source_language_name }}):</strong> {{ sentence.original }}
+                                {{ sentence.original }}
                             </div>
                             <div class="translated-sentence">
-                                <strong>Translation ({{ result.target_language_name }}):</strong> {{ sentence.full_translation }}
+                                {{ sentence.full_translation }}
                             </div>
                         </div>
                     </div>
@@ -206,32 +206,32 @@
                             case 0: // Default: translation above, transliteration below
                                 translationRt.style.order = '-1';
                                 transliterationRt.style.order = '1';
-                                translationRt.style.fontSize = '0.8em';
-                                transliterationRt.style.fontSize = '0.9em';
-                                transliterationRt.style.fontWeight = '600';
+                                translationRt.style.fontSize = '0.6em';
+                                transliterationRt.style.fontSize = '0.6em';
+                                // transliterationRt.style.fontWeight = '600';
                                 break;
                             case 1: // Inverted: transliteration above, translation below
                                 translationRt.style.order = '1';
                                 transliterationRt.style.order = '-1';
-                                translationRt.style.fontSize = '0.9em';
-                                transliterationRt.style.fontSize = '0.8em';
-                                translationRt.style.fontWeight = '600';
+                                translationRt.style.fontSize = '0.6em';
+                                transliterationRt.style.fontSize = '0.6em';
+                                // translationRt.style.fontWeight = '600';
                                 break;
                             case 2: // Both above - center text larger
                                 translationRt.style.order = '-2';
                                 transliterationRt.style.order = '-1';
-                                translationRt.style.fontSize = '0.8em';
-                                transliterationRt.style.fontSize = '0.8em';
+                                translationRt.style.fontSize = '0.6em';
+                                transliterationRt.style.fontSize = '0.6em';
                                 // Make the main word larger when both annotations are above
-                                ruby.style.fontSize = '1.1em';
+                                // ruby.style.fontSize = '1.5em';
                                 break;
                             case 3: // Both below - center text larger
                                 translationRt.style.order = '1';
                                 transliterationRt.style.order = '2';
-                                translationRt.style.fontSize = '0.8em';
-                                transliterationRt.style.fontSize = '0.8em';
+                                translationRt.style.fontSize = '0.6em';
+                                transliterationRt.style.fontSize = '0.6em';
                                 // Make the main word larger when both annotations are below
-                                ruby.style.fontSize = '1.1em';
+                                // ruby.style.fontSize = '1.5em';
                                 break;
                         }
                     }

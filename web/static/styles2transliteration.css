@@ -337,9 +337,9 @@ rt.transliteration {
   text-align: right;
 }
 
-[dir='rtl'] .word-breakdown {
+/* [dir='rtl'] .word-breakdown {
   flex-direction: row-reverse;
-}
+} */
 
 /* Error message */
 .error-message {
@@ -455,10 +455,10 @@ ruby {
   background: linear-gradient(135deg, #f093fb 0%, #9ef37c 100%);
   color: rgb(22, 21, 21);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: normal;
   position: relative;
   min-width: 60px;
-  font-size: 1em;
+  font-size: 2em;
   transition: all 0.3s ease;
   justify-content: center;
   min-height: 60px;
@@ -467,7 +467,7 @@ ruby {
 /* Main word styling - always centered and prominent */
 ruby > :not(rt) {
   font-size: 1.1em;
-  font-weight: 700;
+  /* font-weight: 700; */
   margin: 2px 0;
   order: 0;
   z-index: 2;
@@ -476,7 +476,7 @@ ruby > :not(rt) {
 
 /* Ruby text base styling */
 rt {
-  font-size: 0.8em;
+  font-size: 0.6em;
   line-height: 1.3;
   text-align: center;
   font-weight: 500;
