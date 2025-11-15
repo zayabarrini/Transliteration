@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color-Coded Japanese Analyzer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles-color-coded-japanese-MeCab.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🇯🇵 Color-Coded Japanese Analyzer</h1>
+        <p class="subtitle">Color-coded linguistic analysis using MeCab + pykakasi</p>
+      </header>
+
+      <div class="input-section">
+        <textarea
+          id="sentenceInput"
+          placeholder="Enter Japanese sentences (one per line)&#10;例:&#10;私は本を読みました。&#10;彼女は学校に行きます。&#10;これは美味しい食べ物です。"
+        ></textarea>
+
+        <div class="settings-row">
+          <div class="form-group">
+            <label for="target_lang">Translate to:</label>
+            <select id="target_lang" name="target_lang" required>
+              <option value="">Select target language</option>
+              {% for lang in target_languages %}
+              <option value="{{ lang.code }}" {% if selected_target_lang == lang.code %}selected{% endif %}>
+                {{ lang.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="analyzeBtn">Analyze Sentences</button>
+          <button id="clearBtn" class="secondary">Clear</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <h3>Color Legend</h3>
+        <div class="legend-items">
+          <div class="legend-item" data-category="NOUN">Nouns</div>
+          <div class="legend-item" data-category="VERB">Verbs</div>
+          <div class="legend-item" data-category="ADJECTIVE_I">い-Adjectives</div>
+          <div class="legend-item" data-category="ADJECTIVE_NA">な-Adjectives</div>
+          <div class="legend-item" data-category="PARTICLE">Particles</div>
+          <div class="legend-item" data-category="ADVERB">Adverbs</div>
+          <div class="legend-item" data-category="OTHER">Other</div>
+        </div>
+      </div>
+
+      <div id="results" class="results-section"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='meCabScript.js') }}"></script>
+  </body>
+</html>

@@ -48,6 +48,9 @@ pyttsx3 = "*"
 opencv-python = "*"
 tqdm = "*"
 numpy = "*"
+mecab-python3 = "*"
+unidic = "*"
+flask-cors = "*"
 
 [dev-packages]
 

@@ -68,8 +68,12 @@ web/server.py
 web/webChineseColor-coded.py
 web/webChineseTranslator.py
 web/webHindi.py
+web/webJapaneseColor-coded-MeCab.py
+web/webJapaneseColor-coded.py
 web/webJapaneseTranslator-error.py
 web/webTranslator.py
+web/webTranslator2Language.py
 web/webTransliteration-error.py
+web/webTransliterator.py
 web/webflask-error.py
 web/webflaskTrans-weird.py

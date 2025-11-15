@@ -169,6 +169,11 @@ def analyze_particle(word):
     }
 ```
 
+part_of_speech
+particle_type
+verb_form
+honorific_level
+
 ## Suggested Color Scheme
 
 - **Syntax Roles**: Blues (subject=dark blue, object=medium blue, etc.)
