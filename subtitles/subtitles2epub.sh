@@ -165,6 +165,9 @@ except Exception as e:
             # Remove HTML tags
             s/<[^>]*>//g;
 
+            # Remove dash with spaces (one or more)
+            s/-\s+/ /g;
+
             # Remove timestamp blocks (line number + timestamp line)
             s/^\d+\R\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}\R//mg;
 

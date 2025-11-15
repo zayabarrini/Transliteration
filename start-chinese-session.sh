@@ -119,7 +119,7 @@ tmux send-keys -t chinese-session:0.4 "cd $CHINESE_ROOT/transliteration" Enter
 sleep 1
 tmux send-keys -t chinese-session:0.4 "echo '=== Starting Web Translator ==='" Enter
 sleep 1
-tmux send-keys -t chinese-session:0.4 "pipenv run python3 -m web.webTranslator" Enter
+tmux send-keys -t chinese-session:0.4 "pipenv run python3 -m web.webTransliterator" Enter
 
 # Pane 5: Web Translator 2 Language
 echo "🔤 Starting Web Translator 2 Language..."

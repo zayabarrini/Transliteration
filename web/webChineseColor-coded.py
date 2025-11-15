@@ -1,6 +1,5 @@
 import time
 
-import fugashi
 import jieba
 import jieba.posseg as pseg
 import pykakasi
@@ -12,6 +11,23 @@ app = Flask(__name__)
 
 # Initialize analyzers
 kks = pykakasi.kakasi()
+
+# Initialize Japanese tagger with error handling
+japanese_tagger = None
+JAPANESE_AVAILABLE = False
+
+try:
+    import fugashi
+    japanese_tagger = fugashi.Tagger()
+    # Test the tagger
+    test_result = japanese_tagger("テスト")
+    JAPANESE_AVAILABLE = True
+    print("Japanese MeCab tokenizer initialized successfully")
+except ImportError:
+    print("fugashi not installed, Japanese processing will use fallback methods")
+except Exception as e:
+    print(f"Japanese MeCab initialization failed: {str(e)}")
+    print("Japanese processing will use fallback methods")
 
 # Complete exclusion set for punctuation
 EXCLUDE_CHARS = {
@@ -214,38 +230,58 @@ def process_japanese(text):
 
     # Get full text translation
     try:
-        full_translation = translator.translate(text, src="ja", dest="en")
+        full_translation = translator.translate(text)
     except Exception as e:
         print(f"Full translation failed: {str(e)}")
         full_translation = "Translation unavailable"
 
-    tagger = fugashi.Tagger()
-    words = [word.surface for word in tagger(text)]
-    romaji = [kks.convert(word)[0]["hepburn"] for word in words]
-    translations = []
+    # Use pykakasi for both segmentation AND transliteration (consistent approach)
+    try:
+        analyzed = kks.convert(text)
+        
+        words = []
+        romaji = []
+        
+        for item in analyzed:
+            original = item.get("orig", "")
+            hepburn_romaji = item.get("hepburn", "")
+            
+            words.append(original)
+            romaji.append(hepburn_romaji)
+            
+    except Exception as e:
+        print(f"pykakasi processing failed: {str(e)}")
+        # Fallback: simple character splitting
+        words = list(text)
+        romaji = [""] * len(words)
 
+    # Get word translations
+    translations = []
     for word in words:
+        if is_punctuation(word) or word.isspace():
+            translations.append("")
+            continue
+            
         try:
             # Add delay to avoid rate limiting
             time.sleep(0.5)
-            translation = translator.translate(word, src="ja", dest="en")
+            translation = translator.translate(word)
             translations.append(translation)
         except Exception as e:
             print(f"Translation failed for '{word}': {str(e)}")
-            translations.append(word)  # Fallback to original word if translation fails
+            translations.append(word)  # Fallback to original word
 
+    # Build result
     result = []
     for word, romaji_word, translation in zip(words, romaji, translations):
-        result.append(
-            {
-                "word": word,
-                "transliteration": romaji_word,
-                "translation": translation,
-                "syntax": "X",  # Default for Japanese for now
-                "pos": "Unknown",
-                "is_punctuation": is_punctuation(word),
-            }
-        )
+        result.append({
+            "word": word,
+            "transliteration": romaji_word,
+            "translation": translation,
+            "syntax": "X",  # Default for Japanese
+            "pos": "Unknown",
+            "is_punctuation": is_punctuation(word),
+        })
 
     # Group into sentences
     sentences = group_into_sentences(result)

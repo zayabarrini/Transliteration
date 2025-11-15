@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color-Coded Japanese Analyzer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles-color-coded-japanese.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🇯🇵 Color-Coded Japanese Analyzer</h1>
+        <p class="subtitle">Comprehensive linguistic analysis with visual coding</p>
+      </header>
+
+      <div class="input-section">
+        <textarea
+          id="japaneseText"
+          placeholder="Enter Japanese text here... 
+例: 私は昨日、東京で友達に会いました。"
+        ></textarea>
+        <button id="analyzeBtn">Analyze Sentence</button>
+      </div>
+
+      <div class="results-section" id="resultsSection" style="display: none">
+        <div class="original-translation">
+          <h3>Full Translation</h3>
+          <p id="fullTranslation"></p>
+        </div>
+
+        <div class="analysis-controls">
+          <h3>Color Coding Legend</h3>
+          <div class="legend" id="colorLegend"></div>
+
+          <div class="display-options">
+            <label> <input type="checkbox" id="showTransliteration" checked /> Show Romanji </label>
+            <label> <input type="checkbox" id="showTranslation" checked /> Show Translation </label>
+            <label> <input type="checkbox" id="showSyntax" checked /> Show Syntax Role </label>
+          </div>
+        </div>
+
+        <div class="sentences-container" id="sentencesContainer"></div>
+      </div>
+
+      <div class="loading" id="loading" style="display: none">
+        <div class="spinner"></div>
+        <p>Analyzing Japanese text...</p>
+      </div>
+
+      <div class="error" id="error" style="display: none"></div>
+    </div>
+
+    <script>
+      document.getElementById('analyzeBtn').addEventListener('click', analyzeText);
+      document.getElementById('japaneseText').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+          analyzeText();
+        }
+      });
+
+      // Add event listeners for display options
+      document.getElementById('showTransliteration').addEventListener('change', refreshDisplay);
+      document.getElementById('showTranslation').addEventListener('change', refreshDisplay);
+      document.getElementById('showSyntax').addEventListener('change', refreshDisplay);
+
+      let currentAnalysis = null;
+
+      async function analyzeText() {
+        const text = document.getElementById('japaneseText').value.trim();
+        if (!text) {
+          showError('Please enter some Japanese text to analyze.');
+          return;
+        }
+
+        showLoading();
+        hideError();
+        hideResults();
+
+        try {
+          const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            currentAnalysis = data;
+            displayResults(data);
+          } else {
+            showError(data.error || 'Analysis failed.');
+          }
+        } catch (error) {
+          showError('Network error: ' + error.message);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function displayResults(data) {
+        document.getElementById('fullTranslation').textContent = data.full_translation;
+
+        displayColorLegend();
+        displaySentences(data.sentences);
+
+        document.getElementById('resultsSection').style.display = 'block';
+      }
+
+      function displayColorLegend() {
+        const legend = document.getElementById('colorLegend');
+        legend.innerHTML = '';
+
+        const categories = [
+          { class: 'syntax-subject', label: 'Subject' },
+          { class: 'syntax-topic', label: 'Topic' },
+          { class: 'syntax-object', label: 'Object' },
+          { class: 'syntax-location', label: 'Location' },
+          { class: 'syntax-verb', label: 'Verb' },
+          { class: 'syntax-description', label: 'Description' },
+          { class: 'pos-noun', label: 'Noun' },
+          { class: 'pos-verb', label: 'Verb' },
+          { class: 'pos-adjective', label: 'Adjective' },
+          { class: 'pos-particle', label: 'Particle' },
+          { class: 'honorific-polite', label: 'Polite' },
+          { class: 'honorific-humble', label: 'Humble' },
+        ];
+
+        categories.forEach((cat) => {
+          const item = document.createElement('div');
+          item.className = 'legend-item';
+          item.innerHTML = `
+                    <span class="color-box ${cat.class}"></span>
+                    <span class="legend-label">${cat.label}</span>
+                `;
+          legend.appendChild(item);
+        });
+      }
+
+      function displaySentences(sentences) {
+        const container = document.getElementById('sentencesContainer');
+        container.innerHTML = '';
+
+        sentences.forEach((sentence, sentenceIndex) => {
+          const sentenceDiv = document.createElement('div');
+          sentenceDiv.className = 'sentence';
+
+          const japaneseDiv = document.createElement('div');
+          japaneseDiv.className = 'japanese-text';
+
+          sentence.forEach((word, wordIndex) => {
+            const wordSpan = createWordSpan(word, wordIndex);
+            japaneseDiv.appendChild(wordSpan);
+          });
+
+          sentenceDiv.appendChild(japaneseDiv);
+          container.appendChild(sentenceDiv);
+        });
+      }
+
+      function createWordSpan(word, index) {
+        const span = document.createElement('span');
+        span.className = `word-token ${getSyntaxClass(word.syntax_role)} ${getPOSClass(
+          word.part_of_speech
+        )} ${getHonorificClass(word.honorific_level)}`;
+        span.style.order = index;
+
+        let content = `<span class="japanese-word">${word.word}</span>`;
+
+        if (document.getElementById('showTransliteration').checked && word.transliteration) {
+          content += `<span class="transliteration">${word.transliteration}</span>`;
+        }
+
+        if (document.getElementById('showTranslation').checked && word.translation) {
+          content += `<span class="translation">${word.translation}</span>`;
+        }
+
+        if (document.getElementById('showSyntax').checked) {
+          content += `<span class="syntax-role">${word.syntax_role.toLowerCase()}</span>`;
+        }
+
+        span.innerHTML = content;
+
+        // Add tooltip with full analysis
+        span.title = getTooltipText(word);
+
+        return span;
+      }
+
+      function getSyntaxClass(syntaxRole) {
+        const syntaxMap = {
+          SUBJECT: 'syntax-subject',
+          TOPIC: 'syntax-topic',
+          DIRECT_OBJECT: 'syntax-object',
+          INDIRECT_OBJECT: 'syntax-object',
+          LOCATION: 'syntax-location',
+          VERB: 'syntax-verb',
+          DESCRIPTION: 'syntax-description',
+          QUESTION: 'syntax-question',
+          TIME: 'syntax-time',
+          CONJUNCTION: 'syntax-conjunction',
+          SENTENCE_ENDER: 'syntax-ender',
+          PUNCTUATION: 'syntax-punctuation',
+        };
+        return syntaxMap[syntaxRole] || 'syntax-unknown';
+      }
+
+      function getPOSClass(pos) {
+        const posMap = {
+          NOUN: 'pos-noun',
+          VERB: 'pos-verb',
+          ADJECTIVE_I: 'pos-adjective',
+          ADJECTIVE_NA: 'pos-adjective',
+          PARTICLE: 'pos-particle',
+          ADVERB: 'pos-adverb',
+          CONJUNCTION: 'pos-conjunction',
+          PUNCTUATION: 'pos-punctuation',
+        };
+        return posMap[pos] || 'pos-unknown';
+      }
+
+      function getHonorificClass(honorific) {
+        const honorificMap = {
+          POLITE: 'honorific-polite',
+          HUMBLE: 'honorific-humble',
+          RESPECTFUL: 'honorific-respectful',
+        };
+        return honorificMap[honorific] || 'honorific-neutral';
+      }
+
+      function getTooltipText(word) {
+        return `
+Word: ${word.word}
+Transliteration: ${word.transliteration}
+Translation: ${word.translation}
+Syntax: ${word.syntax_role}
+POS: ${word.part_of_speech}
+Particle: ${word.particle_type}
+Verb Form: ${word.verb_form}
+Honorific: ${word.honorific_level}
+Category: ${word.semantic_category}
+            `.trim();
+      }
+
+      function refreshDisplay() {
+        if (currentAnalysis) {
+          displaySentences(currentAnalysis.sentences);
+        }
+      }
+
+      function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+      }
+
+      function hideLoading() {
+        document.getElementById('loading').style.display = 'none';
+      }
+
+      function showError(message) {
+        const errorDiv = document.getElementById('error');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+
+      function hideError() {
+        document.getElementById('error').style.display = 'none';
+      }
+
+      function hideResults() {
+        document.getElementById('resultsSection').style.display = 'none';
+      }
+    </script>
+  </body>
+</html>
