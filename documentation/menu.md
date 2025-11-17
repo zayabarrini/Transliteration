@@ -1,3 +1,11 @@
+EbookMenu:
+
+- Split
+- Remove Original
+- Trasliterate
+- Merge
+- MergeSimple
+
 ╔════════════════════════════════════════╗
 ║ Text Processing ║
 ╠════════════════════════════════════════╣
