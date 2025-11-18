@@ -342,17 +342,17 @@ def process_segment(text, language):
 #             continue
 
 
-def process_file(input_file, language, enable_transliteration, epub_folder=None):
+def process_file(input_file, language, enable_multilingual_transliteration, epub_folder=None):
     """
     Processes an HTML or XHTML file for transliteration and CSS styling.
 
     Args:
         input_file (str): Path to the input HTML/XHTML file.
         language (str): Target language for transliteration.
-        enable_transliteration (bool): Whether to enable transliteration.
+        enable_multilingual_transliteration (bool): Whether to enable transliteration.
         css_file (str, optional): Path to the CSS file to be added. Defaults to None.
     """
-    print(f"Processing {input_file} for {language} with transliteration: {enable_transliteration}")
+    print(f"Processing {input_file} for {language} with transliteration: {enable_multilingual_transliteration}")
 
     # Read the input file
     with open(input_file, "r", encoding="utf-8") as f:
@@ -367,8 +367,9 @@ def process_file(input_file, language, enable_transliteration, epub_folder=None)
     soup = BeautifulSoup(content, parser)
 
     # Apply transliteration if enabled
-    if enable_transliteration:
-        # process_html_content_multilingual(soup, language)
+    if enable_multilingual_transliteration:
+        process_html_content_multilingual(soup, language)
+    else:
         process_html_content(soup, language)
 
     # Add CSS if epub_folder is provided
@@ -390,7 +391,7 @@ def process_file(input_file, language, enable_transliteration, epub_folder=None)
     print(f"Saved transliterated file: {output_filename}")
 
 
-def process_folder(html_folder, target_language, enable_transliteration=True, epub_folder=None):
+def process_folder(html_folder, target_language, enable_multilingual_transliteration=False, epub_folder=None):
     """
     Processes all HTML files in the specified folder.
     """
@@ -398,7 +399,7 @@ def process_folder(html_folder, target_language, enable_transliteration=True, ep
     for filename in os.listdir(html_folder):
         if filename.lower().endswith((".html", ".htm", ".xhtml", ".xml")):
             input_filename = os.path.join(html_folder, filename)
-            process_file(input_filename, target_language, enable_transliteration, epub_folder)
+            process_file(input_filename, target_language, enable_multilingual_transliteration, epub_folder)
 
 
 if __name__ == "__main__":

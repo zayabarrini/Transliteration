@@ -29,6 +29,7 @@ transliteration/add_metadata_and_cover.py
 transliteration/ch2py.py
 transliteration/epubManagement.py
 transliteration/epubManagementNew.py
+transliteration/epubManager.py
 transliteration/epubMerge.py
 transliteration/epubMergeFolder.py
 transliteration/epubMergeStack.py
@@ -60,6 +61,7 @@ transliteration/transliteration_modified_issues.py
 transliteration_tools.egg-info/PKG-INFO
 transliteration_tools.egg-info/SOURCES.txt
 transliteration_tools.egg-info/dependency_links.txt
+transliteration_tools.egg-info/entry_points.txt
 transliteration_tools.egg-info/requires.txt
 transliteration_tools.egg-info/top_level.txt
 web/__init__.py

@@ -6,7 +6,27 @@
 
 # How to Use, Download and Install
 
+Usage:
+
+```
+epubManager
+```
+
 Menu.md
+
+Setup Instructions - Save the script as epubManager.py in your project root directory
+
+Make it executable:
+
+```bash
+chmod +x epubManager.py
+```
+
+Create a symlink for easy access:
+
+```bash
+sudo ln -s $(pwd)/epubManager.py /usr/local/bin/epubManager
+```
 
 ## Requeriments
 

@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="transliteration-tools",
@@ -12,6 +12,15 @@ setup(
         "pyarabic",
         "jieba",
         "transliterate",
+        "ebooklib",
+        "beautifulsoup4",
+        "chardet",
+        # Add other essential dependencies here
     ],
+    entry_points={
+        'console_scripts': [
+            'epubManager=transliteration.epubManager:main',
+        ],
+    },
     python_requires=">=3.6",
 )

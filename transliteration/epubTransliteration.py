@@ -29,7 +29,7 @@ def verify_language(language: str) -> None:
         sys.exit(1)
 
 
-def process_epub(epub_path: str, language: str) -> str:
+def process_epub(epub_path: str, language: str, enable_multilingual_transliteration: bool) -> str:
     """
     Processes an EPUB for transliteration:
     1. Extracts EPUB
@@ -52,7 +52,7 @@ def process_epub(epub_path: str, language: str) -> str:
         # Process HTML files (transliteration)
         text_folder = find_text_folder(extract_to)
         print(f"Text folder found: {text_folder}")
-        process_folder(text_folder, language, enable_transliteration=True, epub_folder=extract_to)
+        process_folder(text_folder, language, enable_multilingual_transliteration, epub_folder=extract_to)
 
         # Add metadata and cover
         add_metadata_and_cover(extract_to, base_name + "_transliterated_ccs", language)

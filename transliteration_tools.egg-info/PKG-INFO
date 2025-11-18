@@ -9,5 +9,8 @@ Requires-Dist: pykakasi
 Requires-Dist: pyarabic
 Requires-Dist: jieba
 Requires-Dist: transliterate
+Requires-Dist: ebooklib
+Requires-Dist: beautifulsoup4
+Requires-Dist: chardet
 Dynamic: requires-dist
 Dynamic: requires-python

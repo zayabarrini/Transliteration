@@ -37,7 +37,6 @@ pdfplumber = "*"
 pillow = "*"
 requests = "*"
 pix2tex = {version = "*", optional = true}
-transliteration-tools = {file = ".", editable = true}
 flake8 = "*"
 black = "*"
 isort = "*"
@@ -51,6 +50,7 @@ numpy = "*"
 mecab-python3 = "*"
 unidic = "*"
 flask-cors = "*"
+transliteration-tools = {file = ".", editable = true}
 
 [dev-packages]
 

@@ -5,3 +5,6 @@ pykakasi
 pyarabic
 jieba
 transliterate
+ebooklib
+beautifulsoup4
+chardet

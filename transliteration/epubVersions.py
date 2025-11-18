@@ -140,6 +140,40 @@ def is_japanese_char(char: str) -> bool:
     )
 
 
+def process_folder_transliterate_epub(folder_path: str):
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".epub"):
+            epub_path = os.path.join(folder_path, filename)
+            language = get_language_from_epub(epub_path)
+            print(f"Detected language for {filename}: {language}")
+            
+            if language in SUPPORTED_LANGUAGES:
+                # Option 2: Transliterate
+                transliterate_epub(epub_path, language, enable_multilingual_transliteration=False)
+
+def process_folder_transliterate_epub_multilingual(folder_path: str):
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".epub"):
+            epub_path = os.path.join(folder_path, filename)
+            language = get_language_from_epub(epub_path)
+            print(f"Detected language for {filename}: {language}")
+            
+            if language in SUPPORTED_LANGUAGES:
+                # Option 2: Transliterate
+                transliterate_epub(epub_path, language, enable_multilingual_transliteration=True)
+        
+def process_folder_remove_original(folder_path: str):
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".epub"):
+            epub_path = os.path.join(folder_path, filename)
+            language = get_language_from_epub(epub_path)
+            print(f"Detected language for {filename}: {language}")
+
+            ## Option 1: Remove original text
+            epub_path_no_original = remove_original(epub_path)
+            print(f"Processing {epub_path} for language: {language}")
+            
+            
 def process_folder(folder_path: str):
     for filename in os.listdir(folder_path):
         if filename.endswith(".epub"):
@@ -148,12 +182,12 @@ def process_folder(folder_path: str):
             print(f"Detected language for {filename}: {language}")
 
             ## Option 1: Remove original text
-            # epub_path_no_original = remove_original(epub_path)
-            # print(f"Processing {epub_path} for language: {language}")
+            epub_path_no_original = remove_original(epub_path)
+            print(f"Processing {epub_path} for language: {language}")
             
             if language in SUPPORTED_LANGUAGES:
                 # Option 2: Transliterate
-                transliterate_epub(epub_path, language)
+                transliterate_epub(epub_path, language, enable_multilingual_transliteration=False)
             #     # Option : Transliterate no_original
             #     # transliterate_epub(epub_path_no_original)
 
