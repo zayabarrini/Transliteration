@@ -1,40 +1,100 @@
-# For What
+# Zaya Transliteration Toolkit
 
-- Multilingual Products, Tools for Reading/Listening: [de, it, fr, ru, zh-ch, jp, hi, ar, ko, en, es ]
-- Transliteration: SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
-- Consistent with patterns from Calibre Translation Plugin
+A comprehensive multilingual transliteration and EPUB management system supporting multiple languages for enhanced reading and listening experiences.
 
-# How to Use, Download and Install
+## 🌟 Features
 
-Usage:
+- **Multilingual Support**: Tools for reading/listening in 11 languages
+- **Transliteration Engine**: Convert text between scripts for 6 major languages
+- **EPUB Management**: Professional eBook processing and conversion
+- **Calibre Integration**: Consistent with Calibre Translation Plugin patterns
 
+### Supported Languages
+
+**Reading/Listening**: German, Italian, French, Russian, Chinese, Japanese, Hindi, Arabic, Korean, English, Spanish and other languages
+
+**Transliteration**: Japanese, Korean, Chinese, Hindi, Arabic, Russian
+
+[See Zaya's Books here](https://github.com/zayabarrini/ZayasBooks)
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.12 or higher
+- pip or pipenv
+
+### Installation
+
+#### Option 1: Development Installation (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/zayabarrini/Transliteration.git
+cd Transliteration
+
+# Install with pipenv for isolated environment
+pipenv install -e .
 ```
+
+#### Option 2: System-wide Installation
+
+```bash
+pip install -e .
+```
+
+### Basic Usage
+
+```bash
+# Launch the EPUB manager
 epubManager
+
+# Process specific files
+epubManager path/to/your/file.epub
 ```
 
-Menu.md
+## 📖 Documentation
 
-Setup Instructions - Save the script as epubManager.py in your project root directory
+- [Zaya's Books Collection](https://github.com/zayabarrini/zayasbooks)
+- [Grammar Rules Database](https://github.com/zayabarrini/zayas-grammar-db)
+- [Menu & Advanced Usage](Menu.md)
 
-Make it executable:
+## 🛠 Requirements
 
-```bash
-chmod +x epubManager.py
-```
+- Python 3.12
+- Comprehensive dependencies managed automatically via `setup.py`
+- See `Pipfile` for complete dependency list
 
-Create a symlink for easy access:
+## 💝 Support Our Work
 
-```bash
-sudo ln -s $(pwd)/epubManager.py /usr/local/bin/epubManager
-```
+Your support helps us continue developing open-source tools for multilingual accessibility:
 
-## Requeriments
+### ☕ One-time Support
 
-python_version = "3.12"
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/tallesberrs)
 
-[See Zaya's Books](https://github.com/zayabarrini/zayasbooks)
+### 🔄 Recurring Support
 
-[Grammar Rules](https://github.com/zayabarrini/zayas-grammar-db)
+- [Apoia-se](https://apoia.se/tallesbarrini)
+- [Kickante](https://www.kickante.com.br/crowdfunding/escola-de-psicanalise-talles-barrini)
+
+### 🎁 Wishlist & Links
+
+- [Amazon Wishlist](https://www.amazon.com.br/hz/wishlist/ls/3UUK9DJ1OZ20S?ref_=wl_share)
+- [Psychoanalysis, Art & Cinema Studio](https://zayabarrini.vercel.app/)
+- [All Links](https://linktr.ee/zayabarrini)
+
+## 🤝 Contributing
+
+We welcome contributions! Please feel free to submit issues, feature requests, or pull requests.
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+**Made with ❤️ for the global reading community**
 
 # Main usage
 
