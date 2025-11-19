@@ -10,7 +10,12 @@ from transliteration.epubManagement import (
 )
 
 # SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic"]
-SUPPORTED_LANGUAGES = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
+SUPPORTED_LANGUAGES = [
+    "japanese", "korean", "chinese", "hindi", "arabic", "russian",
+    "german", "english", "spanish", "french", "greek", "hebrew",
+    "indonesian", "italian", "latin", "polish", "portuguese", 
+    "swahili", "turkish"
+]
 
 from transliteration.add_metadata_and_cover import add_metadata_and_cover
 from transliteration.html2transliteration import process_folder

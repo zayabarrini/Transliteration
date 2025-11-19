@@ -4,41 +4,11 @@ EPUB Manager - Simple version with defaults
 Provides quick menu-driven access to EPUB operations with sensible defaults
 """
 
+import glob
 import os
 import subprocess
 import sys
 from pathlib import Path
-
-# def ensure_pipenv():
-#     """Check if we're in pipenv shell and activate if not"""
-#     if not os.environ.get('PIPENV_ACTIVE'):
-#         print("Pipenv not active. Activating pipenv shell...")
-        
-#         # Get the directory of this script
-#         script_dir = Path(__file__).parent.parent
-#         os.chdir(script_dir)
-        
-#         # Try to activate pipenv
-#         try:
-#             # First check if pipenv is available
-#             result = subprocess.run(['pipenv', '--version'], capture_output=True, text=True)
-#             if result.returncode != 0:
-#                 print("Error: pipenv is not installed or not in PATH")
-#                 print("Please install pipenv: pip install pipenv")
-#                 sys.exit(1)
-            
-#             # Run the script within pipenv
-#             print(f"Running in directory: {os.getcwd()}")
-#             subprocess.run(['pipenv', 'run', 'python', '-m', 'transliteration.epubManager'])
-#             sys.exit(0)
-            
-#         except Exception as e:
-#             print(f"Error activating pipenv: {e}")
-#             print("Please run manually: pipenv shell")
-#             sys.exit(1)
-
-# # Check pipenv before importing modules
-# ensure_pipenv()
 
 # Now import the modules (we're in pipenv)
 try:
@@ -49,6 +19,7 @@ try:
     from transliteration.epubMergeStack import prep_and_merge_simple
     from transliteration.epubSplitProcessor import process_epub_folder
     from transliteration.epubVersions import (
+        get_language_from_epub,
         process_folder_remove_original,
         process_folder_transliterate_epub,
         process_folder_transliterate_epub_multilingual,
@@ -62,11 +33,49 @@ except ImportError as e:
 
 
 class SimpleEbookManager:
-    def __init__(self):
+    def __init__(self, target_directory=None):
         self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'tr']
         self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
-        self.current_directory = os.getcwd()
         
+        # Language name to code mapping
+        self.language_map = {
+            "chinese": "ch",
+            "russian": "ru", 
+            "german": "de",
+            "english": "en",
+            "arabic": "ar",
+            "hindi": "hi",
+            "spanish": "es",
+            "french": "fr",
+            "greek": "el",
+            "hebrew": "he",
+            "indonesian": "id",
+            "italian": "it",
+            "japanese": "ja",
+            "korean": "ko",
+            "latin": "la",
+            "polish": "pl",
+            "portuguese": "pt",
+            "swahili": "sw",
+            "turkish": "tr"
+        }
+        
+        # Use target_directory if provided, otherwise use current directory
+        if target_directory and os.path.exists(target_directory):
+            self.current_directory = target_directory
+            print(f"Using target directory: {target_directory}")
+        else:
+            self.current_directory = os.getcwd()
+            print(f"Using current directory: {self.current_directory}")
+        
+        # Use target_directory if provided, otherwise use current directory
+        if target_directory and os.path.exists(target_directory):
+            self.current_directory = target_directory
+            print(f"Using target directory: {target_directory}")
+        else:
+            self.current_directory = os.getcwd()
+            print(f"Using current directory: {self.current_directory}")
+    
     def clear_screen(self):
         """Clear the terminal screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -96,6 +105,53 @@ class SimpleEbookManager:
             return choice
         except KeyboardInterrupt:
             return '0'
+
+    def detect_available_languages(self, folder_path):
+        """Detect available languages from EPUB files in folder"""
+        epub_files = glob.glob(os.path.join(folder_path, "*.epub"))
+        available_languages = set()
+        
+        for epub_file in epub_files:
+            try:
+                language = get_language_from_epub(epub_file)
+                if language:
+                    available_languages.add(language)
+            except Exception as e:
+                print(f"Warning: Could not detect language for {epub_file}: {e}")
+        
+        return sorted(available_languages)
+
+    def get_smart_merge_order(self, folder_path):
+        """Create merge order based on available languages and preferred order"""
+        available_langs = self.detect_available_languages(folder_path)
+        if not available_langs:
+            return self.default_merge_order
+        
+        print(f"Available languages detected: {available_langs}")
+        
+        # Convert language names to codes
+        available_codes = set()
+        for lang_name in available_langs:
+            code = self.language_map.get(lang_name.lower())
+            if code:
+                available_codes.add(code)
+            else:
+                # If no mapping found, try to use first 2 letters as fallback
+                code = lang_name[:2].lower()
+                available_codes.add(code)
+                print(f"Warning: No mapping for '{lang_name}', using '{code}' as code")
+        
+        print(f"Available language codes: {sorted(available_codes)}")
+        
+        # Filter default merge order to only include available language codes
+        smart_order = [lang for lang in self.default_merge_order if lang in available_codes]
+        
+        # Add any remaining available languages that aren't in default order
+        for lang in available_codes:
+            if lang not in smart_order:
+                smart_order.append(lang)
+        
+        return smart_order
 
     def split_epubs(self):
         """Split EPUB files with defaults"""
@@ -154,12 +210,14 @@ class SimpleEbookManager:
         print("\n=== Merge EPUBs by Pattern ===")
         print("Using current directory")
         print("File pattern: *-db-*.epub")
-        print(f"Merge order: {self.default_merge_order}")
-        print("Output suffix: ml")
         
         folder_path = self.current_directory
         file_patterns = ['*-db-*.epub']
-        merge_order = self.default_merge_order
+        
+        # Use smart merge order based on available languages
+        merge_order = self.get_smart_merge_order(folder_path)
+        print(f"Smart merge order: {merge_order}")
+        
         output_suffix = "ml"
         
         try:
@@ -174,7 +232,7 @@ class SimpleEbookManager:
             if epub_paths:
                 print(f"Found {len(epub_paths)} files to merge")
                 print(f"Languages: {languages}")
-                print(f"Merge order: {final_merge_order}")
+                print(f"Final merge order: {final_merge_order}")
                 
                 merge_multiple_epubs(epub_paths, output_path, languages, final_merge_order)
                 print("Merge operation completed successfully!")
@@ -191,12 +249,14 @@ class SimpleEbookManager:
         print("\n=== Simple Merge ===")
         print("Using current directory")
         print("File pattern: *-db-*.epub")
-        print(f"Merge order: {self.default_merge_order}")
-        print("Output suffix: ml-simple")
         
         folder_path = self.current_directory
         file_patterns = ['*-db-*.epub']
-        merge_order = self.default_merge_order
+        
+        # Use smart merge order based on available languages
+        merge_order = self.get_smart_merge_order(folder_path)
+        print(f"Smart merge order: {merge_order}")
+        
         output_suffix = "ml-simple"
         
         try:
@@ -234,7 +294,7 @@ class SimpleEbookManager:
                 self.simple_merge()
             elif choice == '6':
                 # Launch advanced version
-                advanced_manager = EpubManagerWithOptions()
+                advanced_manager = EpubManagerWithOptions(self.current_directory)
                 advanced_manager.run()
             else:
                 print("Invalid choice! Please try again.")
@@ -244,10 +304,38 @@ class SimpleEbookManager:
 class EpubManagerWithOptions:
     """Advanced version with customizable options"""
     
-    def __init__(self):
+    def __init__(self, target_directory=None):
         self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'tr']
         self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian"]
-        self.current_directory = os.getcwd()
+        
+        # Language name to code mapping
+        self.language_map = {
+            "chinese": "ch",
+            "russian": "ru", 
+            "german": "de",
+            "english": "en",
+            "arabic": "ar",
+            "hindi": "hi",
+            "spanish": "es",
+            "french": "fr",
+            "greek": "el",
+            "hebrew": "he",
+            "indonesian": "id",
+            "italian": "it",
+            "japanese": "ja",
+            "korean": "ko",
+            "latin": "la",
+            "polish": "pl",
+            "portuguese": "pt",
+            "swahili": "sw",
+            "turkish": "tr"
+        }
+        
+        # Use target_directory if provided, otherwise use current directory
+        if target_directory and os.path.exists(target_directory):
+            self.current_directory = target_directory
+        else:
+            self.current_directory = os.getcwd()
     
     def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -268,6 +356,55 @@ class EpubManagerWithOptions:
         print("0. Exit")
         print()
     
+    def detect_available_languages(self, folder_path):
+        """Detect available languages from EPUB files in folder"""
+        epub_files = glob.glob(os.path.join(folder_path, "*.epub"))
+        available_languages = set()
+        
+        for epub_file in epub_files:
+            try:
+                language = get_language_from_epub(epub_file)
+                if language:
+                    available_languages.add(language)
+            except Exception as e:
+                print(f"Warning: Could not detect language for {epub_file}: {e}")
+        
+        return sorted(available_languages)
+
+    def get_smart_merge_order(self, folder_path, custom_order=None):
+        """Create merge order based on available languages and preferred order"""
+        available_langs = self.detect_available_languages(folder_path)
+        if not available_langs:
+            return custom_order or self.default_merge_order
+        
+        print(f"Available languages detected: {available_langs}")
+        
+        # Convert language names to codes
+        available_codes = set()
+        for lang_name in available_langs:
+            code = self.language_map.get(lang_name.lower())
+            if code:
+                available_codes.add(code)
+            else:
+                # If no mapping found, try to use first 2 letters as fallback
+                code = lang_name[:2].lower()
+                available_codes.add(code)
+                print(f"Warning: No mapping for '{lang_name}', using '{code}' as code")
+        
+        print(f"Available language codes: {sorted(available_codes)}")
+        
+        base_order = custom_order if custom_order else self.default_merge_order
+        
+        # Filter base order to only include available language codes
+        smart_order = [lang for lang in base_order if lang in available_codes]
+        
+        # Add any remaining available languages that aren't in base order
+        for lang in available_codes:
+            if lang not in smart_order:
+                smart_order.append(lang)
+        
+        return smart_order
+
     def get_file_patterns(self):
         print("\nFile patterns (e.g., '*-db-*.epub', 'book-*.epub')")
         print("Leave empty for default ['*-db-*.epub']")
@@ -278,15 +415,22 @@ class EpubManagerWithOptions:
         else:
             return ['*-db-*.epub']
     
-    def get_merge_order(self):
+    def get_merge_order(self, folder_path):
         print(f"\nDefault merge order: {self.default_merge_order}")
-        print("Leave empty to use default, or specify custom order")
+        
+        # Show available languages
+        available_langs = self.detect_available_languages(folder_path)
+        if available_langs:
+            print(f"Available languages: {available_langs}")
+        
+        print("Leave empty to use smart order, or specify custom order")
         order_input = input("Enter merge order (comma separated): ").strip()
         
         if order_input:
-            return [lang.strip() for lang in order_input.split(',')]
+            custom_order = [lang.strip() for lang in order_input.split(',')]
+            return self.get_smart_merge_order(folder_path, custom_order)
         else:
-            return self.default_merge_order
+            return self.get_smart_merge_order(folder_path)
     
     def split_epubs(self):
         print("\n=== Split EPUB Files (Advanced) ===")
@@ -351,10 +495,11 @@ class EpubManagerWithOptions:
         print("\n=== Merge-compose (Advanced) ===")
         folder_path = input(f"Enter folder path (Enter for {self.current_directory}): ").strip() or self.current_directory
         file_patterns = self.get_file_patterns()
-        merge_order = self.get_merge_order()
+        merge_order = self.get_merge_order(folder_path)
         output_suffix = input("Enter output suffix (Enter for 'ml'): ").strip() or "ml"
         
         try:
+            print(f"Using merge order: {merge_order}")
             epub_paths, output_path, languages, final_merge_order = prep_epubs_by_pattern(
                 folder_path=folder_path,
                 file_patterns=file_patterns,
@@ -378,10 +523,11 @@ class EpubManagerWithOptions:
         print("\n=== Simple Merge (Advanced) ===")
         folder_path = input(f"Enter folder path (Enter for {self.current_directory}): ").strip() or self.current_directory
         file_patterns = self.get_file_patterns()
-        merge_order = self.get_merge_order()
+        merge_order = self.get_merge_order(folder_path)
         output_suffix = input("Enter output suffix (Enter for 'ml-simple'): ").strip() or "ml-simple"
         
         try:
+            print(f"Using merge order: {merge_order}")
             prep_and_merge_simple(
                 folder_path=folder_path,
                 file_patterns=file_patterns,
@@ -422,7 +568,13 @@ class EpubManagerWithOptions:
 def main():
     """Main entry point"""
     try:
-        manager = SimpleEbookManager()
+        # Check if a directory was passed as first argument
+        target_directory = None
+        if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+            target_directory = sys.argv[1]
+            print(f"Target directory provided: {target_directory}")
+        
+        manager = SimpleEbookManager(target_directory)
         manager.run()
     except KeyboardInterrupt:
         print("\n\nOperation cancelled by user.")

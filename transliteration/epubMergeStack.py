@@ -460,6 +460,7 @@ def prep_and_merge_simple(folder_path, file_patterns, merge_order=None, output_s
 if __name__ == "__main__":
     folder_path = '/home/zaya/Downloads/Zayas/ZayasBooks/t'
     file_patterns = ['*-db-*.epub']
+    merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'tr']
     
     # Example with simple merging
     print("=== Simple Merging Example ===")
@@ -467,7 +468,6 @@ if __name__ == "__main__":
         prep_and_merge_simple(
             folder_path=folder_path,
             file_patterns=file_patterns,
-            merge_order=['ar','ch','de','es','fr','el','he','hi','id','it','ja','ko','la','pl','pt','ru','sw','tr'],
             output_suffix="ml-simple"
         )
     except ValueError as e:

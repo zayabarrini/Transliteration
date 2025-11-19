@@ -14,9 +14,9 @@ def get_language_from_epub(epub_path: str) -> str:
     """Try to get language from EPUB using multiple methods with priority."""
     # Method 0: Check filename for language hints
     filename = os.path.basename(epub_path).lower()
-    get_language_from_epub = detect_language_from_filename(filename)
-    if get_language_from_epub in SUPPORTED_LANGUAGES:
-        return get_language_from_epub
+    detected_language = detect_language_from_filename(filename)  # FIXED: Use different variable name
+    if detected_language in SUPPORTED_LANGUAGES:
+        return detected_language
 
     try:
         book = epub.read_epub(epub_path)
@@ -85,14 +85,26 @@ def detect_language_from_filename(filename: str) -> str:
     """Detect language from filename patterns for all supported languages."""
     # Define language patterns for all supported languages
     language_patterns = {
+        "russian": ["-ru.", "_ru.", "-rus.", "_rus."],
+        "german": ["-de.", "_de.", "-ger.", "_ger.", "-deu.", "_deu."],
+        "english": ["-en.", "_en.", "-eng.", "_eng.", "-us.", "_us.", "-uk.", "_uk.", "-gb.", "_gb."],
+        "chinese": ["-zh.", "_zh.", "-ch.", "_ch.", "-chi.", "_chi.", "-cn.", "_cn.", "-zho.", "_zho."],
+        "arabic": ["-ar.", "_ar.", "-ara.", "_ara.", "-ae.", "_ae.", "-sa.", "_sa."],
+        "hindi": ["-hi.", "_hi.", "-hin.", "_hin.", "-in.", "_in."],
+        "spanish": ["-es.", "_es.", "-spa.", "_spa.", "-esp.", "_esp.", "-mx.", "_mx.", "-es.", "_es."],
+        "french": ["-fr.", "_fr.", "-fre.", "_fre.", "-fra.", "_fra.", "-fr.", "_fr."],
+        "greek": ["-el.", "_el.", "-gre.", "_gre.", "-ell.", "_ell.", "-gr.", "_gr."],
+        "hebrew": ["-he.", "_he.", "-heb.", "_heb.", "-il.", "_il."],
+        "indonesian": ["-id.", "_id.", "-ind.", "_ind.", "-in.", "_in."],
+        "italian": ["-it.", "_it.", "-ita.", "_ita.", "-it.", "_it."],
         "japanese": ["-ja.", "_ja.", "-jp.", "_jp.", "-jpn.", "_jpn."],
         "korean": ["-ko.", "_ko.", "-kor.", "_kor.", "-kr.", "_kr."],
-        "chinese": ["-zh.", "_zh.", "-ch.", "_ch.", "-chi.", "_chi.", "-cn.", "_cn."],
-        "hindi": ["-hi.", "_hi.", "-hin.", "_hin.", "-in.", "_in."],
-        "arabic": ["-ar.", "_ar.", "-ara.", "_ara.", "-ae.", "_ae.", "-sa.", "_sa."],
-        "russian": ["-ru.", "_ru.", "-rus.", "_rus.", "-ru.", "_ru."],
+        "latin": ["-la.", "_la.", "-lat.", "_lat."],
+        "polish": ["-pl.", "_pl.", "-pol.", "_pol.", "-pl.", "_pl."],
+        "portuguese": ["-pt.", "_pt.", "-por.", "_por.", "-pt.", "_pt.", "-br.", "_br."],
+        "swahili": ["-sw.", "_sw.", "-swa.", "_swa.", "-ke.", "_ke.", "-tz.", "_tz."],
+        "turkish": ["-tr.", "_tr.", "-tur.", "_tur.", "-tr.", "_tr."]
     }
-
     # Check for each language's patterns in the filename
     for language, patterns in language_patterns.items():
         for pattern in patterns:
