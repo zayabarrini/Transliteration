@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arabic Syntax Analysis - Color-Coded Sentences</title>
+    <style>
+      :root {
+        --subject: #3498db;
+        --object: #2ecc71;
+        --verb: #e74c3c;
+        --adjunct: #f39c12;
+        --conjunction: #9b59b6;
+        --preposition: #1abc9c;
+        --other: #95a5a6;
+        --prefix: #3498db;
+        --suffix: #e74c3c;
+        --verb-root: #2ecc71;
+        --pronoun: #9b59b6;
+        --background: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-primary: #2c3e50;
+        --text-secondary: #7f8c8d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--text-primary);
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+        border-bottom: 2px solid #eaeaea;
+      }
+
+      h1 {
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .legend-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .legend-box {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eaeaea;
+      }
+
+      .legend-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+        padding-bottom: 8px;
+        border-bottom: 2px solid;
+      }
+
+      .syntax-title {
+        border-bottom-color: var(--subject);
+      }
+
+      .morphology-title {
+        border-bottom-color: var(--prefix);
+      }
+
+      .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .legend-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        margin-right: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .subject-color {
+        background-color: var(--subject);
+      }
+      .object-color {
+        background-color: var(--object);
+      }
+      .verb-color {
+        background-color: var(--verb);
+      }
+      .adjunct-color {
+        background-color: var(--adjunct);
+      }
+      .conjunction-color {
+        background-color: var(--conjunction);
+      }
+      .preposition-color {
+        background-color: var(--preposition);
+      }
+      .other-color {
+        background-color: var(--other);
+      }
+      .prefix-color {
+        background-color: var(--prefix);
+      }
+      .suffix-color {
+        background-color: var(--suffix);
+      }
+      .verb-root-color {
+        background-color: var(--verb-root);
+      }
+      .pronoun-color {
+        background-color: var(--pronoun);
+      }
+
+      .sentence-section {
+        margin-top: 40px;
+      }
+
+      .section-title {
+        color: var(--text-primary);
+        margin: 40px 0 25px 0;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #3498db;
+        font-size: 1.8rem;
+      }
+
+      .sentence-card {
+        background-color: white;
+        padding: 30px;
+        margin-bottom: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #3498db;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .sentence-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .sentence-number {
+        display: inline-block;
+        background: #3498db;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 32px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .sentence-arabic {
+        font-size: 1.8rem;
+        direction: rtl;
+        text-align: right;
+        margin-bottom: 25px;
+        line-height: 2;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #eaeaea;
+      }
+
+      .sentence-translation {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        padding: 15px 0;
+        border-top: 1px dashed #ddd;
+        margin-top: 15px;
+      }
+
+      .analysis-container {
+        margin-top: 25px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #eaeaea;
+      }
+
+      .analysis-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+      }
+
+      .analysis-title i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+      }
+
+      .syntax-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .syntax-tag {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .morphology-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .morphology-tag {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        background-color: white;
+        border: 1px solid #ddd;
+      }
+
+      .tag-label {
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      .word-analysis {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+
+      .word-breakdown {
+        font-size: 1.1rem;
+        direction: rtl;
+        text-align: right;
+        line-height: 1.8;
+        margin-top: 10px;
+      }
+
+      .subject {
+        color: var(--subject);
+        font-weight: bold;
+      }
+      .object {
+        color: var(--object);
+        font-weight: bold;
+      }
+      .verb {
+        color: var(--verb);
+        font-weight: bold;
+      }
+      .adjunct {
+        color: var(--adjunct);
+        font-weight: bold;
+      }
+      .conjunction {
+        color: var(--conjunction);
+        font-weight: bold;
+      }
+      .preposition {
+        color: var(--preposition);
+        font-weight: bold;
+      }
+      .other {
+        color: var(--other);
+        font-weight: bold;
+      }
+
+      .prefix {
+        color: var(--prefix);
+        font-weight: bold;
+      }
+      .suffix {
+        color: var(--suffix);
+        font-weight: bold;
+      }
+      .verb-root {
+        color: var(--verb-root);
+        font-weight: bold;
+      }
+      .pronoun {
+        color: var(--pronoun);
+        font-weight: bold;
+      }
+
+      .sentence-structure {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f0f7ff;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+      }
+
+      .structure-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+      }
+
+      .structure-visual {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        padding: 10px;
+        text-align: center;
+        background: white;
+        border-radius: 6px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+      }
+
+      .notes {
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 40px;
+        border: 1px solid #eaeaea;
+      }
+
+      .notes h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #3498db;
+      }
+
+      .notes ul {
+        padding-left: 20px;
+      }
+
+      .notes li {
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 25px;
+        border-top: 1px solid #eaeaea;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .sentence-arabic {
+          font-size: 1.5rem;
+        }
+
+        .legend-container {
+          grid-template-columns: 1fr;
+        }
+
+        .legend-grid {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Arabic Syntax Analysis with Color-Coding</h1>
+        <p class="subtitle">
+          Analyzing Arabic sentence structure with color-coded syntactic functions and morphological
+          elements
+        </p>
+      </header>
+
+      <div class="legend-container">
+        <div class="legend-box">
+          <div class="legend-title syntax-title">Syntactic Functions</div>
+          <div class="legend-grid">
+            <div class="legend-item">
+              <div class="legend-color subject-color"></div>
+              <span>S - Subject (فاعل)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color object-color"></div>
+              <span>O - Object (مفعول به)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color verb-color"></div>
+              <span>V - Verb (فعل)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color adjunct-color"></div>
+              <span>A - Adjunct (ظرف)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color conjunction-color"></div>
+              <span>C - Conjunction (حرف عطف)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color preposition-color"></div>
+              <span>P - Preposition (حرف جر)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color other-color"></div>
+              <span>X - Other (أخرى)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="legend-box">
+          <div class="legend-title morphology-title">Morphological Elements</div>
+          <div class="legend-grid">
+            <div class="legend-item">
+              <div class="legend-color prefix-color"></div>
+              <span>Prefix (بادئة)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color suffix-color"></div>
+              <span>Suffix (لاحقة)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color verb-root-color"></div>
+              <span>Verb Root (جذر الفعل)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color pronoun-color"></div>
+              <span>Pronoun (ضمير)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sentence-section">
+        <h2 class="section-title">Arabic Sentences with Syntactic Analysis</h2>
+
+        <!-- Sentence 1 -->
+        <div class="sentence-card">
+          <div class="sentence-number">1</div>
+          <div class="sentence-arabic">
+            <span class="subject">الطالب</span>
+            <span class="verb"
+              ><span class="prefix">ي</span><span class="verb-root">قرأ</span></span
+            >
+            <span class="object"><span class="preposition">ال</span>كتاب</span>
+            <span class="adjunct">في المكتبة</span>
+            <span class="adjunct">اليوم</span>.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> The student reads the book in the library today.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag object-color"
+                style="background-color: var(--object); color: white"
+              >
+                Object (O)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Place (A)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Time (A)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Verb:</span> <span class="prefix">يـ</span> (prefix) +
+                <span class="verb-root">قرأ</span> (root)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Definite article:</span>
+                <span class="preposition">الـ</span> (prefix)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                S [الطالب] + V [يقرأ] + O [الكتاب] + A [في المكتبة] + A [اليوم]
+              </div>
+              <div class="word-breakdown">
+                <strong>Word-by-word:</strong><br />
+                الـطالب = <span class="subject">The student</span> (S)<br />
+                يـقرأ = <span class="prefix">he</span>-<span class="verb-root">reads</span>
+                (V)<br />
+                الـكتاب = <span class="preposition">the</span>-<span class="object">book</span>
+                (O)<br />
+                في المكتبة = <span class="adjunct">in the library</span> (A - Place)<br />
+                اليوم = <span class="adjunct">today</span> (A - Time)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sentence-card">
+          <div class="sentence-number">2</div>
+          <div class="sentence-arabic">
+            <span class="subject">المعلم</span>
+            <span class="verb"
+              ><span class="prefix">سـ</span><span class="verb-root">يشرح</span></span
+            >
+            <span class="object">الدرس</span>
+            <span class="conjunction">و</span>
+            <span class="subject">التلاميذ</span>
+            <span class="verb"
+              ><span class="prefix">سـ</span><span class="verb-root">يستمعون</span
+              ><span class="suffix">ون</span></span
+            >.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> The teacher will explain the lesson and the students will
+            listen.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag object-color"
+                style="background-color: var(--object); color: white"
+              >
+                Object (O)
+              </div>
+              <div
+                class="syntax-tag conjunction-color"
+                style="background-color: var(--conjunction); color: white"
+              >
+                Conjunction (C)
+              </div>
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 1:</span> <span class="prefix">سـ</span> (future
+                prefix) + <span class="verb-root">يشرح</span> (root)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 2:</span> <span class="prefix">سـ</span> (future) +
+                <span class="verb-root">يستمع</span> (root) + <span class="suffix">ون</span> (plural
+                suffix)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Conjunction:</span> <span class="conjunction">و</span> (and)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                S₁ [المعلم] + V₁ [سيشرح] + O [الدرس] + C [و] + S₂ [التلاميذ] + V₂ [سيستمعون]
+              </div>
+              <div class="word-breakdown">
+                <strong>Compound Sentence:</strong><br />
+                المعلم = <span class="subject">The teacher</span> (S₁)<br />
+                سـيشرح = <span class="prefix">will</span>-<span class="verb-root">explain</span>
+                (V₁)<br />
+                الدرس = <span class="object">the lesson</span> (O)<br />
+                و = <span class="conjunction">and</span> (C)<br />
+                التلاميذ = <span class="subject">the students</span> (S₂)<br />
+                سـيستمعـون = <span class="prefix">will</span>-<span class="verb-root">listen</span
+                >-<span class="suffix">(they)</span> (V₂)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sentence-card">
+          <div class="sentence-number">3</div>
+          <div class="sentence-arabic">
+            <span class="object">الهدية</span>
+            <span class="verb"
+              ><span class="prefix">أعط</span><span class="verb-root">اها</span
+              ><span class="suffix">ني</span></span
+            >
+            <span class="subject">أمي</span>
+            <span class="adjunct">أمس</span>
+            <span class="preposition">ل</span>
+            <span class="pronoun">ي</span>.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> My mother gave me the gift yesterday.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag object-color"
+                style="background-color: var(--object); color: white"
+              >
+                Object (O) - Fronted
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Time (A)
+              </div>
+              <div
+                class="syntax-tag preposition-color"
+                style="background-color: var(--preposition); color: white"
+              >
+                Preposition (P)
+              </div>
+              <div
+                class="syntax-tag other-color"
+                style="background-color: var(--other); color: white"
+              >
+                Pronoun Object (X)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Verb:</span> <span class="verb-root">أعط</span> (root) +
+                <span class="suffix">اها</span> (her it) + <span class="suffix">ني</span> (me)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Subject:</span> أم + <span class="pronoun">ي</span> (my
+                mother)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Preposition:</span>
+                <span class="preposition">لـ</span> (to/for) + <span class="pronoun">ي</span> (me)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                O [الهدية] + V [أعطاها] + S [أمي] + A [أمس] + P [لي]
+              </div>
+              <div class="word-breakdown">
+                <strong>VSO Word Order (Object Fronted):</strong><br />
+                الهدية = <span class="object">The gift</span> (O - fronted for emphasis)<br />
+                أعطاها = <span class="verb-root">gave</span>-<span class="suffix">it (her)</span>
+                (V)<br />
+                أمي = <span class="subject">my mother</span> (S)<br />
+                أمس = <span class="adjunct">yesterday</span> (A)<br />
+                لي = <span class="preposition">to</span>-<span class="pronoun">me</span> (P +
+                pronoun object)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sentence-card">
+          <div class="sentence-number">4</div>
+          <div class="sentence-arabic">
+            <span class="conjunction">إذا</span>
+            <span class="verb"
+              ><span class="prefix">ت</span><span class="verb-root">درس</span></span
+            >
+            <span class="subject">أنت</span>
+            <span class="adjunct">بجد</span>،
+            <span class="verb"
+              ><span class="prefix">ت</span><span class="verb-root">نجح</span
+              ><span class="suffix">ت</span></span
+            >
+            <span class="adjunct">في الامتحان</span>.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> If you study hard, you will succeed in the exam.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag conjunction-color"
+                style="background-color: var(--conjunction); color: white"
+              >
+                Subordinator (C)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Manner (A)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Place (A)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 1:</span> <span class="prefix">تـ</span> (you prefix) +
+                <span class="verb-root">درس</span> (root)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Subject:</span> <span class="pronoun">أنت</span> (explicit
+                pronoun)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 2:</span> <span class="prefix">تـ</span> (you) +
+                <span class="verb-root">نجح</span> (root) + <span class="suffix">ت</span> (past
+                suffix)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                C [إذا] + V₁ [تدرس] + S [أنت] + A [بجد] + V₂ [تنجحت] + A [في الامتحان]
+              </div>
+              <div class="word-breakdown">
+                <strong>Conditional Sentence:</strong><br />
+                إذا = <span class="conjunction">If</span> (C - subordinating conjunction)<br />
+                تـدرس = <span class="prefix">you</span>-<span class="verb-root">study</span>
+                (V₁)<br />
+                أنت = <span class="subject">you</span> (S - explicit pronoun for emphasis)<br />
+                بجد = <span class="adjunct">hard</span> (A - manner)<br />
+                تـنجحـت = <span class="prefix">you</span>-<span class="verb-root">succeed</span
+                >-<span class="suffix">(past)</span> (V₂)<br />
+                في الامتحان = <span class="adjunct">in the exam</span> (A - place)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sentence-card">
+          <div class="sentence-number">5</div>
+          <div class="sentence-arabic">
+            <span class="subject"><span class="pronoun">هم</span></span>
+            <span class="verb"
+              ><span class="prefix">ي</span><span class="verb-root">ذهبون</span
+              ><span class="suffix">ون</span></span
+            >
+            <span class="preposition">إلى</span>
+            <span class="object">المدرسة</span>
+            <span class="conjunction">كلما</span>
+            <span class="verb"><span class="prefix">أشرقت</span></span>
+            <span class="object">الشمس</span>.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> They go to school whenever the sun rises.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S) - Pronoun
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag preposition-color"
+                style="background-color: var(--preposition); color: white"
+              >
+                Preposition (P)
+              </div>
+              <div
+                class="syntax-tag object-color"
+                style="background-color: var(--object); color: white"
+              >
+                Object (O) - of Preposition
+              </div>
+              <div
+                class="syntax-tag conjunction-color"
+                style="background-color: var(--conjunction); color: white"
+              >
+                Temporal Conjunction (C)
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V)
+              </div>
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Subject 1:</span> <span class="pronoun">هم</span> (they -
+                independent pronoun)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 1:</span> <span class="prefix">يـ</span> (they prefix)
+                + <span class="verb-root">ذهب</span> (root) + <span class="suffix">ون</span> (plural
+                suffix)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Preposition:</span>
+                <span class="preposition">إلى</span> (to)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Verb 2:</span> <span class="prefix">أشرق</span> (root) +
+                <span class="suffix">ت</span> (past suffix)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                S₁ [هم] + V₁ [يذهبون] + P [إلى] + O₁ [المدرسة] + C [كلما] + V₂ [أشرقت] + S₂ [الشمس]
+              </div>
+              <div class="word-breakdown">
+                <strong>Complex Temporal Sentence:</strong><br />
+                هم = <span class="subject">They</span> (S₁ - independent pronoun)<br />
+                يـذهبـون = <span class="prefix">they</span>-<span class="verb-root">go</span>-<span
+                  class="suffix"
+                  >(plural)</span
+                >
+                (V₁)<br />
+                إلى = <span class="preposition">to</span> (P)<br />
+                المدرسة = <span class="object">the school</span> (O₁ - object of preposition)<br />
+                كلما = <span class="conjunction">whenever</span> (C - temporal conjunction)<br />
+                أشرقـت = <span class="verb-root">rose</span>-<span class="suffix">(she)</span>
+                (V₂)<br />
+                الشمس = <span class="subject">the sun</span> (S₂)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sentence-card">
+          <div class="sentence-number">6</div>
+          <div class="sentence-arabic">
+            <span class="subject">الكتاب</span>
+            <span class="verb"
+              ><span class="prefix">ي</span><span class="verb-root">قرأ</span></span
+            >
+            <span class="pronoun">ه</span>
+            <span class="subject">الطالب</span>
+            <span class="adjunct">في الصباح</span>
+            <span class="conjunction">ولكن</span>
+            <span class="subject">الدفتر</span>
+            <span class="verb"
+              ><span class="prefix">ي</span><span class="verb-root">كتب</span></span
+            >
+            <span class="pronoun">ه</span>
+            <span class="adjunct">في المساء</span>.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> The book is read by the student in the morning, but the
+            notebook is written in the evening.
+          </div>
+
+          <div class="analysis-container">
+            <div class="analysis-title">Syntax Analysis:</div>
+            <div class="syntax-tags">
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Subject (S) - Passive
+              </div>
+              <div
+                class="syntax-tag verb-color"
+                style="background-color: var(--verb); color: white"
+              >
+                Verb (V) - Passive
+              </div>
+              <div
+                class="syntax-tag other-color"
+                style="background-color: var(--other); color: white"
+              >
+                Pronoun Object (X)
+              </div>
+              <div
+                class="syntax-tag subject-color"
+                style="background-color: var(--subject); color: white"
+              >
+                Agent (S)
+              </div>
+              <div
+                class="syntax-tag adjunct-color"
+                style="background-color: var(--adjunct); color: white"
+              >
+                Adjunct - Time (A)
+              </div>
+              <div
+                class="syntax-tag conjunction-color"
+                style="background-color: var(--conjunction); color: white"
+              >
+                Conjunction (C)
+              </div>
+            </div>
+
+            <div class="analysis-title">Morphology Analysis:</div>
+            <div class="morphology-tags">
+              <div class="morphology-tag">
+                <span class="tag-label">Passive Verb 1:</span>
+                <span class="prefix">يـ</span> (passive prefix) +
+                <span class="verb-root">قرأ</span> (root) + <span class="pronoun">ه</span> (it)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Passive Verb 2:</span>
+                <span class="prefix">يـ</span> (passive) + <span class="verb-root">كتب</span> (root)
+                + <span class="pronoun">ه</span> (it)
+              </div>
+              <div class="morphology-tag">
+                <span class="tag-label">Conjunction:</span>
+                <span class="conjunction">ولكن</span> (but)
+              </div>
+            </div>
+
+            <div class="sentence-structure">
+              <div class="structure-title">Sentence Structure:</div>
+              <div class="structure-visual">
+                S₁ [الكتاب] + V₁ [يقرأ] + X [ه] + S₂ [الطالب] + A₁ [في الصباح] + C [ولكن] + S₃
+                [الدفتر] + V₂ [يكتب] + X [ه] + A₂ [في المساء]
+              </div>
+              <div class="word-breakdown">
+                <strong>Passive Voice Contrast:</strong><br />
+                الكتاب = <span class="subject">The book</span> (S₁ - passive subject)<br />
+                يـقرأ = <span class="verb-root">is read</span> (V₁ - passive verb)<br />
+                ه = <span class="pronoun">it</span> (X - object pronoun agreeing with subject)<br />
+                الطالب = <span class="subject">the student</span> (S₂ - agent with preposition
+                omitted)<br />
+                في الصباح = <span class="adjunct">in the morning</span> (A₁)<br />
+                ولكن = <span class="conjunction">but</span> (C - contrastive conjunction)<br />
+                الدفتر = <span class="subject">the notebook</span> (S₃)<br />
+                يـكتب = <span class="verb-root">is written</span> (V₂)<br />
+                ه = <span class="pronoun">it</span> (X)<br />
+                في المساء = <span class="adjunct">in the evening</span> (A₂)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h3>Key Features of Arabic Syntax</h3>
+        <ul>
+          <li>
+            <strong>VSO Word Order:</strong> Arabic typically follows Verb-Subject-Object order, but
+            Subject-Verb-Object is also common, especially with definite subjects.
+          </li>
+          <li>
+            <strong>Case Endings:</strong> Arabic nouns and adjectives change their endings based on
+            grammatical case (nominative, accusative, genitive).
+          </li>
+          <li>
+            <strong>Agreement:</strong> Verbs agree with their subjects in gender and number, and
+            adjectives agree with the nouns they modify.
+          </li>
+          <li>
+            <strong>Pro-drop Language:</strong> Subject pronouns are often omitted since verb
+            conjugation indicates the subject.
+          </li>
+          <li>
+            <strong>Flexible Word Order:</strong> Arabic allows some flexibility in word order for
+            emphasis, with fronting of objects or adjuncts being common.
+          </li>
+          <li>
+            <strong>Idafa Construction:</strong> Possession is expressed through the إضافة
+            construction (noun + noun without definite article).
+          </li>
+          <li>
+            <strong>Dual Forms:</strong> Arabic has special forms for dual (two of something) in
+            addition to singular and plural.
+          </li>
+          <li>
+            <strong>Passive Voice:</strong> Formed by changing the vowel pattern of the verb
+            (internal passive) or using prefix/suffix changes.
+          </li>
+        </ul>
+      </div>
+
+      <footer>
+        <p>Arabic Syntax Analysis - Color-coded syntactic functions and morphological elements</p>
+        <p>
+          S = Subject | V = Verb | O = Object | A = Adjunct | C = Conjunction | P = Preposition | X
+          = Other
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

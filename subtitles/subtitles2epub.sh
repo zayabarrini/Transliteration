@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/Zips/Cinema-Comedy"
+DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/TV/Downton-Abbey/Downton-Abbey"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")

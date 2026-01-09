@@ -17,7 +17,7 @@ DEFAULT_CONFIG = {
         "option": 1,
     }
 
-# DEFAULT_CONFIG = {"option": 3, "language_to_keep": "zh", "language_after": "ru"}
+# DEFAULT_CONFIG = {"option": 2, "language_to_keep": "en"}
 
 # Predefined configurations for common use cases
 # Add to your CONFIG_PRESETS

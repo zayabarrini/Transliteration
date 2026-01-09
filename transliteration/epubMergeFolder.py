@@ -104,7 +104,7 @@ if __name__ == "__main__":
         epub_paths, output_path, languages, merge_order = prep_epubs_by_pattern(
             folder_path=folder_path,
             file_patterns=file_patterns,
-            merge_order=['ch', 'de', 'ru'],  # Use 'ch' here
+            merge_order=['ru', 'de', 'fr', 'it'],
             output_suffix="ml"
         )
         merge_multiple_epubs(epub_paths, output_path, languages, merge_order)

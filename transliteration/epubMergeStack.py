@@ -468,7 +468,7 @@ if __name__ == "__main__":
         prep_and_merge_simple(
             folder_path=folder_path,
             file_patterns=file_patterns,
-            output_suffix="ml-simple"
+            output_suffix="ml-stack"
         )
     except ValueError as e:
         print(f"Error: {e}")

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Russian Verb Conjugation - Color Coded</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      h2 {
+        color: #34495e;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 8px;
+        margin-top: 30px;
+      }
+
+      .intro {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+
+      .color-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .color-item {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+
+      .color-box {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: 4px;
+      }
+
+      .prefix {
+        /* background-color: #3498db; */
+      }
+
+      .root {
+        /* background-color: #2ecc71; */
+      }
+
+      .suffix {
+        /* background-color: #e74c3c; */
+      }
+
+      .ending {
+        /* background-color: #f39c12; */
+      }
+
+      .verb-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .verb-table th {
+        background-color: #2c3e50;
+        color: white;
+        text-align: left;
+        padding: 15px;
+        font-weight: 600;
+      }
+
+      .verb-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .verb-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      .verb-table tr:nth-child(odd) {
+        background-color: #fff;
+      }
+
+      .verb-table tr:hover {
+        background-color: #e8f4fc;
+      }
+
+      .verb-form {
+        font-size: 1.2em;
+        font-weight: 600;
+      }
+
+      .color-coded {
+        font-size: 1.3em;
+        margin: 5px 0;
+        padding: 3px 0;
+      }
+
+      .sentences-container {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-top: 30px;
+      }
+
+      .sentence {
+        margin: 20px 0;
+        padding: 15px;
+        border-left: 4px solid #3498db;
+        background-color: #f8fafc;
+      }
+
+      .sentence-ru {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+      }
+
+      .sentence-en {
+        color: #666;
+        font-style: italic;
+      }
+
+      .note {
+        background-color: #fff8e1;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 30px;
+        border-left: 4px solid #ffc107;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        color: #7f8c8d;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 768px) {
+        .verb-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .color-legend {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Russian Verb Conjugation with Color Coding</h1>
+      <p>Visualizing prefixes, roots, suffixes, and endings in Russian verb conjugation</p>
+    </header>
+
+    <div class="intro">
+      <p>
+        This page demonstrates how Russian verbs change through conjugation. Different colors are
+        used to highlight the prefixes, roots, suffixes, and endings, making it easier to understand
+        how verbs transform in different tenses and persons.
+      </p>
+    </div>
+
+    <h2>Color Legend</h2>
+    <div class="color-legend">
+      <div class="color-item">
+        <div class="color-box prefix"></div>
+        <span>Prefix (приставка)</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box root"></div>
+        <span>Root (корень)</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box suffix"></div>
+        <span>Suffix (суффикс)</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box ending"></div>
+        <span>Ending (окончание)</span>
+      </div>
+    </div>
+
+    <h2>Verb Conjugation Table: писать (to write)</h2>
+    <table class="verb-table">
+      <thead>
+        <tr>
+          <th>Person & Number</th>
+          <th>Present Tense</th>
+          <th>Past Tense</th>
+          <th>Future Tense</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Я (I)</td>
+          <td>
+            <div class="verb-form">пишу</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">у</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писал (m) / писала (f)</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">л / ла</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">буду писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">буду пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Ты (You, informal)</td>
+          <td>
+            <div class="verb-form">пишешь</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ешь</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писал (m) / писала (f)</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">л / ла</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">будешь писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">будешь пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Он/Она/Оно (He/She/It)</td>
+          <td>
+            <div class="verb-form">пишет</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ет</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писал / писала / писало</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">л / ла / ло</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">будет писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">будет пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Мы (We)</td>
+          <td>
+            <div class="verb-form">пишем</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ем</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писали</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ли</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">будем писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">будем пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Вы (You, formal/plural)</td>
+          <td>
+            <div class="verb-form">пишете</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ете</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писали</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ли</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">будете писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">будете пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Они (They)</td>
+          <td>
+            <div class="verb-form">пишут</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пиш</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ут</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">писали</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ли</span>
+            </div>
+          </td>
+          <td>
+            <div class="verb-form">будут писать</div>
+            <div class="color-coded">
+              <span class="root" style="color: #2ecc71; font-weight: bold">будут пис</span
+              ><span class="suffix" style="color: #e74c3c; font-weight: bold">а</span
+              ><span class="ending" style="color: #f39c12; font-weight: bold">ть</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Example Sentences with Color-Coded Verbs</h2>
+    <div class="sentences-container">
+      <div class="sentence">
+        <div class="sentence-ru">
+          Я <span class="prefix" style="color: #3498db; font-weight: bold">за</span
+          ><span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+          ><span class="suffix" style="color: #e74c3c; font-weight: bold">ыва</span
+          ><span class="ending" style="color: #f39c12; font-weight: bold">ю</span> новое письмо.
+        </div>
+        <div class="sentence-en">I am writing down a new letter.</div>
+      </div>
+
+      <div class="sentence">
+        <div class="sentence-ru">
+          Мы <span class="prefix" style="color: #3498db; font-weight: bold">пере</span
+          ><span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+          ><span class="ending" style="color: #f39c12; font-weight: bold">али</span> этот текст
+          вчера.
+        </div>
+        <div class="sentence-en">We rewrote this text yesterday.</div>
+      </div>
+
+      <div class="sentence">
+        <div class="sentence-ru">
+          Она <span class="prefix" style="color: #3498db; font-weight: bold">под</span
+          ><span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+          ><span class="ending" style="color: #f39c12; font-weight: bold">ывает</span> документы
+          сейчас.
+        </div>
+        <div class="sentence-en">She is signing the documents now.</div>
+      </div>
+
+      <div class="sentence">
+        <div class="sentence-ru">
+          Они <span class="prefix" style="color: #3498db; font-weight: bold">вы</span
+          ><span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+          ><span class="suffix" style="color: #e74c3c; font-weight: bold">ыва</span
+          ><span class="ending" style="color: #f39c12; font-weight: bold">ют</span> его из больницы
+          завтра.
+        </div>
+        <div class="sentence-en">They will discharge him from the hospital tomorrow.</div>
+      </div>
+
+      <div class="sentence">
+        <div class="sentence-ru">
+          Ты <span class="prefix" style="color: #3498db; font-weight: bold">до</span
+          ><span class="root" style="color: #2ecc71; font-weight: bold">пис</span
+          ><span class="ending" style="color: #f39c12; font-weight: bold">ал</span> эту книгу на
+          прошлой неделе?
+        </div>
+        <div class="sentence-en">Did you finish writing this book last week?</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <h3>Note on Russian Verb Structure</h3>
+      <p>
+        Russian verbs typically consist of: <strong>Prefix</strong> (приставка) +
+        <strong>Root</strong> (корень) + <strong>Suffix</strong> (суффикс) +
+        <strong>Ending</strong> (окончание).
+      </p>
+      <p>
+        Prefixes often change the meaning of the verb (like "за-" for beginning an action, "пере-"
+        for repeating). Suffixes often indicate aspect (perfective/imperfective) or other
+        grammatical features. Endings change according to person, number, gender, and tense.
+      </p>
+    </div>
+
+    <footer>
+      <p>
+        Created for Russian language learners • Color coding helps visualize verb structure •
+        Refresh page to see different examples
+      </p>
+    </footer>
+  </body>
+</html>

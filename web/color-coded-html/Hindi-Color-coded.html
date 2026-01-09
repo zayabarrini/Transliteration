@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hindi Grammar Conjugations</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f8f5f2;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #e63946;
+      }
+
+      h1 {
+        color: #1d3557;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #457b9d;
+        font-size: 1.2rem;
+      }
+
+      .section-title {
+        background-color: #1d3557;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 5px;
+        margin-top: 30px;
+        margin-bottom: 20px;
+      }
+
+      .color-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+      }
+
+      .color-item {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+
+      .color-box {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: 3px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      th {
+        background-color: #457b9d;
+        color: white;
+        padding: 15px;
+        text-align: left;
+      }
+
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      tr:hover {
+        background-color: #e9ecef;
+      }
+
+      .pronoun-cell {
+        font-weight: bold;
+        color: #1d3557;
+        width: 120px;
+      }
+
+      .hindi-text {
+        font-size: 1.4rem;
+        direction: ltr;
+        text-align: left;
+      }
+
+      .prefix {
+        color: #e63946;
+        font-weight: bold;
+      }
+
+      .root {
+        color: #1d3557;
+        font-weight: bold;
+      }
+
+      .suffix {
+        color: #2a9d8f;
+        font-weight: bold;
+      }
+
+      .translation {
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      .examples {
+        background-color: #f1faee;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 30px;
+        border-left: 5px solid #2a9d8f;
+      }
+
+      .example-sentence {
+        margin: 15px 0;
+        padding: 12px;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .hindi-example {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+
+      .english-example {
+        color: #495057;
+      }
+
+      footer {
+        margin-top: 40px;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .color-legend {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Hindi Grammar Conjugation Tables</h1>
+      <p class="subtitle">Color-coded prefixes and suffixes with pronoun translations</p>
+    </header>
+
+    <div class="color-legend">
+      <div class="color-item">
+        <div class="color-box" style="background-color: #e63946"></div>
+        <span>Prefix</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box" style="background-color: #1d3557"></div>
+        <span>Root Word</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box" style="background-color: #2a9d8f"></div>
+        <span>Suffix</span>
+      </div>
+      <div class="color-item">
+        <div class="color-box" style="background-color: #1d3557; width: 20px; height: 20px"></div>
+        <span>Pronouns (with translation)</span>
+      </div>
+    </div>
+
+    <h2 class="section-title">
+      Verb Conjugations (Present Tense) - Verb: लिखना (likhnā - to write)
+    </h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Pronoun (with translation)</th>
+          <th>Hindi Conjugation</th>
+          <th>Transliteration</th>
+          <th>English Translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pronoun-cell">मैं (I)</td>
+          <td class="hindi-text">
+            <span class="root">लिख</span><span class="suffix">ता हूँ</span>
+          </td>
+          <td>main likhtā hū̃</td>
+          <td class="translation">I write</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">तू (You - intimate)</td>
+          <td class="hindi-text"><span class="root">लिख</span><span class="suffix">ता है</span></td>
+          <td>tū likhtā hai</td>
+          <td class="translation">You write (intimate)</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">तुम (You - informal)</td>
+          <td class="hindi-text"><span class="root">लिख</span><span class="suffix">ते हो</span></td>
+          <td>tum likhte ho</td>
+          <td class="translation">You write (informal)</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">आप (You - formal)</td>
+          <td class="hindi-text">
+            <span class="root">लिख</span><span class="suffix">ते हैं</span>
+          </td>
+          <td>āp likhte ha͠i</td>
+          <td class="translation">You write (formal)</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">यह/वह (He/She/It)</td>
+          <td class="hindi-text"><span class="root">लिख</span><span class="suffix">ता है</span></td>
+          <td>yah/vah likhtā hai</td>
+          <td class="translation">He/She/It writes</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">हम (We)</td>
+          <td class="hindi-text">
+            <span class="root">लिख</span><span class="suffix">ते हैं</span>
+          </td>
+          <td>ham likhte ha͠i</td>
+          <td class="translation">We write</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">ये/वे (They)</td>
+          <td class="hindi-text">
+            <span class="root">लिख</span><span class="suffix">ते हैं</span>
+          </td>
+          <td>ye/ve likhte ha͠i</td>
+          <td class="translation">They write</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-title">Noun Declensions - Noun: लड़का (laṛkā - boy)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>Singular</th>
+          <th>Plural</th>
+          <th>English Translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pronoun-cell">Nominative (Subject)</td>
+          <td class="hindi-text"><span class="root">लड़का</span></td>
+          <td class="hindi-text"><span class="root">लड़के</span></td>
+          <td class="translation">boy / boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Accusative (Object)</td>
+          <td class="hindi-text"><span class="root">लड़के</span><span class="suffix"> को</span></td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> को</span>
+          </td>
+          <td class="translation">to the boy / to the boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Instrumental (With/By)</td>
+          <td class="hindi-text"><span class="root">लड़के</span><span class="suffix"> से</span></td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> से</span>
+          </td>
+          <td class="translation">with/by the boy / boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Dative (For/To)</td>
+          <td class="hindi-text">
+            <span class="root">लड़के</span><span class="suffix"> के लिए</span>
+          </td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> के लिए</span>
+          </td>
+          <td class="translation">for the boy / boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Ablative (From)</td>
+          <td class="hindi-text"><span class="root">लड़के</span><span class="suffix"> से</span></td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> से</span>
+          </td>
+          <td class="translation">from the boy / boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Genitive (Of)</td>
+          <td class="hindi-text"><span class="root">लड़के</span><span class="suffix"> का</span></td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> का</span>
+          </td>
+          <td class="translation">of the boy / boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Locative (In/At)</td>
+          <td class="hindi-text">
+            <span class="root">लड़के</span><span class="suffix"> में</span>
+          </td>
+          <td class="hindi-text">
+            <span class="root">लड़कों</span><span class="suffix"> में</span>
+          </td>
+          <td class="translation">in/at the boy / boys</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-title">Adjective Declensions - Adjective: अच्छा (acchā - good)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Gender & Number</th>
+          <th>Form</th>
+          <th>Example with Noun</th>
+          <th>English Translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pronoun-cell">Masculine Singular</td>
+          <td class="hindi-text"><span class="root">अच्छा</span></td>
+          <td class="hindi-text"><span class="root">अच्छा</span> लड़का</td>
+          <td class="translation">good boy</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Masculine Plural</td>
+          <td class="hindi-text"><span class="root">अच्छे</span></td>
+          <td class="hindi-text"><span class="root">अच्छे</span> लड़के</td>
+          <td class="translation">good boys</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Feminine Singular</td>
+          <td class="hindi-text"><span class="root">अच्छी</span></td>
+          <td class="hindi-text"><span class="root">अच्छी</span> लड़की</td>
+          <td class="translation">good girl</td>
+        </tr>
+        <tr>
+          <td class="pronoun-cell">Feminine Plural</td>
+          <td class="hindi-text"><span class="root">अच्छी</span></td>
+          <td class="hindi-text"><span class="root">अच्छी</span> लड़कियाँ</td>
+          <td class="translation">good girls</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="examples">
+      <h2 class="section-title" style="background-color: #2a9d8f; margin-top: 0">
+        Example Sentences with Color-Coded Syntax
+      </h2>
+
+      <div class="example-sentence">
+        <div class="hindi-example">
+          <span class="pronoun-cell">मैं</span> <span class="root">अच्छी</span>
+          <span class="root">किताब</span><span class="suffix">ें</span> <span class="root">लिख</span
+          ><span class="suffix">ता हूँ</span>।
+        </div>
+        <div class="english-example">
+          <strong>Translation:</strong> I write good books. (Literally: I good books write)
+        </div>
+        <div class="translation" style="margin-top: 5px">
+          <strong>Breakdown:</strong> "मैं" (I) + "अच्छी" (good - feminine plural) + "किताबें"
+          (books) + "लिखता हूँ" (write - 1st person singular)
+        </div>
+      </div>
+
+      <div class="example-sentence">
+        <div class="hindi-example">
+          <span class="pronoun-cell">वह</span> <span class="root">लड़के</span
+          ><span class="suffix"> को</span> <span class="root">अच्छा</span>
+          <span class="root">उपहार</span> <span class="root">दे</span
+          ><span class="suffix">ता है</span>।
+        </div>
+        <div class="english-example">
+          <strong>Translation:</strong> He gives a good gift to the boy.
+        </div>
+        <div class="translation" style="margin-top: 5px">
+          <strong>Breakdown:</strong> "वह" (He) + "लड़के को" (to the boy - dative case) + "अच्छा"
+          (good - masculine singular) + "उपहार" (gift) + "देता है" (gives - 3rd person singular)
+        </div>
+      </div>
+
+      <div class="example-sentence">
+        <div class="hindi-example">
+          <span class="pronoun-cell">हम</span> <span class="root">अच्छे</span>
+          <span class="root">लड़कों</span><span class="suffix"> से</span>
+          <span class="root">बात</span> <span class="root">कर</span
+          ><span class="suffix">ते हैं</span>।
+        </div>
+        <div class="english-example"><strong>Translation:</strong> We talk with good boys.</div>
+        <div class="translation" style="margin-top: 5px">
+          <strong>Breakdown:</strong> "हम" (We) + "अच्छे" (good - masculine plural) + "लड़कों से"
+          (with boys - instrumental case) + "बात" (talk) + "करते हैं" (do - 1st person plural)
+        </div>
+      </div>
+
+      <div class="example-sentence">
+        <div class="hindi-example">
+          <span class="pronoun-cell">तुम</span> <span class="root">अच्छी</span>
+          <span class="root">लड़की</span><span class="suffix"> का</span>
+          <span class="root">नाम</span> <span class="root">लिख</span
+          ><span class="suffix">ते हो</span>।
+        </div>
+        <div class="english-example">
+          <strong>Translation:</strong> You write the good girl's name.
+        </div>
+        <div class="translation" style="margin-top: 5px">
+          <strong>Breakdown:</strong> "तुम" (You - informal) + "अच्छी" (good - feminine singular) +
+          "लड़की का" (girl's - genitive case) + "नाम" (name) + "लिखते हो" (write - 2nd person
+          informal)
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        Hindi Grammar Conjugation Tables | Color-coded prefixes and suffixes for learning Hindi
+        grammar
+      </p>
+      <p>
+        Note: Hindi is written in Devanagari script. The transliterations use IAST (International
+        Alphabet of Sanskrit Transliteration).
+      </p>
+    </footer>
+  </body>
+</html>

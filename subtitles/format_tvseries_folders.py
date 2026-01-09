@@ -133,6 +133,6 @@ def process_all_folders(root_directory):
 
 if __name__ == "__main__":
     # directory = input("Enter root directory containing TV series folders: ").strip()
-    directory = "/home/zaya/Downloads/Workspace/Subtitles/TVSeries/HP"
+    directory = "/home/zaya/Downloads/Zayas/zayascinema/Subtitles/TV/Downton-Abbey/Downton-Abbey"
 
     process_all_folders(directory)

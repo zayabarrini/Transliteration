@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arabic Verb Conjugation Table</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #eaeaea;
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+      }
+
+      .legend {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        margin-right: 8px;
+      }
+
+      .prefix {
+        background-color: #3498db;
+      }
+
+      .suffix {
+        background-color: #e74c3c;
+      }
+
+      .verb-root {
+        background-color: #2ecc71;
+      }
+
+      .pronoun {
+        background-color: #f39c12;
+      }
+
+      .tenses {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .tense-title {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .conjugation-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .conjugation-table th {
+        background-color: #34495e;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .conjugation-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eaeaea;
+        text-align: center;
+      }
+
+      .conjugation-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .conjugation-table tr:hover {
+        background-color: #f0f7ff;
+      }
+
+      .pronoun-column {
+        font-weight: bold;
+        background-color: #fef9e7;
+      }
+
+      .arabic-text {
+        font-size: 1.4rem;
+        direction: rtl;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+      }
+
+      .translation {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+
+      .prefix-colored {
+        color: #3498db;
+        font-weight: bold;
+      }
+
+      .suffix-colored {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+
+      .verb-root-colored {
+        color: #2ecc71;
+        font-weight: bold;
+      }
+
+      .pronoun-colored {
+        color: #f39c12;
+        font-weight: bold;
+      }
+
+      .sentences-section {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 2px solid #eaeaea;
+      }
+
+      .sentences-section h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .sentence-example {
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+      }
+
+      .sentence-arabic {
+        font-size: 1.5rem;
+        direction: rtl;
+        text-align: right;
+        margin-bottom: 10px;
+        line-height: 1.8;
+      }
+
+      .sentence-translation {
+        color: #2c3e50;
+        font-style: italic;
+        padding-top: 10px;
+        border-top: 1px dashed #ddd;
+      }
+
+      .notes {
+        background-color: #e8f4fc;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 30px;
+      }
+
+      .notes h3 {
+        color: #2980b9;
+        margin-bottom: 10px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eaeaea;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .conjugation-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .arabic-text {
+          font-size: 1.2rem;
+        }
+
+        .legend {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .tenses {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Arabic Verb Conjugation Table</h1>
+        <p class="subtitle">Verb: ذَهَبَ (dhahaba) - to go</p>
+      </header>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color prefix"></div>
+          <span>Prefix</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color suffix"></div>
+          <span>Suffix</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color verb-root"></div>
+          <span>Verb Root</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color pronoun"></div>
+          <span>Pronoun</span>
+        </div>
+      </div>
+
+      <div class="tenses">
+        <div class="tense-title">Present Tense (المضارع)</div>
+        <div class="tense-title">Past Tense (الماضي)</div>
+        <div class="tense-title">Subjunctive Tense (المضارع المنصوب)</div>
+        <div class="tense-title">Jussive Tense (المضارع المجزوم)</div>
+      </div>
+
+      <table class="conjugation-table">
+        <thead>
+          <tr>
+            <th>Pronoun (الضمائر)</th>
+            <th>Present (المضارع)</th>
+            <th>Past (الماضي)</th>
+            <th>Subjunctive (المنصوب)</th>
+            <th>Jussive (المجزوم)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنا</div>
+              <div class="translation">I (masculine/feminine)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">أ</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">I go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ت</span>
+              </div>
+              <div class="translation">I went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">أ</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">that I go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">أ</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">(let) I go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنتَ</div>
+              <div class="translation">You (masculine singular)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">You go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ت</span>
+              </div>
+              <div class="translation">You went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">that you go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">(let) you go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنتِ</div>
+              <div class="translation">You (feminine singular)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ين</span>
+              </div>
+              <div class="translation">You go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ت</span>
+              </div>
+              <div class="translation">You went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ي</span>
+              </div>
+              <div class="translation">that you go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ي</span>
+              </div>
+              <div class="translation">(let) you go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنتما</div>
+              <div class="translation">You (dual, masculine/feminine)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ان</span>
+              </div>
+              <div class="translation">You two go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">تما</span>
+              </div>
+              <div class="translation">You two went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">that you two go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">(let) you two go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هو</div>
+              <div class="translation">He</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">He goes</div>
+            </td>
+            <td>
+              <div class="arabic-text"><span class="verb-root-colored">ذهب</span></div>
+              <div class="translation">He went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">that he goes</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">(let) he go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هي</div>
+              <div class="translation">She</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">She goes</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ت</span>
+              </div>
+              <div class="translation">She went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">that she goes</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">(let) she go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هما</div>
+              <div class="translation">They two (masculine)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ان</span>
+              </div>
+              <div class="translation">They two go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">They two went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">that they two go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">(let) they two go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هما</div>
+              <div class="translation">They two (feminine)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ان</span>
+              </div>
+              <div class="translation">They two (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">تا</span>
+              </div>
+              <div class="translation">They two (f) went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">that they two (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ا</span>
+              </div>
+              <div class="translation">(let) they two (f) go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">نحن</div>
+              <div class="translation">We</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ن</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">We go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">نا</span>
+              </div>
+              <div class="translation">We went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ن</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">that we go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ن</span><span class="verb-root-colored">ذهب</span>
+              </div>
+              <div class="translation">(let) we go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنتم</div>
+              <div class="translation">You (masculine plural)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ون</span>
+              </div>
+              <div class="translation">You all go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">تم</span>
+              </div>
+              <div class="translation">You all went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">وا</span>
+              </div>
+              <div class="translation">that you all go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">وا</span>
+              </div>
+              <div class="translation">(let) you all go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">أنتن</div>
+              <div class="translation">You (feminine plural)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">You all (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">تن</span>
+              </div>
+              <div class="translation">You all (f) went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">that you all (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ت</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">(let) you all (f) go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هم</div>
+              <div class="translation">They (masculine plural)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ون</span>
+              </div>
+              <div class="translation">They go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">وا</span>
+              </div>
+              <div class="translation">They went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">وا</span>
+              </div>
+              <div class="translation">that they go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">وا</span>
+              </div>
+              <div class="translation">(let) they go</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="pronoun-column">
+              <div class="arabic-text">هن</div>
+              <div class="translation">They (feminine plural)</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">They (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="verb-root-colored">ذهب</span><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">They (f) went</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">that they (f) go</div>
+            </td>
+            <td>
+              <div class="arabic-text">
+                <span class="prefix-colored">ي</span><span class="verb-root-colored">ذهب</span
+                ><span class="suffix-colored">ن</span>
+              </div>
+              <div class="translation">(let) they (f) go</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sentences-section">
+        <h2>Example Sentences with Color-Coded Conjugation</h2>
+
+        <div class="sentence-example">
+          <div class="sentence-arabic">
+            <span class="pronoun-colored">أنا</span> <span class="prefix-colored">أ</span
+            ><span class="verb-root-colored">ذهب</span> إلى المدرسة كل يوم.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> <span class="pronoun-colored">I</span>
+            <span class="prefix-colored">[prefix]</span><span class="verb-root-colored">go</span> to
+            school every day.
+          </div>
+        </div>
+
+        <div class="sentence-example">
+          <div class="sentence-arabic">
+            <span class="pronoun-colored">هم</span> <span class="prefix-colored">ي</span
+            ><span class="verb-root-colored">ذهب</span><span class="suffix-colored">ون</span> إلى
+            السوق الآن.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> <span class="pronoun-colored">They</span>
+            <span class="prefix-colored">[prefix]</span><span class="verb-root-colored">go</span
+            ><span class="suffix-colored">[suffix]</span> to the market now.
+          </div>
+        </div>
+
+        <div class="sentence-example">
+          <div class="sentence-arabic">
+            <span class="pronoun-colored">أنتِ</span> <span class="prefix-colored">ت</span
+            ><span class="verb-root-colored">ذهب</span><span class="suffix-colored">ين</span> مع
+            أختك.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> <span class="pronoun-colored">You (feminine)</span>
+            <span class="prefix-colored">[prefix]</span><span class="verb-root-colored">go</span
+            ><span class="suffix-colored">[suffix]</span> with your sister.
+          </div>
+        </div>
+
+        <div class="sentence-example">
+          <div class="sentence-arabic">
+            <span class="pronoun-colored">نحن</span> <span class="verb-root-colored">ذهب</span
+            ><span class="suffix-colored">نا</span> إلى الحديقة أمس.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> <span class="pronoun-colored">We</span>
+            <span class="verb-root-colored">went</span
+            ><span class="suffix-colored">[suffix]</span> to the park yesterday.
+          </div>
+        </div>
+
+        <div class="sentence-example">
+          <div class="sentence-arabic">
+            أريد أن <span class="prefix-colored">ت</span
+            ><span class="verb-root-colored">ذهب</span> إلى المكتبة.
+          </div>
+          <div class="sentence-translation">
+            <strong>Translation:</strong> I want you to <span class="prefix-colored">[prefix]</span
+            ><span class="verb-root-colored">go</span> to the library. (Subjunctive mood)
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h3>Notes on Arabic Conjugation:</h3>
+        <ul>
+          <li>
+            <strong>Prefixes</strong> (blue) indicate the subject in present, subjunctive, and
+            jussive tenses.
+          </li>
+          <li>
+            <strong>Suffixes</strong> (red) indicate the subject in past tense and add gender/number
+            information in other tenses.
+          </li>
+          <li>
+            <strong>Verb root</strong> (green) remains relatively constant across conjugations.
+          </li>
+          <li>
+            <strong>Pronouns</strong> (orange) are often omitted in Arabic sentences since the verb
+            conjugation already indicates the subject.
+          </li>
+          <li>
+            The subjunctive tense is used after certain particles (like أن - "that/to") to express
+            purpose, desire, or necessity.
+          </li>
+          <li>
+            The jussive tense is used in commands, prohibitions, and after certain particles (like
+            لم - "did not").
+          </li>
+        </ul>
+      </div>
+
+      <footer>
+        <p>Arabic Verb Conjugation Table - Verb: ذَهَبَ (to go)</p>
+        <p>
+          Note: Arabic text is displayed with the root verb "ذهب" color-coded to show conjugation
+          patterns.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

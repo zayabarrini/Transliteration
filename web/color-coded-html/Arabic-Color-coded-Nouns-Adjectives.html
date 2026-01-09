@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arabic Noun & Adjective Conjugation Table</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f8f5f1;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+        background-image: linear-gradient(to bottom right, #f8f5f1, #e8e4dd);
+      }
+
+      .container {
+        max-width: 1300px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border: 1px solid #e0dcd4;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 25px;
+        border-bottom: 2px solid #e8e4dd;
+      }
+
+      h1 {
+        color: #3a2c1c;
+        margin-bottom: 10px;
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        color: #7a6a5a;
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .legend {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f5f2ed;
+        border-radius: 10px;
+        border: 1px solid #e0dcd4;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+      }
+
+      .legend-color {
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        margin-right: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .noun-root {
+        background-color: #4a6fa5;
+      }
+
+      .adjective-root {
+        background-color: #d17b46;
+      }
+
+      .feminine-marker {
+        background-color: #c44569;
+      }
+
+      .plural-marker {
+        background-color: #2a9d8f;
+      }
+
+      .dual-marker {
+        background-color: #e9c46a;
+      }
+
+      .case-ending {
+        background-color: #8d99ae;
+      }
+
+      .definite-article {
+        background-color: #6a994e;
+      }
+
+      .pronoun {
+        background-color: #9d4edd;
+      }
+
+      .section-title {
+        color: #3a2c1c;
+        margin: 40px 0 20px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #d17b46;
+        font-size: 1.8rem;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        margin-bottom: 40px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0dcd4;
+      }
+
+      .conjugation-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      .conjugation-table th {
+        background-color: #3a2c1c;
+        color: #f5f2ed;
+        padding: 18px 15px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .conjugation-table td {
+        padding: 16px 15px;
+        border-bottom: 1px solid #e8e4dd;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .conjugation-table tr:nth-child(even) {
+        background-color: #fcfaf7;
+      }
+
+      .conjugation-table tr:hover {
+        background-color: #f5f2ed;
+      }
+
+      .category-column {
+        font-weight: bold;
+        background-color: #f5f2ed;
+        color: #3a2c1c;
+        width: 180px;
+      }
+
+      .arabic-text {
+        font-size: 1.6rem;
+        direction: rtl;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        line-height: 1.8;
+      }
+
+      .translation {
+        color: #7a6a5a;
+        font-size: 0.95rem;
+        margin-top: 8px;
+      }
+
+      .phonetic {
+        color: #4a6fa5;
+        font-size: 0.9rem;
+        font-style: italic;
+        margin-top: 5px;
+      }
+
+      .noun-root-colored {
+        color: #4a6fa5;
+        font-weight: bold;
+      }
+
+      .adjective-root-colored {
+        color: #d17b46;
+        font-weight: bold;
+      }
+
+      .feminine-marker-colored {
+        color: #c44569;
+        font-weight: bold;
+      }
+
+      .plural-marker-colored {
+        color: #2a9d8f;
+        font-weight: bold;
+      }
+
+      .dual-marker-colored {
+        color: #e9c46a;
+        font-weight: bold;
+      }
+
+      .case-ending-colored {
+        color: #8d99ae;
+        font-weight: bold;
+      }
+
+      .definite-article-colored {
+        color: #6a994e;
+        font-weight: bold;
+      }
+
+      .pronoun-colored {
+        color: #9d4edd;
+        font-weight: bold;
+      }
+
+      .examples-section {
+        margin-top: 40px;
+        padding: 25px;
+        background-color: #fcfaf7;
+        border-radius: 10px;
+        border: 1px solid #e0dcd4;
+      }
+
+      .example-card {
+        background-color: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        border-left: 5px solid #4a6fa5;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .example-arabic {
+        font-size: 1.7rem;
+        direction: rtl;
+        text-align: right;
+        margin-bottom: 15px;
+        line-height: 2;
+      }
+
+      .example-translation {
+        color: #3a2c1c;
+        font-size: 1.1rem;
+        padding-top: 15px;
+        border-top: 1px dashed #d0c9bc;
+      }
+
+      .example-explanation {
+        color: #7a6a5a;
+        font-size: 0.95rem;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f5f2ed;
+        border-radius: 5px;
+      }
+
+      .noun-variations {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .variation-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e0dcd4;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .variation-title {
+        color: #3a2c1c;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #d0c9bc;
+      }
+
+      .notes {
+        background-color: #e8f4f8;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 40px;
+        border: 1px solid #c5e1ed;
+      }
+
+      .notes h3 {
+        color: #2c5a7a;
+        margin-bottom: 15px;
+      }
+
+      .notes ul {
+        padding-left: 20px;
+      }
+
+      .notes li {
+        margin-bottom: 8px;
+        line-height: 1.5;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 25px;
+        border-top: 1px solid #e0dcd4;
+        color: #7a6a5a;
+        font-size: 0.95rem;
+      }
+
+      .arabic-notes {
+        font-size: 1.1rem;
+        direction: rtl;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .conjugation-table {
+          min-width: 700px;
+        }
+
+        .arabic-text {
+          font-size: 1.4rem;
+        }
+
+        .example-arabic {
+          font-size: 1.5rem;
+        }
+
+        .legend {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .noun-variations {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Arabic Noun & Adjective Conjugation Table</h1>
+        <p class="subtitle">
+          Showing gender, number, case, and definiteness with color-coded morphological elements
+        </p>
+      </header>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color noun-root"></div>
+          <span>Noun Root</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color adjective-root"></div>
+          <span>Adjective Root</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color feminine-marker"></div>
+          <span>Feminine Marker (ة/ـة)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color plural-marker"></div>
+          <span>Plural Marker</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color dual-marker"></div>
+          <span>Dual Marker (ان/ين)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color case-ending"></div>
+          <span>Case Ending (اعراب)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color definite-article"></div>
+          <span>Definite Article (الـ)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color pronoun"></div>
+          <span>Pronoun/Attached Pronoun</span>
+        </div>
+      </div>
+
+      <h2 class="section-title">Noun Conjugation: "كتاب" (Book)</h2>
+      <div class="table-container">
+        <table class="conjugation-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Indefinite (نكرة)</th>
+              <th>Definite (معرفة)</th>
+              <th>With Pronoun (مضاف إليه)</th>
+              <th>Translation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="category-column">Masculine Singular<br />مفرد مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">kitābun</div>
+                <div class="translation">a book (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-kitābu</div>
+                <div class="translation">the book (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span><span class="pronoun-colored">ي</span>
+                </div>
+                <div class="phonetic">kitābī</div>
+                <div class="translation">my book</div>
+              </td>
+              <td>Book (masculine)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Feminine Singular<br />مفرد مؤنث</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">kitābatun</div>
+                <div class="translation">a booklet (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-kitābatu</div>
+                <div class="translation">the booklet (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ت</span
+                  ><span class="pronoun-colored">ي</span>
+                </div>
+                <div class="phonetic">kitabatī</div>
+                <div class="translation">my booklet</div>
+              </td>
+              <td>Booklet (feminine)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Masculine Dual<br />مثنى مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                </div>
+                <div class="phonetic">kitābāni</div>
+                <div class="translation">two books (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                </div>
+                <div class="phonetic">al-kitābāni</div>
+                <div class="translation">the two books (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="dual-marker-colored">ا</span><span class="pronoun-colored">ي</span>
+                </div>
+                <div class="phonetic">kitabāya</div>
+                <div class="translation">my two books</div>
+              </td>
+              <td>Two books</td>
+            </tr>
+            <tr>
+              <td class="category-column">Masculine Plural<br />جمع مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتُب</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">kutubun</div>
+                <div class="translation">books (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتُب</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-kutubu</div>
+                <div class="translation">the books (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتُب</span><span class="pronoun-colored">ي</span>
+                </div>
+                <div class="phonetic">kutubī</div>
+                <div class="translation">my books</div>
+              </td>
+              <td>Books (broken plural)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Feminine Plural<br />جمع مؤنث</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">kitābātun</div>
+                <div class="translation">booklets (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-kitābātu</div>
+                <div class="translation">the booklets (nominative)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="noun-root-colored">كتاب</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="pronoun-colored">ي</span>
+                </div>
+                <div class="phonetic">kitābātī</div>
+                <div class="translation">my booklets</div>
+              </td>
+              <td>Booklets (sound feminine plural)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title">Adjective Conjugation: "جديد" (New)</h2>
+      <div class="table-container">
+        <table class="conjugation-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Indefinite (نكرة)</th>
+              <th>Definite (معرفة)</th>
+              <th>With Noun Agreement</th>
+              <th>Translation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="category-column">Masculine Singular<br />مفرد مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">jadīdun</div>
+                <div class="translation">a new (one)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="adjective-root-colored">جديد</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-jadīdu</div>
+                <div class="translation">the new (one)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="case-ending-colored">ُ</span>
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="translation">The book is new</div>
+              </td>
+              <td>New (masculine)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Feminine Singular<br />مفرد مؤنث</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">jadīdatun</div>
+                <div class="translation">a new (one, fem.)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-jadīdatu</div>
+                <div class="translation">the new (one, fem.)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">سيار</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ُ</span>
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ة</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="translation">The car is new</div>
+              </td>
+              <td>New (feminine)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Masculine Dual<br />مثنى مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                </div>
+                <div class="phonetic">jadīdāni</div>
+                <div class="translation">two new (ones)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="adjective-root-colored">جديد</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                </div>
+                <div class="phonetic">al-jadīdāni</div>
+                <div class="translation">the two new (ones)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتاب</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="dual-marker-colored">ان</span
+                  ><span class="case-ending-colored">ِ</span>
+                </div>
+                <div class="translation">The two books are new</div>
+              </td>
+              <td>Two new (ones)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Masculine Plural<br />جمع مذكر</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="adjective-root-colored">جُدُد</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">jududun</div>
+                <div class="translation">new (ones, plural)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="adjective-root-colored">جُدُد</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-jududu</div>
+                <div class="translation">the new (ones, plural)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">كتُب</span
+                  ><span class="case-ending-colored">ُ</span>
+                  <span class="adjective-root-colored">جُدُد</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="translation">The books are new</div>
+              </td>
+              <td>New (broken plural)</td>
+            </tr>
+            <tr>
+              <td class="category-column">Feminine Plural<br />جمع مؤنث</td>
+              <td>
+                <div class="arabic-text">
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="phonetic">jadīdātun</div>
+                <div class="translation">new (ones, fem. plural)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ُ</span>
+                </div>
+                <div class="phonetic">al-jadīdātu</div>
+                <div class="translation">the new (ones, fem. plural)</div>
+              </td>
+              <td>
+                <div class="arabic-text">
+                  <span class="definite-article-colored">ال</span
+                  ><span class="noun-root-colored">سيار</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ُ</span>
+                  <span class="adjective-root-colored">جديد</span
+                  ><span class="feminine-marker-colored">ات</span
+                  ><span class="case-ending-colored">ٌ</span>
+                </div>
+                <div class="translation">The cars are new</div>
+              </td>
+              <td>New (sound feminine plural)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="noun-variations">
+        <div class="variation-box">
+          <div class="variation-title">Case Endings (الإعراب)</div>
+          <div class="arabic-text">
+            <span class="noun-root-colored">كتاب</span
+            ><span class="case-ending-colored">ٌ</span> (رفع - nominative)<br />
+            <span class="noun-root-colored">كتاب</span
+            ><span class="case-ending-colored">ٍ</span> (جر - genitive)<br />
+            <span class="noun-root-colored">كتاب</span
+            ><span class="case-ending-colored">اً</span> (نصب - accusative)
+          </div>
+          <div class="translation">
+            Nominative: -un/-u<br />
+            Genitive: -in/-i<br />
+            Accusative: -an/-a
+          </div>
+        </div>
+
+        <div class="variation-box">
+          <div class="variation-title">Possessive Pronouns (الضمائر المتصلة)</div>
+          <div class="arabic-text">
+            <span class="noun-root-colored">كتاب</span><span class="pronoun-colored">ي</span> (my
+            book)<br />
+            <span class="noun-root-colored">كتاب</span><span class="pronoun-colored">كَ</span> (your
+            book - m.)<br />
+            <span class="noun-root-colored">كتاب</span><span class="pronoun-colored">كِ</span> (your
+            book - f.)<br />
+            <span class="noun-root-colored">كتاب</span><span class="pronoun-colored">هُ</span> (his
+            book)
+          </div>
+          <div class="translation">
+            Attached pronouns change<br />
+            the noun ending
+          </div>
+        </div>
+
+        <div class="variation-box">
+          <div class="variation-title">Noun-Adjective Agreement</div>
+          <div class="arabic-text">
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">ولد</span><span class="case-ending-colored">ُ</span>
+            <span class="adjective-root-colored">الصغير</span
+            ><span class="case-ending-colored">ُ</span><br />
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">بنت</span
+            ><span class="feminine-marker-colored">ُ</span>
+            <span class="adjective-root-colored">الصغير</span
+            ><span class="feminine-marker-colored">ة</span
+            ><span class="case-ending-colored">ُ</span>
+          </div>
+          <div class="translation">
+            The small boy<br />
+            The small girl<br />
+            (Adjective matches noun)
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Example Sentences with Color-Coded Syntax</h2>
+      <div class="examples-section">
+        <div class="example-card">
+          <div class="example-arabic">
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">كتاب</span><span class="case-ending-colored">ُ</span>
+            <span class="adjective-root-colored">جديد</span
+            ><span class="case-ending-colored">ٌ</span> <span class="case-ending-colored">وَ</span
+            ><span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">قلم</span><span class="case-ending-colored">ُ</span>
+            <span class="adjective-root-colored">قديم</span
+            ><span class="case-ending-colored">ٌ</span>
+          </div>
+          <div class="example-translation">
+            <strong>Translation:</strong> The book is new and the pen is old.
+          </div>
+          <div class="example-explanation">
+            <strong>Explanation:</strong> Both nouns are definite (with الـ) and in nominative case
+            (ُ). The adjectives agree in definiteness, gender, number, and case.
+          </div>
+        </div>
+
+        <div class="example-card">
+          <div class="example-arabic">
+            <span class="noun-root-colored">قرأتُ</span> <span class="noun-root-colored">كتاب</span
+            ><span class="pronoun-colored">ي</span>
+            <span class="adjective-root-colored">الجديد</span>
+            <span class="case-ending-colored">في</span>
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">مكتب</span
+            ><span class="feminine-marker-colored">ة</span>
+          </div>
+          <div class="example-translation">
+            <strong>Translation:</strong> I read my new book in the library.
+          </div>
+          <div class="example-explanation">
+            <strong>Explanation:</strong> "كتابي" (my book) shows attached pronoun "ي". "الجديد" is
+            definite adjective agreeing with the possessed noun. "المكتبة" is feminine noun with
+            feminine marker "ة".
+          </div>
+        </div>
+
+        <div class="example-card">
+          <div class="example-arabic">
+            <span class="pronoun-colored">هذه</span> <span class="noun-root-colored">سيار</span
+            ><span class="feminine-marker-colored">ة</span
+            ><span class="case-ending-colored">ٌ</span>
+            <span class="adjective-root-colored">جميل</span
+            ><span class="feminine-marker-colored">ة</span
+            ><span class="case-ending-colored">ٌ</span> <span class="case-ending-colored">وَ</span
+            ><span class="pronoun-colored">تلك</span> <span class="noun-root-colored">سيار</span
+            ><span class="feminine-marker-colored">ة</span
+            ><span class="case-ending-colored">ٌ</span>
+            <span class="adjective-root-colored">قديم</span
+            ><span class="feminine-marker-colored">ة</span
+            ><span class="case-ending-colored">ٌ</span>
+          </div>
+          <div class="example-translation">
+            <strong>Translation:</strong> This is a beautiful car and that is an old car.
+          </div>
+          <div class="example-explanation">
+            <strong>Explanation:</strong> Demonstrative pronouns "هذه" (this) and "تلك" (that).
+            Feminine nouns with "ة" marker. Adjectives agree in femininity with "ة" ending.
+          </div>
+        </div>
+
+        <div class="example-card">
+          <div class="example-arabic">
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">ولدان</span><span class="case-ending-colored">ِ</span>
+            <span class="adjective-root-colored">الصغير</span
+            ><span class="dual-marker-colored">ان</span><span class="case-ending-colored">ِ</span>
+            <span class="noun-root-colored">يلعبان</span>
+            <span class="case-ending-colored">في</span>
+            <span class="definite-article-colored">ال</span
+            ><span class="noun-root-colored">حديق</span
+            ><span class="feminine-marker-colored">ة</span>
+          </div>
+          <div class="example-translation">
+            <strong>Translation:</strong> The two small boys are playing in the garden.
+          </div>
+          <div class="example-explanation">
+            <strong>Explanation:</strong> Dual noun "الولدان" with dual marker "ان". Adjective
+            matches with dual marker "ان". Verb "يلعبان" also has dual marker for agreement.
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h3>Key Rules of Arabic Noun & Adjective Conjugation:</h3>
+        <ul>
+          <li>
+            <strong>Gender Agreement:</strong> Adjectives must match the gender of the noun they
+            describe (masculine/feminine with "ة" marker).
+          </li>
+          <li>
+            <strong>Number Agreement:</strong> Adjectives match number (singular, dual with "ان/ين",
+            plural).
+          </li>
+          <li>
+            <strong>Case Agreement:</strong> Both nouns and adjectives take case endings
+            (nominative, genitive, accusative).
+          </li>
+          <li>
+            <strong>Definiteness Agreement:</strong> When a noun is definite (with الـ or attached
+            pronoun), its adjective must also be definite.
+          </li>
+          <li>
+            <strong>Feminine Marker:</strong> Most feminine nouns and adjectives end with "ة" (ta
+            marbuta).
+          </li>
+          <li>
+            <strong>Broken Plurals:</strong> Many Arabic nouns have irregular plural forms that
+            change the internal structure of the word.
+          </li>
+          <li>
+            <strong>Sound Plurals:</strong> Regular masculine plural adds "ون/ين", feminine plural
+            adds "ات".
+          </li>
+          <li>
+            <strong>Dual Forms:</strong> For two items, add "ان" for nominative, "ين" for
+            genitive/accusative.
+          </li>
+        </ul>
+      </div>
+
+      <footer>
+        <p>Arabic Noun & Adjective Conjugation Table - Demonstrating Agreement Rules</p>
+        <p class="arabic-notes">
+          الاسم والصفة في اللغة العربية يتطابقان في الجنس والعدد والحالة والتعريف
+        </p>
+        <p>Note: Colors are used to highlight different morphological elements in Arabic words.</p>
+      </footer>
+    </div>
+  </body>
+</html>
