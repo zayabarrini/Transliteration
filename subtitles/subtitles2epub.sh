@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/TV/Downton-Abbey/Downton-Abbey"
+DIRECTORY="/home/zaya/Downloads/Harry.Potter.And.The.Deathly.Hallows.Part.2"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
