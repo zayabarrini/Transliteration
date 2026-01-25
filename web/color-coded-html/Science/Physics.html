@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Styled Physical Equations</title>
+    <!-- KaTeX (lightweight alternative to MathJax) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    ></script>
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #7c3aed;
+        --accent-color: #059669;
+        --dark-bg: #1e293b;
+        --light-bg: #f8fafc;
+      }
+
+      body {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        line-height: 1.6;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #333;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .equation-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        border-left: 5px solid var(--primary-color);
+      }
+
+      .equation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      }
+
+      .equation-card h3 {
+        margin-top: 0;
+        color: var(--primary-color);
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+      }
+
+      .equation {
+        font-size: 1.2em;
+        text-align: center;
+        padding: 20px 0;
+        margin: 15px 0;
+        overflow-x: auto;
+      }
+
+      .katex {
+        font-size: 1.3em !important;
+      }
+
+      /* Custom color classes for equations */
+      .katex-colored .katex {
+        color: var(--secondary-color);
+      }
+
+      .katex-colored .base {
+        color: var(--primary-color);
+      }
+
+      .katex-colored .mord {
+        color: #dc2626;
+      }
+
+      .katex-colored .mbin {
+        color: var(--accent-color);
+      }
+
+      .explanation {
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.95em;
+        border-left: 4px solid var(--accent-color);
+        margin-top: 15px;
+      }
+
+      .dark-theme {
+        background: var(--dark-bg);
+        color: #e2e8f0;
+      }
+
+      .dark-theme .equation-card {
+        background: #334155;
+        color: #e2e8f0;
+      }
+
+      .dark-theme .explanation {
+        background: #475569;
+      }
+
+      .theme-toggle {
+        display: inline-block;
+        padding: 10px 20px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 20px;
+        float: right;
+      }
+
+      header {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+
+      header h1 {
+        margin-top: 0;
+        color: var(--primary-color);
+      }
+
+      .tag {
+        display: inline-block;
+        background: #e0e7ff;
+        color: var(--primary-color);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        margin-right: 8px;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+
+        .theme-toggle {
+          float: none;
+          margin-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Advanced Physical Equations</h1>
+      <p>Styled with KaTeX for web presentation</p>
+      <div>
+        <span class="tag">Quantum Mechanics</span>
+        <span class="tag">Relativity</span>
+        <span class="tag">Thermodynamics</span>
+        <span class="tag">Electromagnetism</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle">Dark Theme</button>
+    </header>
+
+    <div class="container">
+      <!-- Schrödinger Equation -->
+      <div class="equation-card">
+        <h3>Schrödinger Equation</h3>
+        <div class="equation katex-colored" id="eq1">
+          i\hbar\frac{\partial}{\partial t}\Psi(\mathbf{r},t) = \left[ \frac{-\hbar^2}{2\mu}\nabla^2
+          + V(\mathbf{r},t) \right]\Psi(\mathbf{r},t)
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Fundamental equation of quantum mechanics describing how the
+          quantum state of a physical system changes over time.
+        </div>
+      </div>
+
+      <!-- Einstein Field Equations -->
+      <div class="equation-card">
+        <h3>Einstein Field Equations</h3>
+        <div class="equation" id="eq2">
+          G_{\mu\nu} + \Lambda g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Set of equations in general relativity that describe gravity
+          as a result of spacetime curvature.
+        </div>
+      </div>
+
+      <!-- Maxwell's Equations -->
+      <div class="equation-card">
+        <h3>Maxwell's Equations (Differential Form)</h3>
+        <div class="equation" id="eq3">
+          \begin{aligned} \nabla \cdot \mathbf{E} &= \frac{\rho}{\varepsilon_0} \\ \nabla \cdot
+          \mathbf{B} &= 0 \\ \nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}}{\partial t} \\
+          \nabla \times \mathbf{B} &= \mu_0\mathbf{J} + \mu_0\varepsilon_0\frac{\partial
+          \mathbf{E}}{\partial t} \end{aligned}
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Fundamental laws of classical electromagnetism, optics, and
+          electric circuits.
+        </div>
+      </div>
+
+      <!-- Navier-Stokes Equations -->
+      <div class="equation-card">
+        <h3>Navier-Stokes Equations</h3>
+        <div class="equation" id="eq4">
+          \rho \left( \frac{\partial \mathbf{v}}{\partial t} + \mathbf{v} \cdot \nabla \mathbf{v}
+          \right) = -\nabla p + \nabla \cdot \mathbf{T} + \mathbf{f}
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Describe the motion of viscous fluid substances. These
+          equations arise from applying Newton's second law to fluid motion.
+        </div>
+      </div>
+
+      <!-- Dirac Equation -->
+      <div class="equation-card">
+        <h3>Dirac Equation</h3>
+        <div class="equation katex-colored" id="eq5">
+          \left( i\hbar\gamma^\mu \partial_\mu - mc \right) \psi = 0
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Relativistic wave equation derived by British physicist Paul
+          Dirac in 1928, describing elementary spin-½ particles.
+        </div>
+      </div>
+
+      <!-- Boltzmann Equation -->
+      <div class="equation-card">
+        <h3>Boltzmann Transport Equation</h3>
+        <div class="equation" id="eq6">
+          \frac{\partial f}{\partial t} + \frac{\mathbf{p}}{m} \cdot \nabla f + \mathbf{F} \cdot
+          \frac{\partial f}{\partial \mathbf{p}} = \left( \frac{\partial f}{\partial t}
+          \right)_\text{coll}
+        </div>
+        <div class="explanation">
+          <strong>Explanation:</strong> Equation for the time evolution of the particle distribution
+          function in a thermodynamic system out of equilibrium.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize KaTeX
+      document.addEventListener('DOMContentLoaded', function () {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true },
+          ],
+          throwOnError: false,
+        });
+      });
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', function () {
+        document.body.classList.toggle('dark-theme');
+
+        if (document.body.classList.contains('dark-theme')) {
+          themeToggle.textContent = 'Light Theme';
+        } else {
+          themeToggle.textContent = 'Dark Theme';
+        }
+      });
+
+      // Add some dynamic color effects
+      const equations = document.querySelectorAll('.equation');
+      equations.forEach((eq) => {
+        eq.addEventListener('mouseenter', function () {
+          this.style.transform = 'scale(1.02)';
+        });
+
+        eq.addEventListener('mouseleave', function () {
+          this.style.transform = 'scale(1)';
+        });
+      });
+    </script>
+  </body>
+</html>

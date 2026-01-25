@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organic Chemistry Styling</title>
+    <style>
+      :root {
+        --carbon: #333333;
+        --hydrogen: #4a90e2;
+        --oxygen: #e53935;
+        --nitrogen: #43a047;
+        --sulfur: #ff9800;
+        --phosphorus: #ab47bc;
+        --halogen: #26c6da;
+        --bond: #777777;
+        --reaction-arrow: #7b1fa2;
+        --mechanism-arrow: #f57c00;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+
+      .chemistry-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+        border-bottom: 3px solid var(--carbon);
+        padding-bottom: 15px;
+      }
+
+      h2 {
+        color: #34495e;
+        margin-top: 30px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .chem-element {
+        font-weight: bold;
+        position: relative;
+        display: inline-block;
+        text-align: center;
+        min-width: 30px;
+      }
+
+      .carbon {
+        color: var(--carbon);
+      }
+      .hydrogen {
+        color: var(--hydrogen);
+      }
+      .oxygen {
+        color: var(--oxygen);
+      }
+      .nitrogen {
+        color: var(--nitrogen);
+      }
+      .sulfur {
+        color: var(--sulfur);
+      }
+      .phosphorus {
+        color: var(--phosphorus);
+      }
+      .halogen {
+        color: var(--halogen);
+      }
+
+      .subscript {
+        font-size: 0.7em;
+        vertical-align: sub;
+        position: relative;
+        top: 0.1em;
+      }
+
+      .bond {
+        color: var(--bond);
+        margin: 0 5px;
+        font-weight: normal;
+      }
+
+      .double-bond,
+      .triple-bond {
+        position: relative;
+        margin: 0 8px;
+      }
+
+      .double-bond::before {
+        content: '=';
+        position: absolute;
+        top: -2px;
+        left: 0;
+        color: var(--bond);
+      }
+
+      .triple-bond::before {
+        content: '≡';
+        position: absolute;
+        top: -2px;
+        left: 0;
+        color: var(--bond);
+      }
+
+      .reaction {
+        text-align: center;
+        margin: 25px 0;
+        padding: 15px;
+        background-color: #f5f7fa;
+        border-radius: 8px;
+      }
+
+      .reaction-arrow {
+        color: var(--reaction-arrow);
+        font-size: 1.8em;
+        font-weight: bold;
+        margin: 0 20px;
+        position: relative;
+        top: 5px;
+      }
+
+      .mechanism-arrow {
+        color: var(--mechanism-arrow);
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0 10px;
+      }
+
+      .chemical-formula {
+        display: inline-block;
+        background-color: #f8f9fa;
+        padding: 8px 15px;
+        border-radius: 5px;
+        border-left: 4px solid var(--carbon);
+        margin: 5px;
+        font-family: 'Courier New', monospace;
+      }
+
+      .molecule {
+        display: inline-block;
+        margin: 10px;
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f0f4f8;
+        border-radius: 8px;
+      }
+
+      .legend-item {
+        margin: 5px 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .color-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        margin-right: 8px;
+        display: inline-block;
+      }
+
+      .color-carbon {
+        background-color: var(--carbon);
+      }
+      .color-hydrogen {
+        background-color: var(--hydrogen);
+      }
+      .color-oxygen {
+        background-color: var(--oxygen);
+      }
+      .color-nitrogen {
+        background-color: var(--nitrogen);
+      }
+      .color-sulfur {
+        background-color: var(--sulfur);
+      }
+      .color-phosphorus {
+        background-color: var(--phosphorus);
+      }
+      .color-halogen {
+        background-color: var(--halogen);
+      }
+
+      .code-block {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: 'Courier New', monospace;
+        margin: 15px 0;
+        overflow-x: auto;
+        font-size: 0.9em;
+      }
+
+      .note {
+        background-color: #e8f4fc;
+        border-left: 4px solid var(--hydrogen);
+        padding: 12px 15px;
+        margin: 20px 0;
+        border-radius: 0 5px 5px 0;
+      }
+
+      @media (max-width: 768px) {
+        .reaction-arrow {
+          display: block;
+          margin: 10px 0;
+        }
+
+        .molecule {
+          display: block;
+          margin: 15px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chemistry-container">
+      <h1>Organic Chemistry Styling for the Web</h1>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="color-box color-carbon"></div>
+          <span>Carbon</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-hydrogen"></div>
+          <span>Hydrogen</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-oxygen"></div>
+          <span>Oxygen</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-nitrogen"></div>
+          <span>Nitrogen</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-sulfur"></div>
+          <span>Sulfur</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-phosphorus"></div>
+          <span>Phosphorus</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box color-halogen"></div>
+          <span>Halogens</span>
+        </div>
+      </div>
+
+      <h2>1. Colored Chemical Formulas</h2>
+
+      <p>Basic molecules with colored elements:</p>
+
+      <div class="molecule">
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">4</span>
+        </span>
+        <div>Methane</div>
+      </div>
+
+      <div class="molecule">
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="bond">-</span>
+          <span class="chem-element oxygen">O</span>
+          <span class="bond">-</span>
+          <span class="chem-element hydrogen">H</span>
+        </span>
+        <div>Methanol</div>
+      </div>
+
+      <div class="molecule">
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="double-bond"></span>
+          <span class="chem-element oxygen">O</span>
+        </span>
+        <div>Acetaldehyde</div>
+      </div>
+
+      <h2>2. Chemical Reactions</h2>
+
+      <p>Esterification reaction:</p>
+
+      <div class="reaction">
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="double-bond"></span>
+          <span class="chem-element oxygen">O</span>
+          <span class="chem-element oxygen">O</span>
+          <span class="chem-element hydrogen">H</span>
+        </span>
+        <span class="bond">+</span>
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">2</span>
+          <span class="chem-element oxygen">O</span>
+          <span class="chem-element hydrogen">H</span>
+        </span>
+        <span class="reaction-arrow">→</span>
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="double-bond"></span>
+          <span class="chem-element oxygen">O</span>
+          <span class="chem-element oxygen">O</span>
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">2</span>
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+        </span>
+        <span class="bond">+</span>
+        <span class="chemical-formula">
+          <span class="chem-element hydrogen">H</span>
+          <span class="subscript">2</span>
+          <span class="chem-element oxygen">O</span>
+        </span>
+      </div>
+
+      <h2>3. Complex Molecules</h2>
+
+      <p>Amino acid example (Alanine):</p>
+
+      <div
+        class="chemical-formula"
+        style="padding: 15px; margin: 20px auto; display: block; text-align: center"
+      >
+        <span class="chem-element hydrogen">H</span>
+        <span class="subscript">2</span>
+        <span class="chem-element nitrogen">N</span>
+        <span class="bond">-</span>
+        <span class="chem-element carbon">C</span>
+        <span class="chem-element hydrogen">H</span>
+        <span class="bond">-</span>
+        <span class="chem-element carbon">C</span>
+        <span class="double-bond"></span>
+        <span class="chem-element oxygen">O</span>
+        <span class="chem-element oxygen">O</span>
+        <span class="chem-element hydrogen">H</span>
+        <div style="margin-top: 8px; font-size: 0.9em">
+          <span style="color: var(--carbon)">|</span><br />
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+        </div>
+      </div>
+
+      <h2>4. Reaction Mechanisms</h2>
+
+      <div class="reaction">
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <span class="bond">-</span>
+          <span class="chem-element halogen">Br</span>
+        </span>
+        <span class="mechanism-arrow">→</span>
+        <span class="chemical-formula">
+          <span class="chem-element carbon">C</span>
+          <span class="subscript hydrogen">H</span>
+          <span class="subscript">3</span>
+          <span class="chem-element carbon">C</span>
+          <sup>+</sup>
+        </span>
+        <span class="bond">+</span>
+        <span class="chemical-formula">
+          <span class="chem-element halogen">Br</span>
+          <sup>-</sup>
+        </span>
+      </div>
+
+      <div class="note">
+        <strong>Note:</strong> This approach uses pure HTML/CSS for simple chemical notation. For
+        more complex structures (rings, cyclic compounds, orbitals), consider using specialized
+        libraries like <a href="https://chemapps.stolaf.edu/jmol/" target="_blank">JSmol</a>,
+        <a href="https://github.com/chemdoodle/web-components" target="_blank">ChemDoodle</a>, or
+        <a href="https://www.cheminfo-org.github.io/ChemistryWidgets/" target="_blank"
+          >ChemistryWidgets</a
+        >.
+      </div>
+
+      <h2>5. Implementation Code</h2>
+
+      <p>HTML/CSS for a simple molecule:</p>
+
+      <div class="code-block">
+        &lt;span class="chemical-formula"&gt; &lt;span class="chem-element carbon"&gt;C&lt;/span&gt;
+        &lt;span class="subscript hydrogen"&gt;H&lt;/span&gt; &lt;span
+        class="subscript"&gt;3&lt;/span&gt; &lt;span class="chem-element carbon"&gt;C&lt;/span&gt;
+        &lt;span class="double-bond"&gt;&lt;/span&gt; &lt;span class="chem-element
+        oxygen"&gt;O&lt;/span&gt; &lt;/span&gt;
+      </div>
+
+      <p>CSS for element coloring:</p>
+
+      <div class="code-block">
+        :root { --carbon: #333333; --hydrogen: #4A90E2; --oxygen: #E53935; --nitrogen: #43A047; }
+        .carbon { color: var(--carbon); } .hydrogen { color: var(--hydrogen); } .oxygen { color:
+        var(--oxygen); } .nitrogen { color: var(--nitrogen); } .subscript { font-size: 0.7em;
+        vertical-align: sub; } .double-bond::before { content: "="; position: absolute; top: -2px;
+        left: 0; }
+      </div>
+    </div>
+
+    <script>
+      // Simple script to demonstrate dynamic coloring
+      document.addEventListener('DOMContentLoaded', function () {
+        // You could add interactivity here
+        // For example, highlighting elements on hover
+        const elements = document.querySelectorAll('.chem-element');
+        elements.forEach((el) => {
+          el.addEventListener('mouseenter', function () {
+            this.style.transform = 'scale(1.2)';
+            this.style.transition = 'transform 0.2s';
+          });
+
+          el.addEventListener('mouseleave', function () {
+            this.style.transform = 'scale(1)';
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
