@@ -51,6 +51,8 @@ mecab-python3 = "*"
 unidic = "*"
 flask-cors = "*"
 transliteration-tools = {file = ".", editable = true}
+camel-tools = "*"
+pandas = "*"
 
 [dev-packages]
 

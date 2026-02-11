@@ -1,12 +1,13 @@
 # CsvRT.py
 import csv
-import random
-from datetime import datetime
-import subprocess
 import os
+import random
+import subprocess
 import uuid
-from pypinyin import pinyin, Style  # For Chinese transliteration
+from datetime import datetime
+
 import pykakasi  # For Japanese romanization
+from pypinyin import Style, pinyin  # For Chinese transliteration
 
 
 def generate_epubs(csv_file_path, output_dir="output", date=None, dictionary_name="Dictionary"):
@@ -165,7 +166,7 @@ ibooks:
 
 
 if __name__ == "__main__":
-    csv_file_path = "/home/zaya/Downloads/multiple-kanji-2-reading.csv"
-    output_dir = "/home/zaya/Downloads/Books/Theme/Word_Frequency/Ja"
-    dictionary_name = "Word_Frequency-multiple-kanji-2-reading"  # You can change this to whatever dictionary name you want
+    csv_file_path = "/home/zaya/Downloads/Songs-ch.csv"
+    output_dir = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
+    dictionary_name = "Songs-WordList"  # You can change this to whatever dictionary name you want
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)

@@ -65,6 +65,7 @@ transliteration_tools.egg-info/entry_points.txt
 transliteration_tools.egg-info/requires.txt
 transliteration_tools.egg-info/top_level.txt
 web/__init__.py
+web/arabic_vocab_enricher.py
 web/live.py
 web/server.py
 web/webChineseColor-coded.py

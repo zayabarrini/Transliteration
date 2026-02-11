@@ -1,10 +1,10 @@
 # CsvRT.py
 import csv
-import random
-from datetime import datetime
-import subprocess
 import os
+import random
+import subprocess
 import uuid
+from datetime import datetime
 
 
 def generate_epubs(csv_file_path, output_dir="output", date=None, dictionary_name="Dictionary"):
@@ -123,7 +123,7 @@ ibooks:
 
 
 if __name__ == "__main__":
-    csv_file_path = "/home/zaya/Downloads/mo.csv"
-    output_dir = "/home/zaya/Downloads/Books/Theme/Mobius3"
-    dictionary_name = "Mobius3"  # You can change this to whatever dictionary name you want
+    csv_file_path = "/home/zaya/Downloads/Zayas/ZayasBooks/t/arabic-vocab.csv"
+    output_dir = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
+    dictionary_name = "Arabic-WordList"  # You can change this to whatever dictionary name you want
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
