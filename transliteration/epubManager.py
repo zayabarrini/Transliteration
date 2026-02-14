@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from transliteration.epub2post import EpubToPostConverter
+
 # Now import the modules (we're in pipenv)
 try:
     from transliteration.epubMergeFolder import (
@@ -94,7 +96,8 @@ class SimpleEbookManager:
         print("3. Transliterate EPUBs (Default - Main Language Detection)")
         print("4. Merge-compose EPUBs by Languages/Line by Line")
         print("5. Simple Merge/Epub Stacking")
-        print("6. Advanced Options")
+        print("6. Convert EPUBs to Blog Posts")
+        print("7. Advanced Options")
         print("0. Exit")
         print()
     
@@ -272,6 +275,97 @@ class SimpleEbookManager:
             print(f"Error during simple merge: {e}")
         
         input("Press Enter to continue...")
+        
+    def convert_epubs_to_posts(self):
+        """Convert EPUB files to markdown posts"""
+        print("\n=== Convert EPUBs to Posts ===")
+        print("Using current directory as source")
+        
+        folder_path = self.current_directory
+        
+        print("\nSelect destination for posts:")
+        print("1. /home/zaya/Downloads/Zayas/zayaslanguage/src/posts")
+        print("2. /home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts")
+        print("3. Custom path")
+        
+        dest_choice = input("Select destination (1-3, Enter for default 2): ").strip()
+        
+        if dest_choice == "1":
+            posts_dir = "/home/zaya/Downloads/Zayas/zayaslanguage/src/posts"
+        elif dest_choice == "3":
+            posts_dir = input("Enter custom posts directory path: ").strip()
+            if not posts_dir:
+                print("No path provided, using default")
+                posts_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts"
+        else:  # Default to option 2
+            posts_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts"
+        
+        print(f"\nPosts will be saved to: {posts_dir}")
+        
+        # Image directory is fixed based on zayaweb structure
+        images_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img"
+        
+        try:
+            converter = EpubToPostConverter(
+                posts_dir=posts_dir,
+                images_base_dir=images_dir,
+                scripts_dir="/home/zaya/Downloads/Zayas/zayaweb/apps/web/scripts"
+            )
+            
+            # Ask for pattern
+            pattern = input("\nEnter file pattern (Enter for '*.epub'): ").strip() or "*.epub"
+            
+            # Ask if they want to review each file
+            review_each = input("Review each file before conversion? (y/N): ").strip().lower() == 'y'
+            
+            if review_each:
+                import glob
+                epub_files = sorted(glob.glob(os.path.join(folder_path, pattern)))
+                
+                if not epub_files:
+                    print(f"No EPUB files found matching '{pattern}'")
+                else:
+                    print(f"\nFound {len(epub_files)} EPUB files:")
+                    for i, epub_file in enumerate(epub_files, 1):
+                        print(f"{i}. {os.path.basename(epub_file)}")
+                    
+                    for epub_file in epub_files:
+                        print(f"\n{'-'*50}")
+                        print(f"Processing: {os.path.basename(epub_file)}")
+                        proceed = input("Convert this file? (y/N): ").strip().lower()
+                        
+                        if proceed == 'y':
+                            # Ask for custom title/slug
+                            use_custom = input("Use custom title/slug? (y/N): ").strip().lower()
+                            custom_title = None
+                            custom_slug = None
+                            
+                            if use_custom == 'y':
+                                custom_title = input("Enter title (Enter to auto-detect): ").strip() or None
+                                custom_slug = input("Enter slug (Enter to generate): ").strip() or None
+                            
+                            converter.convert_epub_to_post(
+                                epub_file,
+                                custom_title=custom_title,
+                                custom_slug=custom_slug
+                            )
+                        else:
+                            print("Skipping...")
+            else:
+                # Bulk convert all
+                results = converter.convert_folder(folder_path, pattern)
+                
+                # Show summary
+                successful = [r for r in results if r['success']]
+                if successful:
+                    print(f"\n✅ Successfully converted {len(successful)} EPUBs to posts")
+            
+            print("\nConversion process completed!")
+            
+        except Exception as e:
+            print(f"Error during conversion: {e}")
+        
+        input("Press Enter to continue...")
     
     def run(self):
         """Main program loop"""
@@ -293,6 +387,8 @@ class SimpleEbookManager:
             elif choice == '5':
                 self.simple_merge()
             elif choice == '6':
+                self.convert_epubs_to_posts()
+            elif choice == '7':
                 # Launch advanced version
                 advanced_manager = EpubManagerWithOptions(self.current_directory)
                 advanced_manager.run()
@@ -352,7 +448,8 @@ class EpubManagerWithOptions:
         print("3. Transliterate (with options)")
         print("4. Merge-compose (with options)")
         print("5. Simple Merge (with options)")
-        print("6. Back to Simple Manager")
+        print("6. Convert EPUBs to Posts")
+        print("7. Back to Simple Manager")
         print("0. Exit")
         print()
     
@@ -540,6 +637,69 @@ class EpubManagerWithOptions:
         
         input("Press Enter to continue...")
     
+    def convert_epubs_to_posts_advanced(self):
+        """Convert EPUB files to markdown posts with advanced options"""
+        print("\n=== Convert EPUBs to Posts (Advanced) ===")
+        
+        folder_path = input(f"Enter source folder (Enter for {self.current_directory}): ").strip() or self.current_directory
+        
+        print("\nSelect destination for posts:")
+        print("1. /home/zaya/Downloads/Zayas/zayaslanguage/src/posts")
+        print("2. /home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts")
+        print("3. Custom path")
+        
+        dest_choice = input("Select destination (1-3): ").strip()
+        
+        if dest_choice == "1":
+            posts_dir = "/home/zaya/Downloads/Zayas/zayaslanguage/src/posts"
+        elif dest_choice == "2":
+            posts_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts"
+        elif dest_choice == "3":
+            posts_dir = input("Enter custom posts directory path: ").strip()
+            if not posts_dir:
+                print("No path provided, using default")
+                posts_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts"
+        else:
+            print("Invalid choice, using default")
+            posts_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/src/posts"
+        
+        images_dir = input("Enter images base directory (Enter for default): ").strip()
+        if not images_dir:
+            images_dir = "/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img"
+        
+        pattern = input("Enter file pattern (Enter for '*.epub'): ").strip() or "*.epub"
+        
+        # Additional options
+        print("\nConversion options:")
+        create_backup = input("Create backup of original EPUBs? (y/N): ").strip().lower() == 'y'
+        delete_after = input("Delete EPUB after successful conversion? (y/N): ").strip().lower() == 'y'
+        
+        try:
+            converter = EpubToPostConverter(
+                posts_dir=posts_dir,
+                images_base_dir=images_dir,
+                scripts_dir="/home/zaya/Downloads/Zayas/zayaweb/apps/web/scripts"
+            )
+            
+            results = converter.convert_folder(folder_path, pattern)
+            
+            # Handle post-conversion options
+            if delete_after:
+                for result in results:
+                    if result['success']:
+                        try:
+                            os.remove(result['epub'])
+                            print(f"Deleted: {result['epub']}")
+                        except Exception as e:
+                            print(f"Error deleting {result['epub']}: {e}")
+            
+            print("\nConversion completed!")
+            
+        except Exception as e:
+            print(f"Error during conversion: {e}")
+        
+        input("Press Enter to continue...")    
+    
     def run(self):
         while True:
             self.display_menu()
@@ -559,6 +719,8 @@ class EpubManagerWithOptions:
             elif choice == '5':
                 self.simple_merge()
             elif choice == '6':
+                self.convert_epubs_to_posts_advanced()
+            elif choice == '7':
                 return  # Go back to simple manager
             else:
                 print("Invalid choice!")

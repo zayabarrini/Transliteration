@@ -56,7 +56,7 @@ creator:
   - role: editor
     text: Zaya Barrini
 date: {date}
-cover-image: /home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png
+cover-image: /home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png
 identifier:
   - scheme: UUID
     text: {str(uuid.uuid4())}
@@ -74,8 +74,8 @@ ibooks:
                 # if not row.get('en', '').strip():
                 #     continue
 
-                if row[language].startswith("#"):
-                    md_content.append(f"\n{row[language]}\n\n")
+                if row["en"].startswith("#"):
+                    md_content.append(f"\n{row['en']}\n\n")
                     continue
 
                 if language in row and row[language].strip():
@@ -89,10 +89,10 @@ ibooks:
                     words.append(content)
 
                     if len(words) % 10 == 0:
-                        md_content.append(", ".join(words[-10:]) + "\n\n")
+                        md_content.append(". ".join(words[-10:]) + "\n\n")
 
             if words:
-                md_content.append(", ".join(words[-(len(words) % 10) :]) + "\n")
+                md_content.append(". ".join(words[-(len(words) % 10) :]) + "\n")
 
             md_filename = os.path.join(output_dir, f"{base_name}.md")
             with open(md_filename, "w", encoding="utf-8") as md_file:
@@ -110,7 +110,7 @@ ibooks:
                 "--toc",
                 "--toc-depth=2",
                 f"--css={css_path}",
-                f"--epub-cover-image=/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png",
+                f"--epub-cover-image=/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png",
             ]
 
             try:
@@ -123,7 +123,7 @@ ibooks:
 
 
 if __name__ == "__main__":
-    csv_file_path = "/home/zaya/Downloads/Zayas/ZayasBooks/t/arabic-vocab.csv"
+    csv_file_path = "/home/zaya/Downloads/Zayas/ZayasBooks/t/arabic-vocab.csv"  
     output_dir = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
-    dictionary_name = "Arabic-WordList"  # You can change this to whatever dictionary name you want
+    dictionary_name = "Vocab-WordList-pl"
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)

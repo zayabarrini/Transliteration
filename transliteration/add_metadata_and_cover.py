@@ -1,8 +1,9 @@
 import os
 import random
 import shutil
-from bs4 import BeautifulSoup
 from datetime import datetime
+
+from bs4 import BeautifulSoup
 
 
 def add_metadata_and_cover(epub_folder, base_name, language, date=None):
@@ -90,7 +91,7 @@ def add_metadata_and_cover(epub_folder, base_name, language, date=None):
     # Copy the cover image to the EPUB folder
     random_number = random.randint(1, 211)
     source_image_path = (
-        f"/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png"
+        f"/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png"
     )
     media_folder = (
         os.path.join(epub_folder, "EPUB", "media")

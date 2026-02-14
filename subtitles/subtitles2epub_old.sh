@@ -6,7 +6,7 @@ WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
 OUTPUT_EPUB="${directory_name}.epub"
-COVER_IMAGES_DIR="/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing"
+COVER_IMAGES_DIR="/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing"
 
 mkdir -p "$WORKING_DIR"
 

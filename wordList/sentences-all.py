@@ -1,10 +1,10 @@
 # CsvRT.py
 import csv
-import random
-from datetime import datetime
-import subprocess
 import os
+import random
+import subprocess
 import uuid
+from datetime import datetime
 
 
 def generate_epub(csv_file_path, output_dir="output", date=None):
@@ -51,7 +51,7 @@ creator:
   - role: editor
     text: Zaya Barrini
 date: {date}
-cover-image: /home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png
+cover-image: /home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png
 identifier:
   - scheme: UUID
     text: {str(uuid.uuid4())}
@@ -96,7 +96,7 @@ ibooks:
         "--toc",
         "--toc-depth=2",
         f"--css={css_path}",
-        f"--epub-cover-image=/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png",
+        f"--epub-cover-image=/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png",
     ]
 
     try:

@@ -1,16 +1,17 @@
+import csv
+import os
+import random
 import re
 import subprocess
+
+import jieba
+import pykakasi  # For Japanese Romaji
 import pypinyin  # For Chinese Pinyin
-import os
 from hangul_romanize import Transliter  # For Korean
 from hangul_romanize.rule import academic
 from indic_transliteration import sanscript  # For Hindi
 from indic_transliteration.sanscript import transliterate as indic_transliterate
-import pykakasi  # For Japanese Romaji
 from pyarabic.trans import custom_utf82latin  # For Arabic transliteration
-import jieba
-import csv
-import random
 
 
 def format_transliteration(text):
@@ -352,7 +353,7 @@ def process_file(input_filename):
 
                 # Generate random cover image path
                 random_number = random.randint(1, 211)
-                cover_image = f"/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_number}.png"
+                cover_image = f"/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_number}.png"
 
                 # Generate EPUB with metadata and cover image
                 generate_epub(

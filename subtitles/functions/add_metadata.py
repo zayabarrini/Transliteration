@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import os
-import re
 import random
-import yaml
+import re
 from pathlib import Path
+
+import yaml
 
 
 def generate_metadata(title, file_type="subtitles"):
@@ -15,7 +16,7 @@ def generate_metadata(title, file_type="subtitles"):
             {"role": "author", "text": "Zaya Barrini"},
             {"role": "editor", "text": "Zaya Barrini"},
         ],
-        "cover-image": f"/home/zaya/Downloads/Zayas/zayaweb/static/css/img/Bing/bing{random_num}.png",
+        "cover-image": f"/home/zaya/Downloads/Zayas/zayaweb/apps/web/static/css/img/Bing/bing{random_num}.png",
         "identifier": [{"scheme": "DOI", "text": f"doi:10.234234.234/{random_num}"}],
         "publisher": "My Press",
         "rights": "© 2024 Zaya Barrini, CC BY-NC",
@@ -79,7 +80,6 @@ if __name__ == "__main__":
     # if len(sys.argv) != 2:
     #     print("Usage: python add_metadata.py <directory>")
     #     sys.exit(1)
-
     # target_dir = sys.argv[1]
     target_dir = "/home/zaya/Downloads/Workspace/Subtitles/TVSeries"
 
