@@ -174,3 +174,10 @@ Since I'm updating metadata
 Теперь я знаю, что он имел в виду себя.
 Я умоляю присяжных иметь в виду, что эта история чрезвычайно субъективна.
 Ни в коем случае не считается любой формой доказательства.
+
+# 16/02/26
+
+html_transliteration.py
+transliteration.py
+
+Maybe add some logic to these files to put together a json file with the content, so it can be used on the web
