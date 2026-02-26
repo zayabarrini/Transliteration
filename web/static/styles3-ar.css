@@ -78,12 +78,12 @@ button:hover {
 ruby {
   ruby-position: under;
   margin: 0 3px;
-  font-size: 1em;
+  font-size: 2em;
   justify-content: center;
 }
 
 rt {
-  font-size: 0.6em;
+  font-size: 0.4em;
   color: #666;
   opacity: 0.8;
   text-align: center;

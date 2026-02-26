@@ -80,26 +80,35 @@ ibooks:
 
                 if language in row and row[language].strip():
                     if is_translated:
-                        content = (
-                            f'<ruby>{row[language].strip()}<rt>{row["en"].strip()}</rt></ruby>'
-                        )
+                        content = f'<ruby>{row[language].strip()}<rt>{row["en"].strip()}</rt></ruby>'
                     else:
                         content = row[language].strip()
 
                     words.append(content)
 
                     if len(words) % 10 == 0:
-                        md_content.append(". ".join(words[-10:]) + "\n\n")
+                        if language == "ar":
+                            md_content.append(". ".join(words[-10:]) + "\n\n")
+                        else:
+                            md_content.append(", ".join(words[-10:]) + "\n\n")
 
             if words:
-                md_content.append(". ".join(words[-(len(words) % 10) :]) + "\n")
+                if language == "ar":
+                    md_content.append(". ".join(words[-(len(words) % 10):]) + "\n")
+                else:
+                    md_content.append(", ".join(words[-(len(words) % 10):]) + "\n")
 
             md_filename = os.path.join(output_dir, f"{base_name}.md")
             with open(md_filename, "w", encoding="utf-8") as md_file:
                 md_file.writelines(md_content)
 
             epub_filename = os.path.join(output_dir, f"{base_name}.epub")
-            css_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/static/styles3.css"
+            
+            # Use Arabic-specific CSS for Arabic dictionaries
+            if language == "ar":
+                css_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/static/styles3-ar.css"
+            else:
+                css_path = "/home/zaya/Downloads/Zayas/ZayasTransliteration/web/static/styles3.css"
 
             pandoc_cmd = [
                 "pandoc",
@@ -123,7 +132,7 @@ ibooks:
 
 
 if __name__ == "__main__":
-    csv_file_path = "/home/zaya/Downloads/Zayas/ZayasBooks/t/arabic-vocab.csv"  
+    csv_file_path = "/home/zaya/Downloads/Doubt.csv"  
     output_dir = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
-    dictionary_name = "Vocab-WordList-pl"
+    dictionary_name = "Doubt"
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
