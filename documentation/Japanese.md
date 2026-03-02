@@ -15,7 +15,10 @@
 ## Transliteration
 
 - Web: py, template, styles
-- Epub2json.py
+- Epub2jsonJa.py
+- Use Mecab to get syntax analysis
+- Load Json and Render using color-coded syntax
+- Use a library for drawing Japanese Characters
 
 ## Svelte
 
@@ -37,7 +40,7 @@ Can we use pykakasi or MeCab to get data about syntax, etc?
 # epub2jsonJa.py
 
 Let's create a epub2jsonJa.py containing the sections, in each section a list of paragraphs with the english version and the japanese version
-In the end we'd produce the epub transliteration and the .json for use in the web
+In the end we'd produce .json for use in the web
 
 This is the epub structure:
 Each split file contains only one section, then we nest the paragraphs contents into each section:

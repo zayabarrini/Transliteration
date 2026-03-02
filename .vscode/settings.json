@@ -1,7 +1,7 @@
 {
   // Enable format on save for all files
   "editor.formatOnSave": true,
-  
+
   // File-specific formatters
   "[python]": {
     "editor.defaultFormatter": "ms-python.python",
@@ -42,20 +42,17 @@
     "editor.defaultFormatter": "foxundermoon.shell-format",
     "editor.formatOnSave": true
   },
-  
+
   // Python-specific settings - Let VS Code auto-detect Pipenv
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": [
-    "--line-length=100"
-  ],
-  "python.sortImports.args": [
-    "--profile=black"
-  ],
-  
+  "python.formatting.blackArgs": ["--line-length=100"],
+  "python.sortImports.args": ["--profile=black"],
+
   // Prettier settings
   "prettier.singleQuote": true,
   "prettier.semi": true,
   "prettier.tabWidth": 2,
   "prettier.trailingComma": "es5",
-  "prettier.printWidth": 100
+  "prettier.printWidth": 100,
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

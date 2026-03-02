@@ -1,601 +1,415 @@
+#!/usr/bin/env python3
+"""
+epub2json.py - Convert EPUB with parallel text to JSON for language learning readers
+
+The script detects the language code from the EPUB filename (e.g., title-ar.epub, title-es.epub)
+and uses that as the target language, with English as the source language.
+Output is saved to language-specific directories.
+"""
+
+import argparse
+import html
 import json
 import os
 import re
-from collections import OrderedDict
+import shutil
+import sys
+import tempfile
+import zipfile
 from pathlib import Path
-from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 
+# Supported language codes
+SUPPORTED_LANGUAGES = [
+    'ar', 'de', 'el', 'es', 'fr', 'he', 'id', 'it', 'ja', 'ko', 
+    'la', 'pl', 'pt', 'sw', 'tr', 'zh'
+]
 
-class EpubToJsonConverter:
-    def __init__(self, epub_path):
-        self.epub_path = epub_path
-        self.sections = OrderedDict()  # Use OrderedDict to maintain order
+# Default output base directory
+DEFAULT_OUTPUT_BASE = "/home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json"
+
+def detect_language_from_filename(filename):
+    """
+    Detect the target language from the EPUB filename.
+    More robust version that handles spaces, underscores, and various separators.
+    """
+    stem = Path(filename).stem
+    
+    import re
+
+    # List of all supported language codes
+    language_codes = ['ar', 'de', 'el', 'es', 'fr', 'he', 'id', 'it', 'ja', 'ko', 
+                      'la', 'pl', 'pt', 'ru', 'sw', 'tr', 'zh']
+    
+    # Try different patterns
+    for lang in language_codes:
+        # Pattern 1: -lang at the end (with possible dot after)
+        if re.search(rf'-{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
         
-    def extract_epub_content(self):
-        """Extract and parse EPUB content from split files"""
-        with ZipFile(self.epub_path, 'r') as zip_ref:
-            # Find all split XHTML files in text directory
-            split_files = []
-            for file in zip_ref.namelist():
-                if file.startswith('EPUB/text/ch') and file.endswith('.xhtml'):
-                    split_files.append(file)
+        # Pattern 2: _lang at the end
+        if re.search(rf'_{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 3: .lang at the end
+        if re.search(rf'\.{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 4: space then lang at the end
+        if re.search(rf'\s+{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 5: -db-lang pattern (common in your files)
+        if re.search(rf'-db-{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+    
+    # If still not found, try splitting by common separators and check the last part
+    words = re.split(r'[\s_\-\.]+', stem)
+    if words:
+        last_word = words[-1].lower()
+        if last_word in language_codes:
+            return last_word
+    
+    return None
+
+def get_language_unicode_ranges(lang_code):
+    """Get Unicode ranges for character detection for the specified language"""
+    ranges = {
+        'zh': r'[\u4e00-\u9fff]',  # Chinese
+        'ja': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]',  # Japanese (Hiragana, Katakana, Kanji)
+        'ko': r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]',  # Korean (Hangul)
+        'ar': r'[\u0600-\u06FF\u0750-\u077F]',  # Arabic
+        'he': r'[\u0590-\u05FF]',  # Hebrew
+        'ru': r'[\u0400-\u04FF]',  # Russian Cyrillic
+        'el': r'[\u0370-\u03FF]',  # Greek
+        'th': r'[\u0E00-\u0E7F]',  # Thai
+        'vi': r'[\u1EA0-\u1EF9]',  # Vietnamese
+    }
+    
+    # Return the range for the language, or a generic non-Latin range as fallback
+    return ranges.get(lang_code, r'[^\u0000-\u007F]')  # Any non-ASCII as fallback
+
+def extract_epub(epub_path, extract_path):
+    """Extract EPUB file to a temporary directory"""
+    try:
+        with zipfile.ZipFile(epub_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_path)
+        return True
+    except Exception as e:
+        print(f"Error extracting EPUB {epub_path}: {e}", file=sys.stderr)
+        return False
+
+def find_text_files(extract_path):
+    """Find all XHTML/HTML files in the extracted EPUB"""
+    text_files = []
+    
+    # Common paths for content in EPUBs
+    search_paths = [
+        extract_path,
+        os.path.join(extract_path, 'EPUB'),
+        os.path.join(extract_path, 'EPUB', 'text'),
+        os.path.join(extract_path, 'OEBPS'),
+        os.path.join(extract_path, 'OEBPS', 'text'),
+        os.path.join(extract_path, 'content'),
+    ]
+    
+    for search_path in search_paths:
+        if os.path.exists(search_path):
+            # Find all .xhtml, .html, .htm files
+            for ext in ['*.xhtml', '*.html', '*.htm']:
+                text_files.extend(Path(search_path).glob(ext))
+    
+    return sorted(text_files)
+
+def extract_text_from_xhtml(file_path, target_lang):
+    """Extract target language and English text pairs from an XHTML file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        soup = BeautifulSoup(content, 'html.parser')
+        paragraphs = []
+        
+        # Get Unicode range for target language detection
+        lang_range = get_language_unicode_ranges(target_lang)
+        
+        # Find all <p> tags (focus on class="author" as in the examples)
+        author_paragraphs = soup.find_all('p', class_='author')
+        
+        if not author_paragraphs:
+            # If no author paragraphs, try all paragraphs
+            author_paragraphs = soup.find_all('p')
+        
+        i = 0
+        while i < len(author_paragraphs) - 1:
+            p1 = author_paragraphs[i]
+            p2 = author_paragraphs[i + 1]
             
-            # Sort files to maintain chapter order
-            split_files.sort()
+            # Check language attributes
+            p1_lang = p1.get('lang', '')
+            p2_lang = p2.get('lang', '')
             
-            # Process each split file
-            for split_file in split_files:
-                print(f"Processing: {split_file}")
-                with zip_ref.open(split_file) as f:
-                    soup = BeautifulSoup(f.read(), 'html.parser')
-                    self._process_split_file(soup, split_file)
-    
-    def _process_split_file(self, soup, filename):
-        """Process a single split file containing one section"""
-        # Find the section
-        section = soup.find('section')
-        if not section:
-            return
-        
-        # Get section ID
-        section_id = section.get('id', Path(filename).stem)
-        
-        # Initialize section data
-        section_data = {
-            'section_id': section_id,
-            'filename': filename,
-            'paragraphs': [],
-            'title': None
-        }
-        
-        # Check if first element is a title (h1 with Chinese)
-        title = section.find('h1', attrs={'lang': 'zh'})
-        if title:
-            title_data = self._process_paragraph_or_title(title, is_title=True)
-            section_data['title'] = title_data
-        
-        # Find all paragraphs in order
-        current_english = None
-        for element in section.children:
-            if element.name == 'p':
-                # Check if it's English or Chinese
-                if element.get('lang') == 'zh':
-                    # This is a Chinese paragraph
-                    if current_english:
-                        # Pair with previous English
-                        para_data = self._process_paragraph_pair(current_english, element)
-                        section_data['paragraphs'].append(para_data)
-                        current_english = None
-                    else:
-                        # Chinese without preceding English (maybe standalone)
-                        para_data = self._process_paragraph_pair(None, element)
-                        section_data['paragraphs'].append(para_data)
-                else:
-                    # This is an English paragraph, store it for next Chinese
-                    current_english = element
-        
-        self.sections[section_id] = section_data
-    
-    def _process_paragraph_pair(self, english_para, chinese_para):
-        """Process a pair of English and Chinese paragraphs"""
-        # Extract English text
-        english_text = english_para.get_text().strip() if english_para else ""
-        
-        # Find the chinese-dual-display div in Chinese paragraph
-        dual_display = chinese_para.find('div', class_='chinese-dual-display')
-        if not dual_display:
-            return None
-        
-        # Extract clean version (original Chinese text)
-        clean_version = dual_display.find('div', class_='clean-version')
-        original_text = clean_version.get_text().strip() if clean_version else ""
-        
-        # Extract transliterated version HTML
-        transliterated_div = dual_display.find('div', class_='transliterated-version')
-        transliterated_html = str(transliterated_div) if transliterated_div else ""
-        
-        # Extract ruby annotations
-        ruby_annotations = []
-        if transliterated_div:
-            for element in transliterated_div.children:
-                if element.name == 'ruby':
-                    annotation = self._parse_ruby_element(element)
-                    ruby_annotations.append(annotation)
-                elif element.name == 'span' and element.get('class') and 'punctuation-token' in element.get('class', []):
-                    ruby_annotations.append({
-                        'type': 'punctuation',
-                        'content': element.get_text(),
-                        'html': str(element)
+            p1_text = p1.get_text().strip()
+            p2_text = p2.get_text().strip()
+            
+            # Skip empty paragraphs
+            if not p1_text or not p2_text:
+                i += 1
+                continue
+            
+            # Case 1: First is target language, second is English
+            if p1_lang == target_lang and p2_lang != target_lang:
+                # Verify with character detection
+                if re.search(lang_range, p1_text):
+                    paragraphs.append({
+                        target_lang: p1_text,
+                        'en': p2_text
                     })
-        
-        return {
-            'english': english_text,
-            'chinese': original_text,
-            'transliterated_html': transliterated_html,
-            'ruby_annotations': ruby_annotations,
-            'full_html': str(dual_display)
-        }
-    
-    def _process_paragraph_or_title(self, element, is_title=False):
-        """Process a title element (h1 with Chinese)"""
-        dual_display = element.find('div', class_='chinese-dual-display')
-        if not dual_display:
-            return None
-        
-        clean_version = dual_display.find('div', class_='clean-version')
-        original_text = clean_version.get_text().strip() if clean_version else ""
-        
-        transliterated_div = dual_display.find('div', class_='transliterated-version')
-        
-        ruby_annotations = []
-        if transliterated_div:
-            for element in transliterated_div.children:
-                if element.name == 'ruby':
-                    annotation = self._parse_ruby_element(element)
-                    ruby_annotations.append(annotation)
-                elif element.name == 'span' and 'punctuation-token' in element.get('class', []):
-                    ruby_annotations.append({
-                        'type': 'punctuation',
-                        'content': element.get_text(),
-                        'html': str(element)
+                    i += 2
+                    continue
+            
+            # Case 2: First is English, second is target language
+            elif p1_lang != target_lang and p2_lang == target_lang:
+                if re.search(lang_range, p2_text):
+                    paragraphs.append({
+                        target_lang: p2_text,
+                        'en': p1_text
                     })
-        
-        return {
-            'type': 'title' if is_title else 'paragraph',
-            'chinese': original_text,
-            'transliterated_html': str(transliterated_div) if transliterated_div else "",
-            'ruby_annotations': ruby_annotations,
-            'full_html': str(dual_display)
-        }
-    
-    def _parse_ruby_element(self, ruby):
-        """Parse ruby element into structured data"""
-        result = {
-            'type': 'ruby',
-            'syntax': '',
-            'grammatical_class': '',
-            'word': '',
-            'pinyin': '',
-            'html': str(ruby)
-        }
-        
-        # Extract syntax from class
-        classes = ruby.get('class', [])
-        for cls in classes:
-            if cls != 'chinese':
-                result['syntax'] = cls
-        
-        # Find grammatical class (if present)
-        gram_class = ruby.find('span', class_='grammatical-class')
-        if gram_class:
-            result['grammatical_class'] = gram_class.get_text()
-        
-        # Find syntax label (fallback for color-coded mode)
-        syntax_label = ruby.find('span', class_='syntax-label')
-        if syntax_label and not result['grammatical_class']:
-            result['syntax'] = syntax_label.get_text()
-        
-        # Find word token
-        word_token = ruby.find('span', class_='word-token')
-        if word_token:
-            result['word'] = word_token.get_text()
-        
-        # Find pinyin
-        pinyin = ruby.find('rt', class_='pinyin')
-        if pinyin:
-            result['pinyin'] = pinyin.get_text()
-        
-        return result
-    
-    def convert_to_json(self, output_path, pretty_print=True):
-        """Convert extracted content to JSON"""
-        output = {
-            'metadata': {
-                'source_epub': os.path.basename(self.epub_path),
-                'total_sections': len(self.sections),
-                'version': '1.0'
-            },
-            'sections': list(self.sections.values())
-        }
-        
-        with open(output_path, 'w', encoding='utf-8') as f:
-            if pretty_print:
-                json.dump(output, f, ensure_ascii=False, indent=2)
+                    i += 2
+                    continue
+            
+            # If no language attribute, try character detection
             else:
-                json.dump(output, f, ensure_ascii=False)
-        
-        return output_path
-    
-    def create_web_optimized_json(self, output_path):
-        """Create a web-optimized version with simplified structure"""
-        web_optimized = []
-        
-        for section_id, section in self.sections.items():
-            web_section = {
-                'id': section_id,
-                'filename': section['filename'],
-                'title': None,
-                'paragraphs': []
-            }
-            
-            # Add title if exists
-            if section.get('title'):
-                web_section['title'] = {
-                    'zh': section['title']['chinese'],
-                    'annotations': self._simplify_annotations(section['title']['ruby_annotations'])
-                }
-            
-            # Add paragraphs
-            for para in section['paragraphs']:
-                if para:  # Skip None paragraphs
-                    web_para = {
-                        'en': para['english'],
-                        'zh': para['chinese'],
-                        'annotations': self._simplify_annotations(para['ruby_annotations'])
-                    }
-                    web_section['paragraphs'].append(web_para)
-            
-            web_optimized.append(web_section)
-        
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(web_optimized, f, ensure_ascii=False, indent=2)
-        
-        return output_path
-    
-    def _simplify_annotations(self, ruby_annotations):
-        """Simplify ruby annotations for web use"""
-        simplified = []
-        for ann in ruby_annotations:
-            if ann['type'] == 'ruby':
-                simplified.append({
-                    'word': ann['word'],
-                    'pinyin': ann['pinyin'],
-                    'syntax': ann['syntax'],
-                    'grammatical_class': ann['grammatical_class']
-                })
-            else:  # punctuation
-                simplified.append({
-                    'type': 'punct',
-                    'content': ann['content']
-                })
-        return simplified
-    
-    def create_flat_paragraph_list(self, output_path):
-        """Create a flat list of all paragraph pairs for easy navigation"""
-        flat_list = []
-        pair_id = 0
-        
-        for section_id, section in self.sections.items():
-            for para in section['paragraphs']:
-                if para:
-                    flat_list.append({
-                        'id': pair_id,
-                        'section_id': section_id,
-                        # 'filename': section['filename'],
-                        # 'en': para['english'],
-                        # 'zh': para['chinese'],
-                        # 'annotations': self._simplify_annotations(para['ruby_annotations']),
-                        'html': para['full_html']
+                p1_has_target = bool(re.search(lang_range, p1_text))
+                p2_has_target = bool(re.search(lang_range, p2_text))
+                
+                # Check if one has target language and the other appears to be English
+                # (English is mostly ASCII with possible punctuation)
+                p1_is_english = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', p1_text))
+                p2_is_english = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', p2_text))
+                
+                if p1_has_target and p2_is_english:
+                    paragraphs.append({
+                        target_lang: p1_text,
+                        'en': p2_text
                     })
-                    pair_id += 1
+                    i += 2
+                    continue
+                elif p2_has_target and p1_is_english:
+                    paragraphs.append({
+                        target_lang: p2_text,
+                        'en': p1_text
+                    })
+                    i += 2
+                    continue
+            
+            i += 1
         
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(flat_list, f, ensure_ascii=False, indent=2)
+        return paragraphs
+    
+    except Exception as e:
+        print(f"Error processing {file_path}: {e}", file=sys.stderr)
+        return []
+
+def extract_title_from_xhtml(file_path, target_lang):
+    """Extract title from XHTML file, preferring the target language"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
         
-        return output_path
-
-# Usage example
-def process_epub_for_web(epub_file_path, output_dir):
-    """Main function to process EPUB and generate JSON files"""
-    
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Initialize converter
-    converter = EpubToJsonConverter(epub_file_path)
-    
-    # Extract content
-    print("Extracting EPUB content...")
-    converter.extract_epub_content()
-    
-    # Generate full JSON (with all details)
-    full_json_path = os.path.join(output_dir, 'epub_content_full.json')
-    converter.convert_to_json(full_json_path)
-    print(f"Full JSON saved to: {full_json_path}")
-    
-    # Generate web-optimized JSON
-    web_json_path = os.path.join(output_dir, 'epub_content_web.json')
-    converter.create_web_optimized_json(web_json_path)
-    print(f"Web-optimized JSON saved to: {web_json_path}")
-    
-    # Generate flat paragraph list (for easy navigation/display)
-    flat_json_path = os.path.join(output_dir, 'epub_paragraphs_flat.json')
-    converter.create_flat_paragraph_list(flat_json_path)
-    print(f"Flat paragraph list saved to: {flat_json_path}")
-    
-    return {
-        # 'full_json': full_json_path,
-        'web_json': web_json_path,
-        # 'flat_json': flat_json_path
-    }
-
-# Web display component (JavaScript)
-WEB_COMPONENT = """
-// Web display component for the bilingual content
-class BilingualDisplay {
-    constructor(containerId, data) {
-        this.container = document.getElementById(containerId);
-        this.data = data;
-        this.currentSection = 0;
-        this.currentParagraph = 0;
-    }
-    
-    renderCurrent() {
-        const section = this.data[this.currentSection];
-        if (!section) return;
+        soup = BeautifulSoup(content, 'html.parser')
         
-        const para = section.paragraphs[this.currentParagraph];
-        if (!para) return;
+        # Look for h1 with target language
+        h1 = soup.find('h1', lang=target_lang)
+        if h1:
+            return h1.get_text().strip()
         
-        let html = `
-            <div class="bilingual-section">
-                <div class="section-header">
-                    <span class="section-id">${section.id}</span>
-                    <span class="position">${this.currentParagraph + 1}/${section.paragraphs.length}</span>
-                </div>
-        `;
+        # Look for any h1 that might be in the target language (by character detection)
+        lang_range = get_language_unicode_ranges(target_lang)
+        for h1 in soup.find_all('h1'):
+            text = h1.get_text().strip()
+            if re.search(lang_range, text):
+                return text
         
-        // Add title if exists and we're at first paragraph
-        if (this.currentParagraph === 0 && section.title) {
-            html += `
-                <div class="section-title">
-                    <div class="chinese-title">${section.title.zh}</div>
-                </div>
-            `;
-        }
+        # Look for title tag
+        title_tag = soup.find('title')
+        if title_tag:
+            return title_tag.get_text().strip()
         
-        html += `
-                <div class="paragraph-card">
-                    <div class="english-text">${para.en}</div>
-                    <div class="chinese-text">${para.zh}</div>
-                    <div class="annotations">
-        `;
+        # Fallback to any h1
+        h1 = soup.find('h1')
+        if h1:
+            return h1.get_text().strip()
         
-        // Build annotated version
-        let annotatedHtml = '';
-        para.annotations.forEach(ann => {
-            if (ann.type === 'punct') {
-                annotatedHtml += ann.content;
-            } else {
-                annotatedHtml += `
-                    <ruby class="chinese ${ann.syntax}">
-                        <span class="grammatical-class">${ann.grammatical_class || ''}</span>
-                        <span class="word-token ${ann.syntax}">${ann.word}</span>
-                        <rt class="pinyin">${ann.pinyin}</rt>
-                    </ruby>
-                `;
-            }
-        });
+        return None
+    except Exception:
+        return None
+
+def get_section_id_from_filename(filename):
+    """Extract section ID from filename"""
+    base = os.path.splitext(filename)[0]
+    
+    # Handle patterns like ch001_split_000.xhtml
+    match = re.search(r'(ch\d+)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    # Handle title_page splits
+    match = re.search(r'(title_page)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    return base
+
+def process_epub_file(epub_file, target_lang, output_file=None, output_base=None):
+    """Process an EPUB file and convert to JSON"""
+    epub_path = Path(epub_file)
+    
+    if not epub_path.exists():
+        print(f"Error: EPUB file not found: {epub_file}", file=sys.stderr)
+        return []
+    
+    print(f"Processing EPUB: {epub_path.name}")
+    
+    # Create temporary directory for extraction
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Extract EPUB
+        print("Extracting EPUB...")
+        if not extract_epub(epub_file, temp_dir):
+            print(f"Error: Failed to extract EPUB {epub_file}", file=sys.stderr)
+            return []
         
-        html += annotatedHtml + '</div></div>';
+        # Find all text files
+        text_files = find_text_files(temp_dir)
         
-        // Add navigation
-        html += `
-            <div class="navigation">
-                <button onclick="display.previousPair()" ${this.currentParagraph === 0 ? 'disabled' : ''}>Previous</button>
-                <button onclick="display.nextPair()" ${this.currentParagraph === section.paragraphs.length - 1 ? 'disabled' : ''}>Next</button>
-                <select onchange="display.goToSection(this.value)">
-                    ${this.data.map((s, i) => `<option value="${i}" ${i === this.currentSection ? 'selected' : ''}>Section ${i+1}</option>`).join('')}
-                </select>
-            </div>
-        `;
+        if not text_files:
+            print(f"Error: No XHTML/HTML files found in EPUB", file=sys.stderr)
+            return []
         
-        this.container.innerHTML = html;
-    }
+        print(f"Found {len(text_files)} content files to process")
+        print(f"Target language: {target_lang}")
+        
+        # Group files by section
+        sections_dict = {}
+        
+        for xhtml_file in text_files:
+            filename = xhtml_file.name
+            
+            # Skip navigation and cover files
+            if 'nav' in filename.lower() or 'cover' in filename.lower() or 'toc' in filename.lower():
+                continue
+            
+            section_id = get_section_id_from_filename(filename)
+            
+            paragraphs = extract_text_from_xhtml(xhtml_file, target_lang)
+            
+            if paragraphs:
+                if section_id not in sections_dict:
+                    title = extract_title_from_xhtml(xhtml_file, target_lang)
+                    
+                    sections_dict[section_id] = {
+                        'id': section_id,
+                        'filename': filename,
+                        'title': {target_lang: title} if title else None,
+                        'paragraphs': paragraphs
+                    }
+                else:
+                    sections_dict[section_id]['paragraphs'].extend(paragraphs)
+        
+        # Convert to list and sort
+        sections = []
+        for section_id in sorted(sections_dict.keys()):
+            section = sections_dict[section_id]
+            
+            # Remove duplicates
+            unique_paragraphs = []
+            seen_pairs = set()
+            
+            for para in section['paragraphs']:
+                pair_key = (para[target_lang], para['en'])
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    unique_paragraphs.append(para)
+            
+            section['paragraphs'] = unique_paragraphs
+            sections.append(section)
+        
+        print(f"Created {len(sections)} sections with paragraph pairs")
+        
+        # Save to JSON
+        if output_file:
+            output_path = Path(output_file)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(sections, f, ensure_ascii=False, indent=2)
+            
+            print(f"Saved JSON to {output_path}")
+        elif output_base:
+            # Auto-generate output filename with language code in directory
+            epub_name = epub_path.stem
+            # Remove language code from the end if present to avoid duplication
+            for lang in SUPPORTED_LANGUAGES:
+                if epub_name.endswith(f'-{lang}') or epub_name.endswith(f'_{lang}'):
+                    epub_name = epub_name[:-(len(lang)+1)]
+                    break
+            
+            output_dir = Path(output_base) / target_lang
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Clean up the filename for JSON output
+            json_filename = f"{epub_name}.json"
+            output_path = output_dir / json_filename
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(sections, f, ensure_ascii=False, indent=2)
+            
+            print(f"Saved JSON to {output_path}")
+        
+        return sections
+
+def main():
+    parser = argparse.ArgumentParser(description='Convert EPUB with parallel text to JSON')
+    parser.add_argument('epub_file', help='Path to the EPUB file')
+    parser.add_argument('-o', '--output', help='Output JSON file path (overrides auto-detection)')
+    parser.add_argument('-l', '--lang', help='Target language code (e.g., zh, ja, es). If not provided, detected from filename')
+    parser.add_argument('--output-base', default=DEFAULT_OUTPUT_BASE, 
+                       help=f'Base output directory (default: {DEFAULT_OUTPUT_BASE})')
     
-    nextPair() {
-        const section = this.data[this.currentSection];
-        if (this.currentParagraph < section.paragraphs.length - 1) {
-            this.currentParagraph++;
-            this.renderCurrent();
-        } else if (this.currentSection < this.data.length - 1) {
-            this.currentSection++;
-            this.currentParagraph = 0;
-            this.renderCurrent();
-        }
-    }
+    args = parser.parse_args()
     
-    previousPair() {
-        if (this.currentParagraph > 0) {
-            this.currentParagraph--;
-            this.renderCurrent();
-        } else if (this.currentSection > 0) {
-            this.currentSection--;
-            this.currentParagraph = this.data[this.currentSection].paragraphs.length - 1;
-            this.renderCurrent();
-        }
-    }
+    # Detect language from filename if not provided
+    target_lang = args.lang
+    if not target_lang:
+        target_lang = detect_language_from_filename(args.epub_file)
+        if not target_lang:
+            print("Error: Could not detect language from filename. Please specify with --lang", file=sys.stderr)
+            print(f"Supported languages: {', '.join(SUPPORTED_LANGUAGES)}", file=sys.stderr)
+            sys.exit(1)
     
-    goToSection(sectionIndex) {
-        this.currentSection = parseInt(sectionIndex);
-        this.currentParagraph = 0;
-        this.renderCurrent();
-    }
-}
-
-// Initialize display
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('epub_content_web.json')
-        .then(response => response.json())
-        .then(data => {
-            window.display = new BilingualDisplay('content-container', data);
-            window.display.renderCurrent();
-        });
-});
-"""
-
-# CSS for web display
-CSS_STYLES = """
-.bilingual-section {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    font-size: 0.9em;
-    color: #666;
-}
-
-.section-title {
-    text-align: center;
-    margin: 20px 0;
-    font-size: 1.5em;
-    color: #00557f;
-}
-
-.paragraph-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.english-text {
-    font-size: 1.2em;
-    color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.chinese-text {
-    font-size: 1.3em;
-    color: #00557f;
-    margin-bottom: 15px;
-    font-weight: 500;
-}
-
-.annotations {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 5px;
-    line-height: 2.5;
-}
-
-ruby {
-    ruby-align: center;
-    margin: 0 2px;
-}
-
-rt {
-    font-size: 0.7em;
-    color: #666;
-}
-
-.grammatical-class {
-    font-size: 0.6em;
-    color: #999;
-    margin-right: 2px;
-    vertical-align: super;
-}
-
-.word-token {
-    font-size: 1.1em;
-}
-
-/* Syntax coloring */
-.chinese.n .word-token { color: #2c3e50; }
-.chinese.v .word-token { color: #27ae60; }
-.chinese.adj .word-token { color: #e67e22; }
-.chinese.adv .word-token { color: #3498db; }
-.chinese.p .word-token { color: #9b59b6; }
-.chinese.r .word-token { color: #e74c3c; }
-.chinese.x .word-token { color: #7f8c8d; }
-.chinese.o .word-token { color: #95a5a6; }
-
-.navigation {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.navigation button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background: #00557f;
-    color: white;
-    cursor: pointer;
-    font-size: 1em;
-}
-
-.navigation button:hover:not(:disabled) {
-    background: #003d5e;
-}
-
-.navigation button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.navigation select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1em;
-}
-"""
-
-# Example usage
-if __name__ == "__main__":
-    epub_file = "/home/zaya/Downloads/Zayas/ZayasBooks/t/Cinema-Quotes-Doubt-Primordial-Scence-Fantasy-Abuse-db-ch_transliterated_ccs.epub"
-    output_directory = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
+    print(f"Processing EPUB file: {args.epub_file}")
+    print(f"Target language: {target_lang}")
+    print(f"Output base directory: {args.output_base}")
     
-    # Process the EPUB
-    result = process_epub_for_web(epub_file, output_directory)
+    sections = process_epub_file(
+        args.epub_file, 
+        target_lang, 
+        output_file=args.output,
+        output_base=args.output_base if not args.output else None
+    )
     
-    # Save the web component files
-    with open(os.path.join(output_directory, 'chinese-display.js'), 'w', encoding='utf-8') as f:
-        f.write(WEB_COMPONENT)
+    # Print summary
+    total_paragraphs = sum(len(section['paragraphs']) for section in sections)
+    print(f"\nSummary:")
+    print(f"  Sections: {len(sections)}")
+    print(f"  Total paragraphs: {total_paragraphs}")
     
-    with open(os.path.join(output_directory, 'styles.css'), 'w', encoding='utf-8') as f:
-        f.write(CSS_STYLES)
-    
-    # Create a simple HTML viewer
-    html_viewer = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilingual Reader</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="content-container"></div>
-    <script src="chinese-display.js"></script>
-</body>
-</html>"""
-    
-    with open(os.path.join(output_directory, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(html_viewer)
-    
-    print("\nProcessing complete!")
-    print(f"Generated files in {output_directory}:")
-    for key, path in result.items():
-        print(f"  - {key}: {path}")
-    print("  - index.html: Web viewer")
-    print("  - styles.css: CSS styles")
-    print("  - chinese-display.js: JavaScript component")
+    if sections and sections[0]['paragraphs']:
+        print(f"\nSample paragraph:")
+        sample = sections[0]['paragraphs'][0]
+        print(f"  {target_lang.upper()}: {sample[target_lang][:50]}...")
+        print(f"  EN: {sample['en'][:50]}...")
+
+if __name__ == '__main__':
+    main()
