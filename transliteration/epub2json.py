@@ -5,7 +5,7 @@ epub2json.py - Convert EPUB with parallel text to JSON for language learning rea
 The script detects the language code from the EPUB filename (e.g., title-ar.epub, title-es.epub)
 and uses that as the target language, with English as the source language.
 Output is saved to language-specific directories.
-Handles paragraph pairs that span across multiple files.
+Handles paragraph pairs within each file and tracks unmatched paragraphs across files.
 """
 
 import argparse
@@ -98,36 +98,47 @@ def detect_language_from_filename(filename):
 def get_language_unicode_ranges(lang_code):
     """Get Unicode ranges for character detection for the specified language"""
     ranges = {
+        # East Asian languages
         'zh': r'[\u4e00-\u9fff]',  # Chinese
-        'ja': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]',  # Japanese
-        'ko': r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]',  # Korean
-        'ar': r'[\u0600-\u06FF\u0750-\u077F]',  # Arabic
-        'he': r'[\u0590-\u05FF]',  # Hebrew
-        'ru': r'[\u0400-\u04FF]',  # Russian
-        'el': r'[\u0370-\u03FF]',  # Greek
+        'ja': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]',  # Japanese (Hiragana, Katakana, Kanji)
+        'ko': r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]',  # Korean (Hangul, Jamo)
+        
+        # South Asian languages (Indic scripts)
         'hi': r'[\u0900-\u097F]',  # Hindi (Devanagari)
         'bn': r'[\u0980-\u09FF]',  # Bengali
-        'ur': r'[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]',  # Urdu (Arabic + extended)
         'pa': r'[\u0A00-\u0A7F]',  # Punjabi (Gurmukhi)
-        'mr': r'[\u0900-\u097F]',  # Marathi (Devanagari)
+        'mr': r'[\u0900-\u097F]',  # Marathi (Devanagari - same as Hindi range)
         'te': r'[\u0C00-\u0C7F]',  # Telugu
         'ta': r'[\u0B80-\u0BFF]',  # Tamil
-        'th': r'[\u0E00-\u0E7F]',  # Thai
-        'vi': r'[\u1EA0-\u1EF9]',  # Vietnamese
-        'id': r'[A-Za-z\s\.,!?\'"-]',  # Indonesian (Latin script, similar to English)
-        'tr': r'[\u011E\u011F\u0130\u0131\u015E\u015F\u00FC]',  # Turkish
+        'ur': r'[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]',  # Urdu (Arabic + extended)
+        
+        # Middle Eastern languages
+        'ar': r'[\u0600-\u06FF\u0750-\u077F]',  # Arabic
+        'he': r'[\u0590-\u05FF]',  # Hebrew
+        
+        # European languages
+        'ru': r'[\u0400-\u04FF]',  # Russian (Cyrillic)
+        'el': r'[\u0370-\u03FF]',  # Greek
         'pl': r'[\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u015A\u015B\u0179\u017A\u017B\u017C]',  # Polish
+        'tr': r'[\u011E\u011F\u0130\u0131\u015E\u015F\u00FC]',  # Turkish
         'fr': r'[àâäéèêëîïôöùûüÿçœ]',  # French accents
         'es': r'[áéíóúüñ]',  # Spanish accents
         'de': r'[äöüß]',  # German
         'pt': r'[áâãàçéêíóôõúü]',  # Portuguese
         'it': r'[àèéìíîòóùú]',  # Italian
-        'sw': r'[A-Za-z\s\.,!?\'"-]',  # Swahili (Latin script)
+        'sw': r'[A-Za-z\s\.,!?\'"-]',  # Swahili (Latin script, similar to English)
+        
+        # Southeast Asian languages
+        'th': r'[\u0E00-\u0E7F]',  # Thai
+        'vi': r'[\u1EA0-\u1EF9]',  # Vietnamese (Latin with diacritics)
+        'id': r'[A-Za-z\s\.,!?\'"-]',  # Indonesian (Latin script)
+        
+        # Latin-based fallback
+        'la': r'[A-Za-z\s\.,!?\'"-]',  # Latin
     }
     
-    # For languages without specific ranges, return a pattern that matches common non-Latin scripts
-    # or just any non-ASCII as fallback
-    return ranges.get(lang_code, r'[^\u0000-\u007F]')  # Any non-ASCII as fallback
+    # For languages without specific ranges, return pattern for non-ASCII (likely target language)
+    return ranges.get(lang_code, r'[^\u0000-\u007F]')
 
 def extract_epub(epub_path, extract_path):
     """Extract EPUB file to a temporary directory"""
@@ -163,65 +174,203 @@ def find_text_files(extract_path):
     
     return sorted(text_files)
 
-def extract_all_paragraphs_with_context(file_path, target_lang, lang_range):
+def extract_text_from_xhtml(file_path, target_lang, pending_paragraph=None):
     """
-    Extract all paragraphs from a file, preserving order and tracking 
-    which paragraphs are target language and which are English.
-    Returns a list of tuples (text, is_target_lang, is_english)
+    Extract target language and English text pairs from an XHTML file.
+    Handles pending paragraphs from previous files.
+    Returns (paragraphs, new_pending)
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
         soup = BeautifulSoup(content, 'html.parser')
+        paragraphs = []
+        
+        # Get Unicode range for target language detection
+        lang_range = get_language_unicode_ranges(target_lang)
         
         # Find all paragraphs
         author_paragraphs = soup.find_all('p', class_='author')
         if not author_paragraphs:
             author_paragraphs = soup.find_all('p')
         
-        result = []
-        for p in author_paragraphs:
-            text = p.get_text().strip()
-            if not text:
-                continue
+        # Process pending paragraph from previous file first
+        i = 0
+        if pending_paragraph:
+            # Try to pair pending paragraph with first paragraph in this file
+            if len(author_paragraphs) > 0:
+                p1 = pending_paragraph
+                p2 = author_paragraphs[0]
+                
+                p1_text = p1.get_text().strip()
+                p2_text = p2.get_text().strip()
+                
+                if p1_text and p2_text:
+                    p1_lang = p1.get('lang', '')
+                    p2_lang = p2.get('lang', '')
+                    
+                    # Check if pending is target and current is English
+                    if p1_lang == target_lang and (p2_lang == 'en' or p2_lang == ''):
+                        if re.search(lang_range, p1_text):
+                            paragraphs.append({
+                                target_lang: p1_text,
+                                'en': p2_text
+                            })
+                            i = 1  # Skip the first paragraph of this file
+                            pending_paragraph = None
+                    
+                    # Check if pending is English and current is target
+                    elif (p1_lang == 'en' or p1_lang == '') and p2_lang == target_lang:
+                        if re.search(lang_range, p2_text):
+                            paragraphs.append({
+                                target_lang: p2_text,
+                                'en': p1_text
+                            })
+                            i = 1  # Skip the first paragraph of this file
+                            pending_paragraph = None
+        
+        # Process the rest of the paragraphs in this file
+        while i < len(author_paragraphs) - 1:
+            p1 = author_paragraphs[i]
+            p2 = author_paragraphs[i + 1]
             
             # Check language attributes
-            p_lang = p.get('lang', '')
+            p1_lang = p1.get('lang', '')
+            p2_lang = p2.get('lang', '')
             
-            # Determine if this is target language or English
-            is_target = False
-            is_english = False
+            p1_text = p1.get_text().strip()
+            p2_text = p2.get_text().strip()
             
-            if p_lang == target_lang:
-                is_target = True
-            elif p_lang == 'en' or p_lang == 'en-US' or p_lang == 'en-GB':
-                is_english = True
-            elif p_lang and p_lang != target_lang:
-                # If it has a lang attribute but not target, check if it's English
-                is_english = True
+            # Skip empty paragraphs
+            if not p1_text or not p2_text:
+                i += 1
+                continue
+            
+            # Case 1: First is target language, second is English
+            if p1_lang == target_lang and (p2_lang == 'en' or p2_lang == ''):
+                # Verify with character detection
+                if re.search(lang_range, p1_text):
+                    paragraphs.append({
+                        target_lang: p1_text,
+                        'en': p2_text
+                    })
+                    i += 2
+                    continue
+            
+            # Case 2: First is English, second is target language
+            elif (p1_lang == 'en' or p1_lang == '') and p2_lang == target_lang:
+                if re.search(lang_range, p2_text):
+                    paragraphs.append({
+                        target_lang: p2_text,
+                        'en': p1_text
+                    })
+                    i += 2
+                    continue
+            
+            # If no language attribute, try character detection
             else:
-                # No language attribute, try character detection
-                has_target_chars = bool(re.search(lang_range, text))
+                p1_has_target = bool(re.search(lang_range, p1_text))
+                p2_has_target = bool(re.search(lang_range, p2_text))
                 
-                # Check if it's English (mostly ASCII with common punctuation)
-                is_english_chars = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', text))
+                # Check if one has target language and the other appears to be English
+                p1_is_english = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', p1_text))
+                p2_is_english = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', p2_text))
                 
-                if has_target_chars:
-                    is_target = True
-                elif is_english_chars:
-                    is_english = True
+                if p1_has_target and p2_is_english:
+                    paragraphs.append({
+                        target_lang: p1_text,
+                        'en': p2_text
+                    })
+                    i += 2
+                    continue
+                elif p2_has_target and p1_is_english:
+                    paragraphs.append({
+                        target_lang: p2_text,
+                        'en': p1_text
+                    })
+                    i += 2
+                    continue
             
-            result.append((text, is_target, is_english))
+            i += 1
         
-        return result
+        # Check if there's an unpaired paragraph at the end of this file
+        new_pending = None
+        if i < len(author_paragraphs):
+            last_p = author_paragraphs[i]
+            last_text = last_p.get_text().strip()
+            last_lang = last_p.get('lang', '')
+            
+            if last_text:
+                # Only keep it as pending if it's target language or English
+                if last_lang == target_lang or last_lang == 'en':
+                    new_pending = last_p
+                else:
+                    # Check by character detection
+                    last_has_target = bool(re.search(lang_range, last_text))
+                    last_is_english = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', last_text))
+                    
+                    if last_has_target or last_is_english:
+                        new_pending = last_p
+        
+        return paragraphs, new_pending
     
     except Exception as e:
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
-        return []
+        return [], None
+
+def extract_title_from_xhtml(file_path, target_lang):
+    """Extract title from XHTML file, preferring the target language"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        soup = BeautifulSoup(content, 'html.parser')
+        
+        # Look for h1 with target language
+        h1 = soup.find('h1', lang=target_lang)
+        if h1:
+            return h1.get_text().strip()
+        
+        # Look for any h1 that might be in the target language (by character detection)
+        lang_range = get_language_unicode_ranges(target_lang)
+        for h1 in soup.find_all('h1'):
+            text = h1.get_text().strip()
+            if re.search(lang_range, text):
+                return text
+        
+        # Look for title tag
+        title_tag = soup.find('title')
+        if title_tag:
+            return title_tag.get_text().strip()
+        
+        # Fallback to any h1
+        h1 = soup.find('h1')
+        if h1:
+            return h1.get_text().strip()
+        
+        return None
+    except Exception:
+        return None
+
+def get_section_id_from_filename(filename):
+    """Extract section ID from filename"""
+    base = os.path.splitext(filename)[0]
+    
+    # Handle patterns like ch001_split_000.xhtml
+    match = re.search(r'(ch\d+)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    # Handle title_page splits
+    match = re.search(r'(title_page)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    return base
 
 def process_epub_file(epub_file, target_lang, output_file=None, output_base=None):
-    """Process an EPUB file and convert to JSON with cross-file synchronization"""
+    """Process an EPUB file and convert to JSON with cross-file pending handling"""
     epub_path = Path(epub_file)
     
     if not epub_path.exists():
@@ -248,11 +397,9 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
         print(f"Found {len(text_files)} content files to process")
         print(f"Target language: {target_lang}")
         
-        # Get Unicode range for target language detection
-        lang_range = get_language_unicode_ranges(target_lang)
-        
-        # Process all files sequentially to maintain paragraph order
-        all_paragraphs = []
+        # Group files by section
+        sections_dict = {}
+        pending_paragraph = None
         
         for xhtml_file in text_files:
             filename = xhtml_file.name
@@ -261,109 +408,51 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
             if 'nav' in filename.lower() or 'cover' in filename.lower() or 'toc' in filename.lower():
                 continue
             
-            print(f"  Processing: {filename}")
+            section_id = get_section_id_from_filename(filename)
             
-            # Extract paragraphs with context
-            file_paragraphs = extract_all_paragraphs_with_context(xhtml_file, target_lang, lang_range)
-            all_paragraphs.extend(file_paragraphs)
-        
-        print(f"Total paragraphs extracted: {len(all_paragraphs)}")
-        
-        # Now pair the paragraphs: target language with English
-        paired_paragraphs = []
-        i = 0
-        
-        while i < len(all_paragraphs):
-            text, is_target, is_english = all_paragraphs[i]
+            # Extract paragraphs with pending from previous file
+            paragraphs, pending_paragraph = extract_text_from_xhtml(xhtml_file, target_lang, pending_paragraph)
             
-            # If this is target language, look for English partner
-            if is_target:
-                # Look ahead for English text
-                j = i + 1
-                found_english = None
-                found_english_index = -1
-                
-                while j < len(all_paragraphs):
-                    _, next_is_target, next_is_english = all_paragraphs[j]
+            if paragraphs:
+                if section_id not in sections_dict:
+                    title = extract_title_from_xhtml(xhtml_file, target_lang)
                     
-                    if next_is_english:
-                        found_english = all_paragraphs[j][0]
-                        found_english_index = j
-                        break
-                    elif next_is_target:
-                        # Found another target text without English in between - might be a sequence
-                        break
-                    j += 1
-                
-                if found_english:
-                    paired_paragraphs.append({
-                        target_lang: text,
-                        'en': found_english
-                    })
-                    i = found_english_index + 1  # Skip the English paragraph we used
-                    continue
+                    sections_dict[section_id] = {
+                        'id': section_id,
+                        'filename': filename,
+                        'title': {target_lang: title} if title else None,
+                        'paragraphs': paragraphs
+                    }
                 else:
-                    # No English partner found, add as orphan
-                    print(f"Warning: No English translation found for: {text[:50]}...")
-                    paired_paragraphs.append({
-                        target_lang: text,
-                        'en': "[MISSING TRANSLATION]"
-                    })
-                    i += 1
+                    sections_dict[section_id]['paragraphs'].extend(paragraphs)
+        
+        # Handle any remaining pending paragraph at the very end
+        if pending_paragraph:
+            pending_text = pending_paragraph.get_text().strip()
+            pending_lang = pending_paragraph.get('lang', '')
+            print(f"Warning: Unmatched paragraph at end of document: {pending_text[:50]}...")
+            # Optionally add as orphan or just discard
+            # We'll discard it to avoid misalignment
+        
+        # Convert to list and sort
+        sections = []
+        for section_id in sorted(sections_dict.keys()):
+            section = sections_dict[section_id]
             
-            # If this is English, look for target language partner (reverse direction)
-            elif is_english:
-                # Look ahead for target language text
-                j = i + 1
-                found_target = None
-                found_target_index = -1
-                
-                while j < len(all_paragraphs):
-                    _, next_is_target, next_is_english = all_paragraphs[j]
-                    
-                    if next_is_target:
-                        found_target = all_paragraphs[j][0]
-                        found_target_index = j
-                        break
-                    elif next_is_english:
-                        # Found another English without target in between
-                        break
-                    j += 1
-                
-                if found_target:
-                    paired_paragraphs.append({
-                        target_lang: found_target,
-                        'en': text
-                    })
-                    i = found_target_index + 1  # Skip the target paragraph we used
-                    continue
-                else:
-                    # No target partner found
-                    i += 1
+            # Remove duplicates
+            unique_paragraphs = []
+            seen_pairs = set()
             
-            # If it's neither (unclassified), just move on
-            else:
-                i += 1
+            for para in section['paragraphs']:
+                pair_key = (para[target_lang], para['en'])
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    unique_paragraphs.append(para)
+            
+            section['paragraphs'] = unique_paragraphs
+            sections.append(section)
         
-        # Remove duplicates
-        unique_paragraphs = []
-        seen_pairs = set()
-        
-        for para in paired_paragraphs:
-            pair_key = (para[target_lang], para['en'])
-            if pair_key not in seen_pairs:
-                seen_pairs.add(pair_key)
-                unique_paragraphs.append(para)
-        
-        # Group into sections (simple approach - all in one section)
-        sections = [{
-            'id': 'main',
-            'filename': 'all_content',
-            'title': {target_lang: None},
-            'paragraphs': unique_paragraphs
-        }]
-        
-        print(f"Created 1 section with {len(unique_paragraphs)} paragraph pairs")
+        print(f"Created {len(sections)} sections with paragraph pairs")
         
         # Save to JSON
         if output_file:
