@@ -36,8 +36,8 @@ except ImportError as e:
 
 class SimpleEbookManager:
     def __init__(self, target_directory=None):
-        self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'tr']
-        self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian", "german", "english", "spanish", "french", "greek", "hebrew", "indonesian", "italian", "latin", "polish", "portuguese", "swahili", "turkish"]
+        self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'th', 'tr']
+        self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian", "german", "english", "spanish", "french", "greek", "hebrew", "indonesian", "italian", "latin", "polish", "portuguese", "swahili", "thai", "turkish"]
         
         # Language name to code mapping
         self.language_map = {
@@ -59,6 +59,7 @@ class SimpleEbookManager:
             "polish": "pl",
             "portuguese": "pt",
             "swahili": "sw",
+            "thai": "th",
             "turkish": "tr"
         }
 
