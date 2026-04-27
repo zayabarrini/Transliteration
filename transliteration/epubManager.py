@@ -36,12 +36,12 @@ except ImportError as e:
 
 class SimpleEbookManager:
     def __init__(self, target_directory=None):
-        self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'th', 'tr']
-        self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian", "german", "english", "spanish", "french", "greek", "hebrew", "indonesian", "italian", "latin", "polish", "portuguese", "swahili", "thai", "turkish"]
+        self.default_merge_order = ['ru', 'de', 'en', 'ch', 'ar', 'hi', 'es', 'fr', 'el', 'he', 'id', 'it', 'ja', 'ko', 'la', 'pl', 'pt', 'sw', 'th', 'tr', 'bn', 'ur', 'pa', 'mr', 'te', 'ta', 'vi']
+        self.supported_languages = ["japanese", "korean", "chinese", "hindi", "arabic", "russian", "german", "english", "spanish", "french", "greek", "hebrew", "indonesian", "italian", "latin", "polish", "portuguese", "swahili", "turkish", "bengali", "urdu", "punjabi", "marathi", "telugu", "tamil", "vietnamese"]        
         
         # Language name to code mapping
         self.language_map = {
-            "chinese": "zh",  # Note: changed from "ch" to "zh" to match standard
+            "chinese": "zh",
             "russian": "ru", 
             "german": "de",
             "english": "en",
@@ -59,8 +59,14 @@ class SimpleEbookManager:
             "polish": "pl",
             "portuguese": "pt",
             "swahili": "sw",
-            "thai": "th",
-            "turkish": "tr"
+            "turkish": "tr",
+            "bengali": "bn",
+            "urdu": "ur",
+            "punjabi": "pa",
+            "marathi": "mr",
+            "telugu": "te",
+            "tamil": "ta",
+            "vietnamese": "vi"
         }
 
         # Use target_directory if provided, otherwise use current directory

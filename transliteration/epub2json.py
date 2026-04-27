@@ -23,8 +23,9 @@ from bs4 import BeautifulSoup
 
 # Supported language codes - expanded to include all common codes
 SUPPORTED_LANGUAGES = [
-    'ar', 'de', 'el', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 
-    'la', 'pl', 'pt', 'ru', 'sw', 'tr', 'zh', 'en', 'th', 'vi'
+    'ar', 'bn', 'de', 'el', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 
+    'la', 'mr', 'pa', 'pl', 'pt', 'ru', 'sw', 'ta', 'te', 'th', 'tr', 'ur', 
+    'vi', 'zh', 'en'
 ]
 
 # Default output base directory
@@ -40,8 +41,7 @@ def detect_language_from_filename(filename):
     import re
 
     # List of all supported language codes
-    language_codes = ['ar', 'de', 'el', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 
-                      'la', 'pl', 'pt', 'ru', 'sw', 'th', 'tr', 'zh', 'en']
+    language_codes = SUPPORTED_LANGUAGES
     
     # First, normalize the filename by replacing common separators
     # This helps with pattern matching
@@ -106,15 +106,23 @@ def get_language_unicode_ranges(lang_code):
         'ru': r'[\u0400-\u04FF]',  # Russian
         'el': r'[\u0370-\u03FF]',  # Greek
         'hi': r'[\u0900-\u097F]',  # Hindi (Devanagari)
+        'bn': r'[\u0980-\u09FF]',  # Bengali
+        'ur': r'[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]',  # Urdu (Arabic + extended)
+        'pa': r'[\u0A00-\u0A7F]',  # Punjabi (Gurmukhi)
+        'mr': r'[\u0900-\u097F]',  # Marathi (Devanagari)
+        'te': r'[\u0C00-\u0C7F]',  # Telugu
+        'ta': r'[\u0B80-\u0BFF]',  # Tamil
         'th': r'[\u0E00-\u0E7F]',  # Thai
         'vi': r'[\u1EA0-\u1EF9]',  # Vietnamese
-        'pl': r'[\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u015A\u015B\u0179\u017A\u017B\u017C]',  # Polish
+        'id': r'[A-Za-z\s\.,!?\'"-]',  # Indonesian (Latin script, similar to English)
         'tr': r'[\u011E\u011F\u0130\u0131\u015E\u015F\u00FC]',  # Turkish
+        'pl': r'[\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u015A\u015B\u0179\u017A\u017B\u017C]',  # Polish
         'fr': r'[àâäéèêëîïôöùûüÿçœ]',  # French accents
         'es': r'[áéíóúüñ]',  # Spanish accents
         'de': r'[äöüß]',  # German
         'pt': r'[áâãàçéêíóôõúü]',  # Portuguese
         'it': r'[àèéìíîòóùú]',  # Italian
+        'sw': r'[A-Za-z\s\.,!?\'"-]',  # Swahili (Latin script)
     }
     
     # For languages without specific ranges, return a pattern that matches common non-Latin scripts
@@ -187,12 +195,16 @@ def extract_all_paragraphs_with_context(file_path, target_lang, lang_range):
             
             if p_lang == target_lang:
                 is_target = True
-            elif p_lang != target_lang and p_lang:
+            elif p_lang == 'en' or p_lang == 'en-US' or p_lang == 'en-GB':
+                is_english = True
+            elif p_lang and p_lang != target_lang:
                 # If it has a lang attribute but not target, check if it's English
                 is_english = True
             else:
                 # No language attribute, try character detection
                 has_target_chars = bool(re.search(lang_range, text))
+                
+                # Check if it's English (mostly ASCII with common punctuation)
                 is_english_chars = bool(re.match(r'^[A-Za-z0-9\s\.,!?\'"-]+$', text))
                 
                 if has_target_chars:
@@ -255,6 +267,8 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
             file_paragraphs = extract_all_paragraphs_with_context(xhtml_file, target_lang, lang_range)
             all_paragraphs.extend(file_paragraphs)
         
+        print(f"Total paragraphs extracted: {len(all_paragraphs)}")
+        
         # Now pair the paragraphs: target language with English
         paired_paragraphs = []
         i = 0
@@ -267,12 +281,14 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
                 # Look ahead for English text
                 j = i + 1
                 found_english = None
+                found_english_index = -1
                 
                 while j < len(all_paragraphs):
                     _, next_is_target, next_is_english = all_paragraphs[j]
                     
                     if next_is_english:
                         found_english = all_paragraphs[j][0]
+                        found_english_index = j
                         break
                     elif next_is_target:
                         # Found another target text without English in between - might be a sequence
@@ -284,10 +300,11 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
                         target_lang: text,
                         'en': found_english
                     })
-                    i = j + 1  # Skip the English paragraph we used
+                    i = found_english_index + 1  # Skip the English paragraph we used
                     continue
                 else:
-                    # No English partner found, add as standalone (might be processed later)
+                    # No English partner found, add as orphan
+                    print(f"Warning: No English translation found for: {text[:50]}...")
                     paired_paragraphs.append({
                         target_lang: text,
                         'en': "[MISSING TRANSLATION]"
@@ -299,12 +316,14 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
                 # Look ahead for target language text
                 j = i + 1
                 found_target = None
+                found_target_index = -1
                 
                 while j < len(all_paragraphs):
                     _, next_is_target, next_is_english = all_paragraphs[j]
                     
                     if next_is_target:
                         found_target = all_paragraphs[j][0]
+                        found_target_index = j
                         break
                     elif next_is_english:
                         # Found another English without target in between
@@ -316,7 +335,7 @@ def process_epub_file(epub_file, target_lang, output_file=None, output_base=None
                         target_lang: found_target,
                         'en': text
                     })
-                    i = j + 1  # Skip the target paragraph we used
+                    i = found_target_index + 1  # Skip the target paragraph we used
                     continue
                 else:
                     # No target partner found
