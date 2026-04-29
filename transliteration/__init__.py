@@ -22,6 +22,7 @@ from .transliteration import (
     is_punctuation,
     transliterate,
     transliterate_for_subtitles,
+    process_chinese_advanced
 )
 
 # 3. Explicit exports
@@ -34,5 +35,12 @@ __all__ = [
     "filter_language_characters",
     "transliterate",
     "add_furigana",
-    "is_latin" "transliterate_for_subtitles",
+    "is_latin",
+    "transliterate_for_subtitles",
+    "process_chinese_advanced",
+    "get_pinyin_annotations",
+    "get_pinyin_for_word",
+    "analyze_chinese_syntax",
+    "format_transliteration",
+    "get_grammatical_classes_from_pos",
 ]
