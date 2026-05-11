@@ -7,7 +7,7 @@ ruby {
   line-height: 1.5;
   margin-right: 0.5em;
   vertical-align: top;
-  font-size: 2em;
+  font-size: 1em;
 }
 
 rt {
@@ -25,7 +25,7 @@ rt {
 /* Korean specific styles */
 ruby.japanese {
   margin-right: 0.1em; /* Reduced spacing between Japanese characters */
-  font-size: 2.1em; /* Slightly larger base character */
+  font-size: 1.6em; /* Slightly larger base character */
   line-height: 1.2;
 }
 
@@ -39,7 +39,7 @@ ruby.japanese rt {
 /* Korean specific styles */
 ruby.korean {
   margin-right: 0.1em; /* Reduced spacing between Korean characters */
-  font-size: 1.8em; /* Slightly larger base character */
+  font-size: 1.6em; /* Slightly larger base character */
   line-height: 1.2;
 }
 
@@ -113,7 +113,7 @@ ruby.chinese {
 }
 
 ruby.chinese rt {
-  font-size: 14px;
+  font-size: 1.3em;
 }
 
 /* This is the key - order the elements properly */
@@ -121,7 +121,7 @@ ruby.chinese span.grammatical-class {
   color: #7f8c8d;
   /* font-weight: bold; */
   order: 1; /* This puts it at the TOP */
-  font-size: 14px;
+  font-size: 1em;
   margin-bottom: 2px;
 }
 
@@ -129,14 +129,14 @@ ruby.chinese span.syntax-label {
   color: #7f8c8d;
   /* font-weight: bold; */
   order: 1; /* This puts it at the TOP */
-  font-size: 14px;
+  font-size: 0.8em;
   margin-bottom: 2px;
 }
 
 ruby.chinese rt.pinyin {
   color: #7f8c8d;
   order: -1; /* This puts it at the BOTTOM */
-  font-size: 14px;
+  font-size: 0.8em;
   margin-top: 2px;
 }
 
@@ -144,7 +144,6 @@ ruby.chinese .word-token {
   padding: 4px 8px;
   border-radius: 6px;
   color: rgb(17, 18, 19);
-  font-size: 60px;
   /* font-weight: bold; */
   order: 0; /* This keeps the Chinese word in the middle */
 }
@@ -230,7 +229,7 @@ ruby.chinese.x {
 
 /* Clean version styling */
 .clean-version {
-  font-size: 2em;
+  font-size: 1em;
   margin-bottom: 0.5em;
   padding: 10px;
   background: #f8f9fa;
@@ -239,7 +238,7 @@ ruby.chinese.x {
 }
 
 .transliterated-version {
-  font-size: 1.2em;
+  font-size: 1em;
   padding: 10px;
 }
 

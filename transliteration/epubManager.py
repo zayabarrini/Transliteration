@@ -105,7 +105,8 @@ class SimpleEbookManager:
         print("5. Simple Merge/Epub Stacking")
         print("6. Convert EPUBs to Blog Posts")
         print("7. Convert EPUB to JSON (for language learning readers)")
-        print("8. Advanced Options")
+        print("8. Convert Multilingual EPUB to JSON (all languages)")
+        print("9. Advanced Options")
         print("0. Exit")
         print()
 
@@ -131,6 +132,108 @@ class SimpleEbookManager:
                 print(f"Warning: Could not detect language for {epub_file}: {e}")
 
         return sorted(available_languages)
+    
+    def convert_epub_to_json_multilingual(self):
+        """Convert multilingual EPUB files to JSON with all languages"""
+        print("\n=== Convert Multilingual EPUB to JSON ===")
+        print("This will create a single JSON file with all language translations")
+        print("JSON files will be saved to:")
+        print("  /home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml/")
+        
+        folder_path = input(f"Enter folder containing EPUB files (Enter for {self.current_directory}): ").strip() or self.current_directory
+        
+        # Find all EPUB files
+        epub_files = []
+        for ext in ['*.epub', '*.EPUB']:
+            epub_files.extend(glob.glob(os.path.join(folder_path, ext)))
+        
+        epub_files = sorted(epub_files)
+        
+        if not epub_files:
+            print("No EPUB files found!")
+            input("Press Enter to continue...")
+            return
+        
+        print(f"\nFound {len(epub_files)} EPUB files:")
+        for i, epub_file in enumerate(epub_files, 1):
+            print(f"{i}. {os.path.basename(epub_file)}")
+        
+        print(f"{len(epub_files)+1}. Process all")
+        print("0. Cancel")
+        
+        try:
+            choice = input("\nSelect files to process: ").strip()
+            
+            if choice == '0':
+                return
+            
+            selected_files = []
+            if choice == str(len(epub_files) + 1):
+                selected_files = epub_files
+            else:
+                indices = [int(x.strip()) for x in choice.split(',') if x.strip()]
+                for idx in indices:
+                    if 1 <= idx <= len(epub_files):
+                        selected_files.append(epub_files[idx-1])
+            
+            if not selected_files:
+                print("No valid files selected")
+                input("Press Enter to continue...")
+                return
+            
+            print(f"\nProcessing {len(selected_files)} files...")
+            
+            # Path to epub2jsonMulti.py script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            epub2json_script = os.path.join(script_dir, "epub2jsonMulti.py")
+            
+            if not os.path.exists(epub2json_script):
+                print(f"Error: Could not find epub2jsonMulti.py at {epub2json_script}")
+                input("Press Enter to continue...")
+                return
+            
+            success_count = 0
+            for epub_file in selected_files:
+                print(f"\n{'-'*50}")
+                print(f"Processing: {os.path.basename(epub_file)}")
+                
+                try:
+                    cmd = [
+                        sys.executable, 
+                        epub2json_script, 
+                        epub_file,
+                        '--output-base',
+                        '/home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml'
+                    ]
+                    
+                    result = subprocess.run(cmd, capture_output=True, text=True)
+                    
+                    if result.returncode == 0:
+                        print(f"✅ Success: {os.path.basename(epub_file)}")
+                        if result.stdout:
+                            # Show summary
+                            for line in result.stdout.split('\n'):
+                                if 'Language distribution:' in line:
+                                    print(f"   {line}")
+                                elif line.strip().startswith('  ') and ':' in line:
+                                    print(f"   {line.strip()}")
+                        success_count += 1
+                    else:
+                        print(f"❌ Failed: {os.path.basename(epub_file)}")
+                        if result.stderr:
+                            print(f"   Error: {result.stderr[:200]}")
+                        
+                except Exception as e:
+                    print(f"❌ Exception: {e}")
+            
+            print(f"\n{'='*50}")
+            print(f"Successfully processed: {success_count} / {len(selected_files)}")
+            print(f"JSON files saved to: /home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml/")
+            
+        except Exception as e:
+            print(f"Error during conversion: {e}")
+        
+        input("\nPress Enter to continue...")
 
     def get_smart_merge_order(self, folder_path):
         """Create merge order based on available languages and preferred order"""
@@ -709,7 +812,9 @@ class SimpleEbookManager:
                 self.convert_epubs_to_posts()
             elif choice == "7":
                 self.convert_epub_to_json()
-            elif choice == "8":
+            elif choice == '8':
+                self.convert_epub_to_json_multilingual()
+            elif choice == '9':
                 # Launch advanced version
                 advanced_manager = EpubManagerWithOptions(self.current_directory)
                 advanced_manager.run()
