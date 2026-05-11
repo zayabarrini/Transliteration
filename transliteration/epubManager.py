@@ -89,6 +89,139 @@ class SimpleEbookManager:
         """Clear the terminal screen"""
         os.system("cls" if os.name == "nt" else "clear")
 
+    def convert_epub_to_json_ordered(self):
+        """Convert ordered multilingual EPUB to JSON with specified language order"""
+        print("\n=== Convert Ordered Multilingual EPUB to JSON ===")
+        print("This is for EPUBs where paragraphs appear in a consistent language order")
+        print("without explicit language attributes.")
+        print("\nJSON files will be saved to:")
+        print("  /home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml/")
+        
+        folder_path = input(f"Enter folder containing EPUB files (Enter for {self.current_directory}): ").strip() or self.current_directory
+        
+        # Find all EPUB files
+        epub_files = []
+        for ext in ['*.epub', '*.EPUB']:
+            epub_files.extend(glob.glob(os.path.join(folder_path, ext)))
+        
+        # Specifically look for Milano_Multilingual.epub
+        milano_file = None
+        other_files = []
+        
+        for f in epub_files:
+            if 'Milano_Multilingual' in f or 'milano_multilingual' in f.lower():
+                milano_file = f
+            else:
+                other_files.append(f)
+        
+        if milano_file:
+            print(f"\nFound Milano_Multilingual.epub!")
+            selected_files = [milano_file]
+            
+            # Ask if they want to process other files
+            if other_files:
+                process_others = input(f"\nAlso found {len(other_files)} other EPUB files. Process them too? (y/N): ").strip().lower()
+                if process_others == 'y':
+                    selected_files.extend(other_files)
+        else:
+            # Show all files
+            epub_files = sorted(epub_files)
+            if not epub_files:
+                print("No EPUB files found!")
+                input("Press Enter to continue...")
+                return
+            
+            print(f"\nFound {len(epub_files)} EPUB files:")
+            for i, epub_file in enumerate(epub_files, 1):
+                print(f"{i}. {os.path.basename(epub_file)}")
+            
+            print(f"{len(epub_files)+1}. Process all")
+            print("0. Cancel")
+            
+            choice = input("\nSelect files to process: ").strip()
+            
+            if choice == '0':
+                return
+            
+            selected_files = []
+            if choice == str(len(epub_files) + 1):
+                selected_files = epub_files
+            else:
+                indices = [int(x.strip()) for x in choice.split(',') if x.strip()]
+                for idx in indices:
+                    if 1 <= idx <= len(epub_files):
+                        selected_files.append(epub_files[idx-1])
+        
+        if not selected_files:
+            print("No valid files selected")
+            input("Press Enter to continue...")
+            return
+        
+        # Default language order for Milano
+        default_order = ['en', 'de', 'ru', 'ar', 'hi', 'zh', 'ja', 'ko', 'fr', 'pt', 'it', 'es', 'pl', 'el', 'he']
+        
+        print(f"\nDefault language order: {', '.join(default_order)}")
+        use_default = input("Use this language order? (Y/n): ").strip().lower()
+        
+        language_order = default_order
+        if use_default == 'n':
+            custom_order = input("Enter comma-separated language codes in order: ").strip()
+            if custom_order:
+                language_order = [lang.strip() for lang in custom_order.split(',')]
+        
+        print(f"\nProcessing {len(selected_files)} files with language order: {', '.join(language_order)}")
+        
+        # Path to epub2jsonOrdered.py script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        epub2json_script = os.path.join(script_dir, "epub2jsonOrdered.py")
+        
+        if not os.path.exists(epub2json_script):
+            print(f"Error: Could not find epub2jsonOrdered.py at {epub2json_script}")
+            input("Press Enter to continue...")
+            return
+        
+        success_count = 0
+        for epub_file in selected_files:
+            print(f"\n{'-'*50}")
+            print(f"Processing: {os.path.basename(epub_file)}")
+            
+            # Build lang-order argument
+            lang_order_arg = ','.join(language_order)
+            
+            try:
+                cmd = [
+                    sys.executable, 
+                    epub2json_script, 
+                    epub_file,
+                    '--output-base',
+                    '/home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml',
+                    '--lang-order',
+                    lang_order_arg
+                ]
+                
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    print(f"✅ Success: {os.path.basename(epub_file)}")
+                    # Extract summary from output
+                    for line in result.stdout.split('\n'):
+                        if 'Complete groups' in line or 'Total translation groups' in line:
+                            print(f"   {line.strip()}")
+                    success_count += 1
+                else:
+                    print(f"❌ Failed: {os.path.basename(epub_file)}")
+                    if result.stderr:
+                        print(f"   Error: {result.stderr[:200]}")
+                    
+            except Exception as e:
+                print(f"❌ Exception: {e}")
+        
+        print(f"\n{'='*50}")
+        print(f"Successfully processed: {success_count} / {len(selected_files)}")
+        print(f"JSON files saved to: /home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml/")
+        input("\nPress Enter to continue...")
+
+
     def display_menu(self):
         """Display the main menu"""
         self.clear_screen()
@@ -106,7 +239,8 @@ class SimpleEbookManager:
         print("6. Convert EPUBs to Blog Posts")
         print("7. Convert EPUB to JSON (for language learning readers)")
         print("8. Convert Multilingual EPUB to JSON (all languages)")
-        print("9. Advanced Options")
+        print("9. Convert Ordered Multilingual EPUB to JSON (specify language order)")
+        print("10. Advanced Options")
         print("0. Exit")
         print()
 
@@ -815,6 +949,8 @@ class SimpleEbookManager:
             elif choice == '8':
                 self.convert_epub_to_json_multilingual()
             elif choice == '9':
+                self.convert_epub_to_json_ordered()
+            elif choice == '10':
                 # Launch advanced version
                 advanced_manager = EpubManagerWithOptions(self.current_directory)
                 advanced_manager.run()
