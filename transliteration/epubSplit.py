@@ -50,9 +50,92 @@ def strip_internal_tags(html_content):
 
     return soup
 
+# Common abbreviations that shouldn't trigger splits (Western)
+COMMON_ABBREVIATIONS = {
+    'mr', 'mrs', 'ms', 'dr', 'prof', 'rev', 'hon', 'st', 'ave', 'blvd',
+    'inc', 'corp', 'ltd', 'co', 'etc', 'e.g', 'i.e', 'vs', 'fig', 'p',
+    'pp', 'vol', 'ed', 'trans', 'ca', 'al', 'cf', 'c.f', 'op', 'cit',
+    'ibid', 'id', 'loc', 'e.g.', 'i.e.', 'viz', 'sc', 'no', 'esp'
+}
+
+# Pattern for Roman numerals (e.g., IV, IX, XII)
+ROMAN_NUMERAL_PATTERN = re.compile(r'^[IVXLCDM]+$', re.IGNORECASE)
+
+# Pattern for common reference patterns like [1], (1), [a], [注1], [3]
+REFERENCE_PATTERN = re.compile(r'^[\[]?[\d\w注附][\]\)]?$|^[\(\[]\d+[\]\)]$')
+
+def is_abbreviation(word: str) -> bool:
+    """Check if a word is a common abbreviation or acronym"""
+    word_lower = word.lower().rstrip('.')
+    
+    # Check common abbreviations
+    if word_lower in COMMON_ABBREVIATIONS:
+        return True
+    
+    # Check for single-letter abbreviations (e.g., "U.S.", "U.K.")
+    if len(word_lower) == 1 and word_lower.isalpha():
+        return True
+    
+    # Check for acronyms with multiple capital letters (e.g., "USA", "UNESCO")
+    if word.isupper() and len(word) >= 2 and word.isalpha():
+        return True
+    
+    # Check for Roman numerals
+    if ROMAN_NUMERAL_PATTERN.match(word.upper()):
+        return True
+    
+    return False
+
+def is_number_with_period(token: str, text: str, pos: int) -> bool:
+    """Check if a period is part of a number (e.g., 1.2, 3.14, 4.5.6)"""
+    # Look for pattern like number. or .number
+    if re.match(r'^\d+\.$', token):  # "123." 
+        return True
+    if re.search(r'\d\.\d', text[max(0, pos-3):min(len(text), pos+4)]):  # "1.2"
+        return True
+    return False
+
+def is_reference_marker(token: str) -> bool:
+    """Check if a token is a reference marker like [1], (3), [注1]"""
+    return bool(REFERENCE_PATTERN.match(token.strip()))
+
+def should_split_at_period(text: str, period_pos: int) -> bool:
+    """Determine if a period should be treated as a sentence boundary"""
+    # Look at the context before the period
+    start = max(0, period_pos - 20)
+    before_text = text[start:period_pos]
+    
+    # Split into words/tokens
+    words = re.findall(r'[^\s]+', before_text)
+    
+    if not words:
+        return True
+    
+    # Check last word/token before period
+    last_token = words[-1]
+    
+    # Don't split if it's an abbreviation
+    if is_abbreviation(last_token):
+        return False
+    
+    # Don't split if it's a number with decimal
+    if is_number_with_period(last_token, text, period_pos):
+        return False
+    
+    # Don't split if it's a reference marker (like "[1]" before period)
+    if is_reference_marker(last_token):
+        return False
+    
+    # Check for ellipsis "..." - don't split
+    if period_pos >= 2 and text[period_pos-2:period_pos+1] == '..':
+        return False
+    
+    return True
+
+
 
 def split_paragraphs(soup):
-    """Split paragraphs at sentence boundaries"""
+    """Split paragraphs at sentence boundaries with abbreviation/reference protection"""
     paragraphs = soup.find_all("p")
 
     for p in paragraphs:
@@ -61,29 +144,42 @@ def split_paragraphs(soup):
         if len(text) < 15:
             continue
 
-        # Better sentence splitting for mixed Chinese/Western text
         sentences = []
         current_sentence = []
+        i = 0
         
-        for char in text:
-            current_sentence.append(char)
-            # Check for sentence boundaries in Chinese
-            if char in '。！？…、,，:;；' and len(current_sentence) > 1:
+        while i < len(text):
+            current_sentence.append(text[i])
+            
+            # Check for Chinese sentence enders (always split)
+            if text[i] in '。！？…':
                 sentences.append(''.join(current_sentence).strip())
                 current_sentence = []
-            # Check for Western punctuation followed by space or end of string/paragraph
-            elif char in '.!?' and len(current_sentence) > 1:
-                # Look ahead to see if next char is space or end
-                next_idx = len(''.join(current_sentence))
-                if next_idx >= len(text) or text[next_idx] in ' \t\n\r':
-                    sentences.append(''.join(current_sentence).strip())
-                    current_sentence = []
+            
+            # Check for Western punctuation
+            elif text[i] in '.!?':
+                # For periods, check if it's a real sentence boundary
+                if text[i] == '.':
+                    if should_split_at_period(text, i):
+                        # Check if next char is whitespace or end
+                        if i + 1 >= len(text) or text[i+1] in ' \t\n\r':
+                            sentences.append(''.join(current_sentence).strip())
+                            current_sentence = []
+                    # If not a real boundary, just continue
+                else:  # ! or ?
+                    if i + 1 >= len(text) or text[i+1] in ' \t\n\r':
+                        sentences.append(''.join(current_sentence).strip())
+                        current_sentence = []
+            
             # Handle semicolons and em dashes when followed by space
-            elif char in ':;—' and len(current_sentence) > 1:
-                next_idx = len(''.join(current_sentence))
-                if next_idx < len(text) and text[next_idx] in ' \t\n\r':
+            elif text[i] in ':;—' and i + 1 < len(text) and text[i+1] in ' \t\n\r':
+                # But don't split if it's part of a reference like "[1]:"
+                if not (len(current_sentence) > 2 and 
+                        ''.join(current_sentence[-3:]).startswith('[')):
                     sentences.append(''.join(current_sentence).strip())
                     current_sentence = []
+            
+            i += 1
         
         # Add any remaining text
         if current_sentence:
@@ -100,14 +196,13 @@ def split_paragraphs(soup):
             # Add remaining sentences as new paragraphs
             current = p
             for sentence in sentences[1:]:
-                if sentence.strip():
+                if sentence.strip() and len(sentence.strip()) > 5:  # Avoid tiny fragments
                     new_p = soup.new_tag("p")
                     new_p.string = sentence.strip()
                     current.insert_after(new_p)
                     current = new_p
 
     return soup
-
 def process_html_file(file_path: str):
     """Process individual HTML file"""
     with open(file_path, "r", encoding="utf-8") as f:
