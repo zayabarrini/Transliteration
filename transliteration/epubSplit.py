@@ -13,16 +13,22 @@ from transliteration.epubManagementNew import (
 )
 
 # Enhanced multilingual sentence splitting regex
+# Fixed multilingual sentence splitting regex
 SPLIT_REGEX = re.compile(
     r"""
-    (?<!\w\.\w.)          # Don't split after abbreviations like U.S.A.
-    (?<![A-Z][a-z]\.)    # Don't split after abbreviations like Dr.
-    (?<=[.!?…:;。！？—])   # Split after sentence-ending punctuation (including CJK and em dash)
-    (?:\s+|$)             # Followed by whitespace OR end of string
-    (?![.!?…:;。！？])      # But not if it's another sentence ender
-    |                     # OR
-    \s*—\s*            # Split on em dash with optional whitespace
-""",
+    # Match sentence-ending punctuation in Chinese/Japanese/Korean
+    ([。！？…])           # CJK sentence enders
+    \s*                  # Optional whitespace (including none)
+    (?=[^)}\]])          # Not followed by closing brackets
+    |
+    # Western sentence endings with whitespace
+    (?<=[.!?])           # Western punctuation
+    (?:\s+|$)            # Followed by whitespace or end
+    |
+    # Colon/semicolon/em dash with whitespace
+    (?<=[:;—])           # Colon, semicolon, or em dash
+    (?:\s+)              # Followed by whitespace
+    """,
     re.VERBOSE,
 )
 
@@ -55,25 +61,52 @@ def split_paragraphs(soup):
         if len(text) < 15:
             continue
 
-        # Split sentences using our enhanced regex
-        sentences = SPLIT_REGEX.split(text)
+        # Better sentence splitting for mixed Chinese/Western text
+        sentences = []
+        current_sentence = []
+        
+        for char in text:
+            current_sentence.append(char)
+            # Check for sentence boundaries in Chinese
+            if char in '。！？…、,，:;；' and len(current_sentence) > 1:
+                sentences.append(''.join(current_sentence).strip())
+                current_sentence = []
+            # Check for Western punctuation followed by space or end of string/paragraph
+            elif char in '.!?' and len(current_sentence) > 1:
+                # Look ahead to see if next char is space or end
+                next_idx = len(''.join(current_sentence))
+                if next_idx >= len(text) or text[next_idx] in ' \t\n\r':
+                    sentences.append(''.join(current_sentence).strip())
+                    current_sentence = []
+            # Handle semicolons and em dashes when followed by space
+            elif char in ':;—' and len(current_sentence) > 1:
+                next_idx = len(''.join(current_sentence))
+                if next_idx < len(text) and text[next_idx] in ' \t\n\r':
+                    sentences.append(''.join(current_sentence).strip())
+                    current_sentence = []
+        
+        # Add any remaining text
+        if current_sentence:
+            sentences.append(''.join(current_sentence).strip())
+        
+        # Remove empty sentences
+        sentences = [s for s in sentences if s]
 
-        # Only split if we have multiple sentences that meet criteria
-        if len(sentences) > 1 and any(should_split(s) for s in sentences):
+        # Only split if we have multiple sentences
+        if len(sentences) > 1:
             # Clear original paragraph and keep first sentence
-            p.string = sentences[0].strip()
-
-            # Add remaining sentences as new paragraphs after current one
+            p.string = sentences[0]
+            
+            # Add remaining sentences as new paragraphs
             current = p
             for sentence in sentences[1:]:
-                if should_split(sentence.strip()):
+                if sentence.strip():
                     new_p = soup.new_tag("p")
                     new_p.string = sentence.strip()
                     current.insert_after(new_p)
                     current = new_p
 
     return soup
-
 
 def process_html_file(file_path: str):
     """Process individual HTML file"""
