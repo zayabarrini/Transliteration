@@ -417,7 +417,7 @@ def get_grammatical_classes_from_pos(pos_tag):
     
     return pos_mapping.get(pos_tag.lower(), pos_tag.lower())
 
-def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False):
+def get_pinyin_annotations(text, color_coded=True, show_grammatical_class=False):
     """Get pinyin annotations with optional grammatical class display"""
     from string import Template
 
@@ -484,7 +484,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                     if word_pinyin and word_pinyin != word:
                         template = Template(
                             '<ruby class="chinese $syntax">'
-                            '<span class="syntax-label">$syntax</span>'
+                            # '<span class="syntax-label">$syntax</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '<rt class="pinyin">$pinyin</rt>'
                             '</ruby>'
@@ -497,7 +497,7 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
                     else:
                         template = Template(
                             '<ruby class="chinese $syntax">'
-                            '<span class="syntax-label">$syntax</span>'
+                            # '<span class="syntax-label">$syntax</span>'
                             '<span class="word-token $syntax">$word</span>'
                             '</ruby>'
                         )
@@ -516,7 +516,8 @@ def get_pinyin_annotations(text, color_coded=False, show_grammatical_class=False
     clean_div = f'<div class="clean-version">{"".join(clean_version)}</div>'
     trans_div = f'<div class="transliterated-version">{"".join(result)}</div>'
 
-    return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
+    # return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
+    return f'<div class="chinese-dual-display">{trans_div}</div>'
 
 def get_detailed_pos_analysis(text):
     """Return detailed POS analysis with grammatical classes"""

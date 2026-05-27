@@ -231,7 +231,7 @@ class SimpleEbookManager:
         print(f"Current directory: {self.current_directory}")
         print(f"Pipenv active: {'Yes' if os.environ.get('PIPENV_ACTIVE') else 'No'}")
         print()
-        print("1. Split EPUB files")
+        print("1. Split p into sentences")
         print("2. Remove original text")
         print("3. Transliterate EPUBs (Default - Main Language Detection)")
         print("4. Merge-compose EPUBs by Languages/Line by Line")
@@ -405,7 +405,7 @@ class SimpleEbookManager:
 
     def split_epubs(self):
         """Split EPUB files with defaults"""
-        print("\n=== Split EPUB Files ===")
+        print("\n=== Split into Sentences ===")
         print("Using current directory as both input and output")
         print("File pattern: *-db-*.epub")
 
@@ -1032,7 +1032,7 @@ class EpubManagerWithOptions:
         print("=" * 50)
         print(f"Current directory: {self.current_directory}")
         print()
-        print("1. Split EPUB files (with options)")
+        print("1. Split into Sentences (with options)")
         print("2. Remove original text (with options)")
         print("3. Transliterate (with options)")
         print("4. Merge-compose (with options)")
@@ -1119,7 +1119,7 @@ class EpubManagerWithOptions:
             return self.get_smart_merge_order(folder_path)
 
     def split_epubs(self):
-        print("\n=== Split EPUB Files (Advanced) ===")
+        print("\n=== Split into Sentences (Advanced) ===")
 
         input_folder = (
             input(f"Enter input folder (Enter for {self.current_directory}): ").strip()

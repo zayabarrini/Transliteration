@@ -7,7 +7,7 @@ ruby {
   line-height: 1.5;
   margin-right: 0.5em;
   vertical-align: top;
-  font-size: 1em;
+  font-size: 2em; /* KEY: Changed from 1em to 2em */
 }
 
 rt {
@@ -22,15 +22,15 @@ rt {
 
 /* Language-specific overrides */
 
-/* Korean specific styles */
+/* Japanese specific styles */
 ruby.japanese {
-  margin-right: 0.1em; /* Reduced spacing between Japanese characters */
-  font-size: 1.6em; /* Slightly larger base character */
+  margin-right: 0.1em;
+  font-size: 2.1em; /* KEY: Changed from 1.6em to 2.1em */
   line-height: 1.2;
 }
 
 ruby.japanese rt {
-  font-size: 35%; /* Smaller transliteration */
+  font-size: 35%;
   margin-top: -0.1em;
   margin-right: 0.1em !important;
   line-height: 1;
@@ -38,13 +38,13 @@ ruby.japanese rt {
 
 /* Korean specific styles */
 ruby.korean {
-  margin-right: 0.1em; /* Reduced spacing between Korean characters */
-  font-size: 1.6em; /* Slightly larger base character */
+  margin-right: 0.1em;
+  font-size: 1.8em; /* KEY: Changed from 1.6em to 1.8em */
   line-height: 1.2;
 }
 
 ruby.korean rt {
-  font-size: 35%; /* Smaller transliteration */
+  font-size: 35%;
   margin-top: -0.1em;
   margin-right: 0.1em !important;
   line-height: 1;
@@ -52,12 +52,11 @@ ruby.korean rt {
 
 /* Add margin between Korean words */
 ruby.korean + ruby.korean {
-  margin-left: 0.3em; /* Space between words */
+  margin-left: 0.3em;
 }
 
-/* Or if you want space after every Korean word (including before punctuation) */
 ruby.korean {
-  margin-right: 0.3em; /* Space after each word */
+  margin-right: 0.3em;
 }
 
 /* Hindi specific styles */
@@ -67,7 +66,6 @@ ruby.hindi {
 
 /* Arabic specific styles */
 ruby.arabic {
-  /* Add any Arabic-specific styles here */
   direction: rtl;
 }
 
@@ -82,21 +80,21 @@ ruby.russian {
   /* Add any Russian-specific styles here */
 }
 
-/* Chinese specific styles - keep all your existing Chinese styles */
+/* Chinese specific styles */
 :root {
-  --n: #60a5fa; /* blue for nouns */
-  --v: #f87171; /* red for verbs */
-  --adj: #34d399; /* green for adjectives */
-  --adv: #a78bfa; /* purple for adverbs */
-  --r: #fbbf24; /* yellow for pronouns */
-  --nm: #f97316; /* orange for numerals */
-  --p: #06b6d4; /* cyan for prepositions */
-  --c: #d946ef; /* pink for conjunctions */
-  --ax: #8b5cf6; /* indigo for auxiliary */
-  --mp: #f59e0b; /* amber for modal particles */
-  --q: #10b981; /* emerald for quantifiers */
-  --o: #94a3b8; /* gray for other */
-  --x: #cbd5e1; /* light gray for unknown */
+  --n: #60a5fa;
+  --v: #f87171;
+  --adj: #34d399;
+  --adv: #a78bfa;
+  --r: #fbbf24;
+  --nm: #f97316;
+  --p: #06b6d4;
+  --c: #d946ef;
+  --ax: #8b5cf6;
+  --mp: #f59e0b;
+  --q: #10b981;
+  --o: #94a3b8;
+  --x: #cbd5e1;
   --punct: transparent;
 }
 
@@ -106,37 +104,34 @@ ruby.chinese {
   align-items: center;
   margin: 5px 5px;
   padding: 5px 10px;
-  /* background-color: #f0f8ff; */
   border-radius: 4px;
   text-align: center;
   line-height: 1.8;
 }
 
 ruby.chinese rt {
-  font-size: 1.3em;
+  font-size: 14px; /* KEY: Changed from relative to absolute pixels */
 }
 
-/* This is the key - order the elements properly */
+/* Order the elements properly */
 ruby.chinese span.grammatical-class {
   color: #7f8c8d;
-  /* font-weight: bold; */
-  order: 1; /* This puts it at the TOP */
-  font-size: 1em;
+  order: 1;
+  font-size: 14px; /* KEY: Changed from relative to absolute pixels */
   margin-bottom: 2px;
 }
 
 ruby.chinese span.syntax-label {
   color: #7f8c8d;
-  /* font-weight: bold; */
-  order: 1; /* This puts it at the TOP */
-  font-size: 0.8em;
+  order: 1;
+  font-size: 14px; /* KEY: Changed from relative to absolute pixels */
   margin-bottom: 2px;
 }
 
 ruby.chinese rt.pinyin {
   color: #7f8c8d;
-  order: -1; /* This puts it at the BOTTOM */
-  font-size: 0.8em;
+  order: -1;
+  font-size: 14px; /* KEY: Changed from relative to absolute pixels */
   margin-top: 2px;
 }
 
@@ -144,11 +139,11 @@ ruby.chinese .word-token {
   padding: 4px 8px;
   border-radius: 6px;
   color: rgb(17, 18, 19);
-  /* font-weight: bold; */
-  order: 0; /* This keeps the Chinese word in the middle */
+  font-size: 30px; /* KEY: Added explicit pixel size */
+  order: 0;
 }
 
-/* Color styles for the simplified POS tags with new colors */
+/* Color styles for POS tags */
 ruby.chinese .word-token.n {
   background: var(--n);
   color: #1e3a8a;
@@ -205,7 +200,7 @@ ruby.chinese .word-token.x {
 .punctuation-token {
   display: inline-block;
   margin: 0 2px;
-  vertical-align: bottom; /* Fix alignment to baseline */
+  vertical-align: bottom;
 }
 
 /* Enhanced styling for color-coded mode */
@@ -229,7 +224,7 @@ ruby.chinese.x {
 
 /* Clean version styling */
 .clean-version {
-  font-size: 1em;
+  font-size: 2em; /* KEY: Changed from 1em to 2em */
   margin-bottom: 0.5em;
   padding: 10px;
   background: #f8f9fa;
@@ -238,7 +233,7 @@ ruby.chinese.x {
 }
 
 .transliterated-version {
-  font-size: 1em;
+  font-size: 1.2em; /* KEY: Changed from 1em to 1.2em */
   padding: 10px;
 }
 

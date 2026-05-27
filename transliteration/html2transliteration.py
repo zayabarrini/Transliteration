@@ -1,6 +1,12 @@
 import os
 import shutil
 
+import webbrowser
+import http.server
+import socketserver
+import threading
+
+
 from bs4 import BeautifulSoup, NavigableString  # For HTML parsing
 
 from transliteration.add_css import (  # Import from our new module
@@ -341,6 +347,306 @@ def process_segment(text, language):
 #             print(f"Error processing element: {e}")
 #             continue
 
+def serve_html_folder(folder_path, port=8000, auto_open=True):
+    """
+    Start an HTTP server to serve HTML files from the specified folder.
+    
+    Args:
+        folder_path (str): Path to the folder containing HTML files
+        port (int): Port number for the server (default: 8000)
+        auto_open (bool): Whether to automatically open the browser (default: True)
+    
+    Returns:
+        str: URL of the server
+    """
+    # Convert to absolute path
+    folder_path = os.path.abspath(folder_path)
+    
+    if not os.path.exists(folder_path):
+        print(f"❌ Folder not found: {folder_path}")
+        return None
+    
+    # Create a simple index page for easy navigation
+    index_path = os.path.join(folder_path, "index.html")
+    if not os.path.exists(index_path):
+        create_navigation_index(folder_path)
+    
+    # Change to the folder
+    original_dir = os.getcwd()
+    os.chdir(folder_path)
+    
+    # Create handler with custom logging
+    class CustomHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, format, *args):
+            # Suppress default logging for cleaner output
+            if not format.startswith("GET /"):
+                print(f"  → {args[0] if args else format}")
+    
+    # Allow address reuse
+    socketserver.TCPServer.allow_reuse_address = True
+    
+    server_url = f"http://localhost:{port}/"
+    
+    print(f"\n{'='*60}")
+    print(f"🌐 HTTP Server Started")
+    print(f"📁 Serving folder: {folder_path}")
+    print(f"🔗 URL: {server_url}")
+    print(f"⚙️  Port: {port}")
+    print(f"💡 Press Ctrl+C to stop the server")
+    print(f"{'='*60}\n")
+    
+    if auto_open:
+        webbrowser.open(server_url)
+        print(f"✅ Browser opened automatically\n")
+    
+    try:
+        with socketserver.TCPServer(("", port), CustomHandler) as httpd:
+            httpd.serve_forever()
+    except KeyboardInterrupt:
+        print(f"\n{'='*60}")
+        print(f"🛑 Server stopped")
+        print(f"{'='*60}\n")
+    finally:
+        os.chdir(original_dir)
+
+
+def create_navigation_index(folder_path):
+    """
+    Create an index.html file for easy navigation through HTML files.
+    
+    Args:
+        folder_path (str): Path to the folder
+    """
+    # Get all HTML/XHTML files
+    html_files = []
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith((".html", ".htm", ".xhtml", ".xml")):
+            html_files.append(filename)
+    
+    if not html_files:
+        return
+    
+    # Sort files
+    html_files.sort()
+    
+    # Create the index HTML
+    index_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPUB Viewer - Navigate Pages</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }}
+        
+        .container {{
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }}
+        
+        .header h1 {{
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }}
+        
+        .header p {{
+            opacity: 0.9;
+            font-size: 1.1em;
+        }}
+        
+        .file-list {{
+            padding: 30px;
+        }}
+        
+        .file-item {{
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }}
+        
+        .file-item:hover {{
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }}
+        
+        .file-link {{
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.1em;
+        }}
+        
+        .file-link:hover {{
+            color: #667eea;
+        }}
+        
+        .file-icon {{
+            font-size: 1.5em;
+            margin-right: 15px;
+        }}
+        
+        .file-name {{
+            flex: 1;
+            font-family: monospace;
+        }}
+        
+        .file-size {{
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 15px;
+        }}
+        
+        .footer {{
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+        }}
+        
+        @media (max-width: 768px) {{
+            .header h1 {{
+                font-size: 1.8em;
+            }}
+            
+            .file-link {{
+                flex-wrap: wrap;
+            }}
+            
+            .file-size {{
+                margin-left: 35px;
+                margin-top: 5px;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 EPUB Viewer</h1>
+            <p>Select a page to start reading</p>
+        </div>
+        
+        <div class="file-list">
+            <h2 style="margin-bottom: 20px; color: #333;">📖 Available Pages</h2>
+"""
+    
+    # Add each HTML file as a link
+    for filename in html_files:
+        # Get file size
+        file_path = os.path.join(folder_path, filename)
+        file_size = os.path.getsize(file_path)
+        
+        # Format size
+        if file_size < 1024:
+            size_str = f"{file_size} B"
+        elif file_size < 1024 * 1024:
+            size_str = f"{file_size / 1024:.1f} KB"
+        else:
+            size_str = f"{file_size / (1024 * 1024):.1f} MB"
+        
+        # Choose icon based on file type
+        icon = "📄" if filename.endswith(".html") else "📝"
+        
+        index_content += f"""
+            <div class="file-item">
+                <a href="{filename}" class="file-link">
+                    <span class="file-icon">{icon}</span>
+                    <span class="file-name">{filename}</span>
+                    <span class="file-size">{size_str}</span>
+                </a>
+            </div>
+"""
+    
+    index_content += f"""
+        </div>
+        
+        <div class="footer">
+            <p>✨ Total {len(html_files)} pages • Server running locally</p>
+            <p style="margin-top: 5px; font-size: 0.8em;">💡 Tip: You can also navigate to specific files directly</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    # Write the index file
+    with open(os.path.join(folder_path, "index.html"), "w", encoding="utf-8") as f:
+        f.write(index_content)
+    
+    print(f"📝 Created navigation index with {len(html_files)} files")
+
+
+def view_processed_html(html_file_path, port=8000):
+    """
+    View a specific HTML file by starting a server and opening it.
+    
+    Args:
+        html_file_path (str): Path to the HTML file
+        port (int): Port for the server
+    """
+    if not os.path.exists(html_file_path):
+        print(f"❌ File not found: {html_file_path}")
+        return
+    
+    folder = os.path.dirname(html_file_path)
+    filename = os.path.basename(html_file_path)
+    
+    # Start server in a separate thread
+    original_dir = os.getcwd()
+    os.chdir(folder)
+    
+    class CustomHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, format, *args):
+            pass  # Suppress logging
+    
+    socketserver.TCPServer.allow_reuse_address = True
+    
+    server_url = f"http://localhost:{port}/{filename}"
+    
+    print(f"\n{'='*60}")
+    print(f"🌐 Opening HTML file: {filename}")
+    print(f"🔗 URL: {server_url}")
+    print(f"💡 Press Ctrl+C to stop the server")
+    print(f"{'='*60}\n")
+    
+    webbrowser.open(server_url)
+    
+    try:
+        with socketserver.TCPServer(("", port), CustomHandler) as httpd:
+            httpd.serve_forever()
+    except KeyboardInterrupt:
+        print(f"\n🛑 Server stopped\n")
+    finally:
+        os.chdir(original_dir)
+
 
 def process_file(input_file, language, enable_multilingual_transliteration, epub_folder=None):
     """
@@ -404,6 +710,13 @@ def process_folder(html_folder, target_language, enable_multilingual_translitera
 
 if __name__ == "__main__":
     # Define the folder containing HTML files
-    html_folder = "/home/zaya/Downloads/Harry Potter シリーズ全7巻 (J.K. Rowling) (Z-Library)-trans/OEBPS/Text"  # Update this path to your folder containing HTML files
-    target_language = "japanese"  # Target language (e.g., 'chinese', 'japanese', etc.)
-    process_folder(html_folder, target_language)
+    html_folder = "/home/zaya/Downloads/Zayas/ZayasBooks/t/Heated-Rivalry-db-zh_transliterated_ccs/"
+    # target_language = "japanese"  # Target language (e.g., 'chinese', 'japanese', etc.)
+    # process_folder(html_folder, target_language)
+    
+    # Then serve them for viewing
+    serve_html_folder(html_folder, port=8000)
+    
+    # Or view a specific file
+    # specific_file = os.path.join(html_folder, "chapter1.xhtml")
+    # view_processed_html(specific_file)

@@ -22,6 +22,7 @@ def get_css_file(language, epub_folder):
     """Returns the destination path for the CSS file after copying it to the EPUB folder"""
     # Always use the unified multilingual CSS file
     css_filename = "styles-multilingual.css"
+    # css_filename = "styles-ch.css"
     source_path = f"/home/zaya/Downloads/Zayas/ZayasTransliteration/transliteration/{css_filename}"
 
     # Determine destination folder
