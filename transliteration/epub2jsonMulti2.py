@@ -40,31 +40,61 @@ def find_text_files(extract_path):
     """Find all XHTML/HTML files in the extracted EPUB in order"""
     text_files = []
     
-    search_paths = [
-        os.path.join(extract_path, 'EPUB', 'text'),
-        os.path.join(extract_path, 'EPUB'),
-        os.path.join(extract_path, 'OEBPS', 'text'),
-        os.path.join(extract_path, 'OEBPS', 'Text'),
-        os.path.join(extract_path, 'OEBPS'),
-        extract_path,
-    ]
+    # Look for HTML files anywhere in the extracted EPUB
+    # Common patterns: index_split_*.html, *.xhtml, *.html, *.htm
+    patterns = ['**/*.xhtml', '**/*.html', '**/*.htm']
     
-    for search_path in search_paths:
-        if os.path.exists(search_path):
-            for ext in ['*.xhtml', '*.html', '*.htm']:
-                files = list(Path(search_path).glob(ext))
-                if files:
-                    # Sort by filename to maintain order (split_000, split_001, etc.)
-                    text_files.extend(sorted(files))
+    for pattern in patterns:
+        files = list(Path(extract_path).glob(pattern))
+        if files:
+            # Sort by filename to maintain order (split_000, split_001, etc.)
+            # Handle numeric sorting for index_split_XXX.html
+            def sort_key(filepath):
+                name = filepath.name
+                # Extract numeric part if present (e.g., index_split_001.html -> 1)
+                match = re.search(r'(\d+)', name)
+                if match:
+                    return int(match.group(1))
+                return name
+            
+            files = sorted(files, key=sort_key)
+            text_files.extend(files)
     
-    return text_files
+    # Also look specifically in common EPUB directories if the glob didn't find them
+    if not text_files:
+        search_paths = [
+            extract_path,
+            os.path.join(extract_path, 'EPUB'),
+            os.path.join(extract_path, 'EPUB', 'text'),
+            os.path.join(extract_path, 'OEBPS'),
+            os.path.join(extract_path, 'OEBPS', 'text'),
+            os.path.join(extract_path, 'OEBPS', 'Text'),
+        ]
+        
+        for search_path in search_paths:
+            if os.path.exists(search_path):
+                for ext in ['*.xhtml', '*.html', '*.htm']:
+                    files = list(Path(search_path).glob(ext))
+                    if files:
+                        # Sort by filename to maintain order
+                        text_files.extend(sorted(files))
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_files = []
+    for file in text_files:
+        if file not in seen:
+            seen.add(file)
+            unique_files.append(file)
+    
+    return unique_files
 
 def extract_paragraphs_from_file(file_path):
     """
     Extract paragraphs preserving the structure where:
-    - All language variants are in consecutive p tags
-    - Each group is a set of consecutive p tags that form a "paragraph unit"
-    - Different language versions are identified by lang attribute (or missing lang for English)
+    - English paragraphs have calibre2 class and no lang attribute
+    - Translations have calibre3 class and lang attributes
+    Returns list of paragraph groups: {'en': 'text', 'translations': [...]}
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -79,47 +109,46 @@ def extract_paragraphs_from_file(file_path):
         i = 0
         while i < len(all_p_tags):
             p = all_p_tags[i]
+            classes = p.get('class', [])
             
-            # Start a new group
-            group = {}
-            
-            # Collect consecutive p tags that belong together
-            # Strategy: Collect all tags until we see a pattern break
-            # For your EPUB, each "logical paragraph" has all language versions in sequence
-            j = i
-            current_group_hashes = set()
-            
-            while j < len(all_p_tags):
-                current_p = all_p_tags[j]
-                text = current_p.get_text().strip()
-                
-                if not text:
-                    j += 1
+            # Check if this is an English paragraph (calibre2)
+            if 'calibre2' in classes and not p.get('lang'):
+                english_text = p.get_text().strip()
+                if not english_text:
+                    i += 1
                     continue
                 
-                # Get language from lang attribute, default to 'en' if no lang
-                lang = current_p.get('lang', 'en')
+                # Look for following translations (calibre3 with lang attributes)
+                translations = {}
+                j = i + 1
                 
-                # If this language is already in the current group, we've started a new paragraph unit
-                if lang in group:
-                    break
+                # Collect consecutive translation paragraphs
+                while j < len(all_p_tags):
+                    next_p = all_p_tags[j]
+                    next_classes = next_p.get('class', [])
+                    lang_attr = next_p.get('lang', '')
+                    
+                    if 'calibre3' in next_classes and lang_attr:
+                        trans_text = next_p.get_text().strip()
+                        if trans_text:
+                            translations[lang_attr] = trans_text
+                        j += 1
+                    elif 'calibre2' in next_classes and not next_p.get('lang'):
+                        # Next English paragraph found, stop collecting translations
+                        break
+                    else:
+                        # Skip other elements
+                        j += 1
                 
-                # Check if this looks like a new paragraph (e.g., starts with special formatting)
-                # But for your EPUB, consecutive p tags with different langs form one unit
-                group[lang] = text
-                current_group_hashes.add(lang)
-                j += 1
-                
-                # Stop if we've collected many languages (typical max is 7)
-                if len(group) >= 10:
-                    break
-            
-            # Only add if we have at least 2 languages
-            if len(group) >= 2:
+                # Create group with English and all translations
+                group = {'en': english_text}
+                group.update(translations)
                 paragraph_groups.append(group)
+                
+                # Move index to the next English paragraph
                 i = j
             else:
-                # Skip single-language paragraphs
+                # Skip non-English paragraphs (they should be collected as translations)
                 i += 1
         
         return paragraph_groups
@@ -134,8 +163,8 @@ def extract_all_paragraphs(text_files):
     """
     all_groups = []
     
-    for html_file in text_files:
-        filename = html_file.name
+    for xhtml_file in text_files:
+        filename = xhtml_file.name
         
         # Skip navigation and cover files
         if 'nav' in filename.lower() or 'cover' in filename.lower() or 'toc' in filename.lower():
@@ -143,16 +172,16 @@ def extract_all_paragraphs(text_files):
         
         print(f"  Processing: {filename}")
         
-        groups = extract_paragraphs_from_file(html_file)
+        groups = extract_paragraphs_from_file(xhtml_file)
         all_groups.extend(groups)
     
     return all_groups
 
 def extract_title_from_epub(text_files):
     """Extract title from the first suitable file"""
-    for html_file in text_files:
+    for xhtml_file in text_files:
         try:
-            with open(html_file, 'r', encoding='utf-8') as f:
+            with open(xhtml_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
             soup = BeautifulSoup(content, 'html.parser')
@@ -192,7 +221,7 @@ def process_epub_file_multilingual(epub_file, output_file=None, output_base=None
         text_files = find_text_files(temp_dir)
         
         if not text_files:
-            print(f"Error: No HTML files found in EPUB", file=sys.stderr)
+            print(f"Error: No XHTML/HTML files found in EPUB", file=sys.stderr)
             return []
         
         print(f"Found {len(text_files)} content files to process")
@@ -201,12 +230,6 @@ def process_epub_file_multilingual(epub_file, output_file=None, output_base=None
         print("Extracting paragraph groups...")
         all_groups = extract_all_paragraphs(text_files)
         print(f"Total paragraph groups extracted: {len(all_groups)}")
-        
-        if not all_groups:
-            print("Warning: No paragraph groups found. Trying alternative extraction method...")
-            # Try alternative: treat each p tag individually but group by position
-            all_groups = extract_all_paragraphs_alternative(text_files)
-            print(f"Alternative method found: {len(all_groups)} groups")
         
         # Show language distribution
         lang_counts = defaultdict(int)
@@ -260,56 +283,6 @@ def process_epub_file_multilingual(epub_file, output_file=None, output_base=None
         
         return sections
 
-def extract_all_paragraphs_alternative(text_files):
-    """
-    Alternative extraction: group by line number proximity
-    """
-    all_groups = []
-    
-    for html_file in text_files:
-        try:
-            with open(html_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            soup = BeautifulSoup(content, 'html.parser')
-            paragraphs = []
-            
-            # Collect all p tags with their languages
-            for p in soup.find_all('p'):
-                text = p.get_text().strip()
-                if text:
-                    lang = p.get('lang', 'en')
-                    paragraphs.append({'lang': lang, 'text': text})
-            
-            # Group them sequentially
-            i = 0
-            while i < len(paragraphs):
-                group = {}
-                j = i
-                
-                # Group until we see a repeating language or until reasonable limit
-                seen_langs = set()
-                while j < len(paragraphs) and len(group) < 15:
-                    lang = paragraphs[j]['lang']
-                    if lang not in seen_langs:
-                        group[lang] = paragraphs[j]['text']
-                        seen_langs.add(lang)
-                        j += 1
-                    else:
-                        break
-                
-                if len(group) >= 2:
-                    all_groups.append(group)
-                    i = j
-                else:
-                    i += 1
-                    
-        except Exception as e:
-            print(f"Error in alternative extraction for {html_file}: {e}")
-            continue
-    
-    return all_groups
-
 def main():
     parser = argparse.ArgumentParser(description='Convert multilingual EPUB to JSON')
     parser.add_argument('epub_file', help='Path to the EPUB file')
@@ -329,18 +302,18 @@ def main():
     )
     
     # Print summary
-    if sections and sections[0]['paragraphs']:
+    if sections:
         total_groups = len(sections[0]['paragraphs'])
         print(f"\nSummary:")
         print(f"  Sections: {len(sections)}")
         print(f"  Total translation groups: {total_groups}")
         
-        print(f"\nSample translation group (first 2):")
-        for i, group in enumerate(sections[0]['paragraphs'][:2]):
-            print(f"\n  Group {i+1}:")
-            for lang, text in list(group.items())[:4]:  # Show first 4 languages
-                preview = text[:50] + "..." if len(text) > 50 else text
-                print(f"    {lang.upper()}: {preview}")
+        if sections[0]['paragraphs']:
+            print(f"\nSample translation group (first 3):")
+            for i, group in enumerate(sections[0]['paragraphs'][:3]):
+                print(f"\n  Group {i+1}:")
+                for lang, text in list(group.items())[:3]:  # Show first 3 languages
+                    print(f"    {lang.upper()}: {text[:60]}...")
 
 if __name__ == '__main__':
     main()

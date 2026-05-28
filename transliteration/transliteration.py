@@ -417,107 +417,155 @@ def get_grammatical_classes_from_pos(pos_tag):
     
     return pos_mapping.get(pos_tag.lower(), pos_tag.lower())
 
+# def get_pinyin_annotations(text, color_coded=True, show_grammatical_class=False):
+#     """Get pinyin annotations with optional grammatical class display"""
+#     from string import Template
+
+#     from pypinyin import Style, lazy_pinyin, load_phrases_dict
+
+#     # Custom phrase corrections
+#     load_phrases_dict(
+#         {"什么": [["shén"], ["me"]], "怎么": [["zěn"], ["me"]], "明白": [["míng"], ["bai"]]}
+#     )
+
+#     # Get syntax analysis with actual POS tags
+#     syntax_analysis = analyze_chinese_syntax(text)
+
+#     # Build both versions
+#     result = []
+#     clean_version = []
+
+#     for word, syntax, pos in syntax_analysis:
+#         if is_punctuation(word):
+#             # Add punctuation directly to both versions
+#             result.append(f'<span class="punctuation-token">{word}</span>')
+#             clean_version.append(word)
+#         else:
+#             # Get pinyin for the entire word
+#             word_pinyin = get_pinyin_for_word(word)
+            
+#             # Get grammatical class if requested
+#             grammatical_class = get_grammatical_classes_from_pos(pos) if show_grammatical_class else ""
+
+#             # Always add to clean version
+#             clean_version.append(word)
+
+#             if color_coded:
+#                 if show_grammatical_class:
+#                     # Template for grammatical class display
+#                     if word_pinyin and word_pinyin != word:
+#                         template = Template(
+#                             '<ruby class="chinese $syntax">'
+#                             '<span class="grammatical-class">$grammatical_class</span>'
+#                             '<span class="word-token $syntax">$word</span>'
+#                             '<rt class="pinyin">$pinyin</rt>'
+#                             '</ruby>'
+#                         )
+#                         result.append(template.substitute(
+#                             syntax=syntax,
+#                             grammatical_class=grammatical_class,
+#                             word=word,
+#                             pinyin=word_pinyin
+#                         ))
+#                     else:
+#                         template = Template(
+#                             '<ruby class="chinese $syntax">'
+#                             '<span class="grammatical-class">$grammatical_class</span>'
+#                             '<span class="word-token $syntax">$word</span>'
+#                             '</ruby>'
+#                         )
+#                         result.append(template.substitute(
+#                             syntax=syntax,
+#                             grammatical_class=grammatical_class,
+#                             word=word
+#                         ))
+#                 else:
+#                     # Template for original color-coded mode
+#                     if word_pinyin and word_pinyin != word:
+#                         template = Template(
+#                             '<ruby class="chinese $syntax">'
+#                             # '<span class="syntax-label">$syntax</span>'
+#                             '<span class="word-token $syntax">$word</span>'
+#                             '<rt class="pinyin">$pinyin</rt>'
+#                             '</ruby>'
+#                         )
+#                         result.append(template.substitute(
+#                             syntax=syntax,
+#                             word=word,
+#                             pinyin=word_pinyin
+#                         ))
+#                     else:
+#                         template = Template(
+#                             '<ruby class="chinese $syntax">'
+#                             # '<span class="syntax-label">$syntax</span>'
+#                             '<span class="word-token $syntax">$word</span>'
+#                             '</ruby>'
+#                         )
+#                         result.append(template.substitute(
+#                             syntax=syntax,
+#                             word=word
+#                         ))
+#             else:
+#                 # Simple mode: just word with pinyin
+#                 if word_pinyin and word_pinyin != word:
+#                     result.append(f'<ruby class="chinese">{word}<rt>{word_pinyin}</rt></ruby>')
+#                 else:
+#                     result.append(word)
+
+#     # Create the dual display structure
+#     clean_div = f'<div class="clean-version">{"".join(clean_version)}</div>'
+#     trans_div = f'<div class="transliterated-version">{"".join(result)}</div>'
+
+#     # return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
+#     return f'<div class="chinese-dual-display">{trans_div}</div>'
+
 def get_pinyin_annotations(text, color_coded=True, show_grammatical_class=False):
-    """Get pinyin annotations with optional grammatical class display"""
+    """Get pinyin annotations with optional grammatical class display - Matching working ReadAloud version"""
     from string import Template
-
+    
     from pypinyin import Style, lazy_pinyin, load_phrases_dict
-
+    
     # Custom phrase corrections
     load_phrases_dict(
         {"什么": [["shén"], ["me"]], "怎么": [["zěn"], ["me"]], "明白": [["míng"], ["bai"]]}
     )
-
+    
     # Get syntax analysis with actual POS tags
     syntax_analysis = analyze_chinese_syntax(text)
-
-    # Build both versions
+    
+    # Build the version
     result = []
-    clean_version = []
-
+    
     for word, syntax, pos in syntax_analysis:
         if is_punctuation(word):
-            # Add punctuation directly to both versions
+            # Add punctuation directly
             result.append(f'<span class="punctuation-token">{word}</span>')
-            clean_version.append(word)
         else:
             # Get pinyin for the entire word
             word_pinyin = get_pinyin_for_word(word)
             
-            # Get grammatical class if requested
-            grammatical_class = get_grammatical_classes_from_pos(pos) if show_grammatical_class else ""
-
-            # Always add to clean version
-            clean_version.append(word)
-
-            if color_coded:
-                if show_grammatical_class:
-                    # Template for grammatical class display
-                    if word_pinyin and word_pinyin != word:
-                        template = Template(
-                            '<ruby class="chinese $syntax">'
-                            '<span class="grammatical-class">$grammatical_class</span>'
-                            '<span class="word-token $syntax">$word</span>'
-                            '<rt class="pinyin">$pinyin</rt>'
-                            '</ruby>'
-                        )
-                        result.append(template.substitute(
-                            syntax=syntax,
-                            grammatical_class=grammatical_class,
-                            word=word,
-                            pinyin=word_pinyin
-                        ))
-                    else:
-                        template = Template(
-                            '<ruby class="chinese $syntax">'
-                            '<span class="grammatical-class">$grammatical_class</span>'
-                            '<span class="word-token $syntax">$word</span>'
-                            '</ruby>'
-                        )
-                        result.append(template.substitute(
-                            syntax=syntax,
-                            grammatical_class=grammatical_class,
-                            word=word
-                        ))
-                else:
-                    # Template for original color-coded mode
-                    if word_pinyin and word_pinyin != word:
-                        template = Template(
-                            '<ruby class="chinese $syntax">'
-                            # '<span class="syntax-label">$syntax</span>'
-                            '<span class="word-token $syntax">$word</span>'
-                            '<rt class="pinyin">$pinyin</rt>'
-                            '</ruby>'
-                        )
-                        result.append(template.substitute(
-                            syntax=syntax,
-                            word=word,
-                            pinyin=word_pinyin
-                        ))
-                    else:
-                        template = Template(
-                            '<ruby class="chinese $syntax">'
-                            # '<span class="syntax-label">$syntax</span>'
-                            '<span class="word-token $syntax">$word</span>'
-                            '</ruby>'
-                        )
-                        result.append(template.substitute(
-                            syntax=syntax,
-                            word=word
-                        ))
+            if color_coded and word_pinyin and word_pinyin != word:
+                # Match the structure from wordListCJ.py
+                result.append(
+                    f'<ruby class="chinese {syntax}">'
+                    f'{word}'
+                    f'<rt class="pinyin">{word_pinyin}</rt>'
+                    f'</ruby>'
+                )
+            elif color_coded and (not word_pinyin or word_pinyin == word):
+                # No pinyin available
+                result.append(
+                    f'<span class="word-token {syntax}">{word}</span>'
+                )
             else:
-                # Simple mode: just word with pinyin
+                # Simple mode
                 if word_pinyin and word_pinyin != word:
                     result.append(f'<ruby class="chinese">{word}<rt>{word_pinyin}</rt></ruby>')
                 else:
                     result.append(word)
-
-    # Create the dual display structure
-    clean_div = f'<div class="clean-version">{"".join(clean_version)}</div>'
-    trans_div = f'<div class="transliterated-version">{"".join(result)}</div>'
-
-    # return f'<div class="chinese-dual-display">{clean_div}{trans_div}</div>'
-    return f'<div class="chinese-dual-display">{trans_div}</div>'
+    
+    # Return the transliterated version (no dual display for Calibre)
+    return f'<div class="chinese-dual-display">{" ".join(result)}</div>'
 
 def get_detailed_pos_analysis(text):
     """Return detailed POS analysis with grammatical classes"""
