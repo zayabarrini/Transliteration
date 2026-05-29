@@ -132,7 +132,7 @@ ibooks:
 
 
 if __name__ == "__main__":
-    csv_file_path = "/home/zaya/Downloads/Doubt.csv"  
+    csv_file_path = "/home/zaya/Downloads/Erotic.csv"  
     output_dir = "/home/zaya/Downloads/Zayas/ZayasBooks/t"
-    dictionary_name = "Doubt"
+    dictionary_name = "Erotic"
     generate_epubs(csv_file_path, output_dir, dictionary_name=dictionary_name)
