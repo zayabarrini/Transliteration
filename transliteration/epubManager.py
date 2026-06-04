@@ -14,18 +14,14 @@ from transliteration.epub2post import EpubToPostConverter
 
 # Now import the modules (we're in pipenv)
 try:
-    from transliteration.epubMergeFolder import (
-        merge_multiple_epubs,
-        prep_epubs_by_pattern,
-    )
+    from transliteration.epubMergeFolder import (merge_multiple_epubs,
+                                                 prep_epubs_by_pattern)
     from transliteration.epubMergeStack import prep_and_merge_simple
     from transliteration.epubSplitProcessor import process_epub_folder
     from transliteration.epubVersions import (
-        get_language_from_epub,
-        process_folder_remove_original,
+        get_language_from_epub, process_folder_remove_original,
         process_folder_transliterate_epub,
-        process_folder_transliterate_epub_multilingual,
-    )
+        process_folder_transliterate_epub_multilingual)
 except ImportError as e:
     print(f"Error importing modules: {e}")
     print("Make sure you're in the correct directory with transliteration package")
@@ -221,6 +217,169 @@ class SimpleEbookManager:
         print(f"JSON files saved to: /home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml/")
         input("\nPress Enter to continue...")
 
+    def process_for_readaloud(self):
+        """Process EPUB for @Voice read-aloud functionality"""
+        print("\n=== Process EPUB for @Voice Read Aloud ===")
+        print("This adds hidden language markers for multilingual TTS support")
+        print("Creates a version optimized for @Voice Aloud Reader\n")
+        
+        folder_path = input(f"Enter folder containing EPUB files (Enter for {self.current_directory}): ").strip() or self.current_directory
+        
+        # Find all EPUB files
+        epub_files = []
+        for ext in ['*.epub', '*.EPUB']:
+            epub_files.extend(glob.glob(os.path.join(folder_path, ext)))
+        
+        epub_files = sorted(epub_files)
+        
+        if not epub_files:
+            print("No EPUB files found!")
+            input("Press Enter to continue...")
+            return
+        
+        print(f"\nFound {len(epub_files)} EPUB files:")
+        for i, epub_file in enumerate(epub_files, 1):
+            print(f"{i}. {os.path.basename(epub_file)}")
+        
+        print(f"{len(epub_files)+1}. Process all")
+        print("0. Cancel")
+        
+        choice = input("\nSelect files to process: ").strip()
+        
+        if choice == '0':
+            return
+        
+        selected_files = []
+        if choice == str(len(epub_files) + 1):
+            selected_files = epub_files
+        else:
+            indices = [int(x.strip()) for x in choice.split(',') if x.strip()]
+            for idx in indices:
+                if 1 <= idx <= len(epub_files):
+                    selected_files.append(epub_files[idx-1])
+        
+        if not selected_files:
+            print("No valid files selected")
+            input("Press Enter to continue...")
+            return
+        
+        # Ask for configuration options
+        print("\nConfiguration Options:")
+        print("-" * 40)
+        
+        # Source language
+        source_lang = input(f"Source language code (Enter for 'en'): ").strip() or 'en'
+        
+        # Marker patterns
+        print("\nMarker patterns (use {LANG} as placeholder for language code)")
+        print(f"Default start marker: '[{{LANG}}]'")
+        use_custom_markers = input("Use custom markers? (y/N): ").strip().lower()
+        
+        marker_start = None
+        marker_end = None
+        
+        if use_custom_markers == 'y':
+            marker_start = input("Start marker pattern: ").strip()
+            marker_end = input("End marker pattern: ").strip()
+        
+        # Verbose mode
+        verbose = input("\nVerbose output? (y/N): ").strip().lower() == 'y'
+        
+        # Output suffix
+        output_suffix = input(f"Output suffix (Enter for '_readaloud'): ").strip() or '_readaloud'
+        
+        # Path to epub2readAloud.py script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        readaloud_script = os.path.join(script_dir, "epub2readAloud.py")
+        
+        if not os.path.exists(readaloud_script):
+            # Try current directory
+            readaloud_script = os.path.join(os.getcwd(), "epub2readAloud.py")
+            if not os.path.exists(readaloud_script):
+                print(f"Error: Could not find epub2readAloud.py")
+                print(f"Expected at: {script_dir}/epub2readAloud.py")
+                input("Press Enter to continue...")
+                return
+        
+        print(f"\n{'='*60}")
+        print(f"Processing {len(selected_files)} file(s)")
+        print(f"{'='*60}")
+        
+        success_count = 0
+        failed_files = []
+        
+        for i, epub_file in enumerate(selected_files, 1):
+            filename = os.path.basename(epub_file)
+            print(f"\n[{i}/{len(selected_files)}] Processing: {filename}")
+            print("-" * 40)
+            
+            try:
+                # Build command
+                cmd = [sys.executable, readaloud_script, epub_file]
+                
+                # Add options
+                cmd.extend(['--source-lang', source_lang])
+                
+                if marker_start:
+                    cmd.extend(['--marker-start', marker_start])
+                if marker_end:
+                    cmd.extend(['--marker-end', marker_end])
+                if output_suffix != '_readaloud':
+                    cmd.extend(['--output-suffix', output_suffix])
+                if verbose:
+                    cmd.append('--verbose')
+                
+                # Run the command
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    print(f"✅ Success: {filename}")
+                    # Show detected languages from output
+                    for line in result.stdout.split('\n'):
+                        if 'Detected languages:' in line:
+                            print(f"   {line.strip()}")
+                        elif 'Markers added by language:' in line:
+                            print(f"   {line.strip()}")
+                            # Also show next few lines for language breakdown
+                    success_count += 1
+                else:
+                    print(f"❌ Failed: {filename}")
+                    if result.stderr:
+                        # Show first few lines of error
+                        error_lines = result.stderr.strip().split('\n')[:3]
+                        for line in error_lines:
+                            print(f"   Error: {line}")
+                    failed_files.append(filename)
+                    
+            except Exception as e:
+                print(f"❌ Exception processing {filename}: {e}")
+                failed_files.append(filename)
+        
+        # Summary
+        print(f"\n{'='*60}")
+        print(f"PROCESSING COMPLETE")
+        print(f"{'='*60}")
+        print(f"Successfully processed: {success_count} / {len(selected_files)}")
+        
+        if failed_files:
+            print(f"\nFailed files ({len(failed_files)}):")
+            for f in failed_files:
+                print(f"  - {f}")
+        
+        # Show output location and config files
+        if success_count > 0:
+            print(f"\n📱 Output files created in: {folder_path}")
+            print(f"   Pattern: *{output_suffix}.epub")
+            print(f"\n📄 @Voice configuration files saved alongside each processed EPUB")
+            print(f"   Look for: *_@voice_config.txt")
+            print("\n💡 Next steps:")
+            print("   1. Open @Voice Aloud Reader")
+            print("   2. Settings → Text-to-Speech → Pattern/Replace")
+            print("   3. Enable 'Pattern/Replace mode'")
+            print("   4. Add the patterns from the generated config file")
+            print("   5. Enable only the language patterns you want to hear")
+        
+        input("\nPress Enter to continue...")
 
     def display_menu(self):
         """Display the main menu"""
@@ -240,7 +399,8 @@ class SimpleEbookManager:
         print("7. Convert EPUB to JSON (for language learning readers)")
         print("8. Convert Multilingual EPUB to JSON (all languages)")
         print("9. Convert Ordered Multilingual EPUB to JSON (specify language order)")
-        print("10. Advanced Options")
+        print("10. Process for @Voice Read Aloud (add language markers)")
+        print("11. Advanced Options")
         print("0. Exit")
         print()
 
@@ -951,6 +1111,8 @@ class SimpleEbookManager:
             elif choice == '9':
                 self.convert_epub_to_json_ordered()
             elif choice == '10':
+                self.process_for_readaloud()
+            elif choice == '11':
                 # Launch advanced version
                 advanced_manager = EpubManagerWithOptions(self.current_directory)
                 advanced_manager.run()

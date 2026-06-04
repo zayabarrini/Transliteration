@@ -3,8 +3,9 @@
 epub2jsonEn.py - Convert EPUB with foreign language + English translation to JSON
 
 This script detects the foreign language from the EPUB filename (e.g., -ru, -ar, -zh)
-and creates a JSON object where each paragraph has both the original text and English translation.
-Expected structure: English (with lang="en") followed by foreign language (no lang attribute)
+and creates a JSON object matching the structure of epub2json.py.
+Output is saved to language-specific directories.
+Handles paragraph pairs within each file.
 """
 
 import argparse
@@ -14,47 +15,73 @@ import re
 import sys
 import tempfile
 import zipfile
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 from bs4 import BeautifulSoup
 
-SUPPORTED_LANGUAGES = {
-    'ru': 'Russian',
-    'ar': 'Arabic',
-    'zh': 'Chinese',
-    'hi': 'Hindi',
-    'ko': 'Korean',
-    'ja': 'Japanese',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'it': 'Italian',
-    'pt': 'Portuguese',
-    'tr': 'Turkish',
-    'vi': 'Vietnamese',
-    'th': 'Thai',
-    'pl': 'Polish',
-    'uk': 'Ukrainian'
-}
+# Supported language codes
+SUPPORTED_LANGUAGES = [
+    'ar', 'bn', 'de', 'el', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 
+    'la', 'mr', 'pa', 'pl', 'pt', 'ru', 'sw', 'ta', 'te', 'th', 'tr', 'ur', 
+    'vi', 'zh', 'en'
+]
 
+# Default output base directory
 DEFAULT_OUTPUT_BASE = "/home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json"
 
-def detect_source_language(epub_path):
-    """Detect source language from filename (e.g., file-ru.epub -> ru)"""
-    filename = Path(epub_path).stem
-    # Look for patterns like -ru, _ru, -ar, _ar at the end
-    match = re.search(r'[-_](ru|ar|zh|hi|ko|ja|es|fr|de|it|pt|tr|vi|th|pl|uk)$', filename)
-    if match:
-        return match.group(1)
+def detect_language_from_filename(filename):
+    """
+    Detect the source language from the EPUB filename.
+    Matches the pattern from epub2json.py
+    """
+    stem = Path(filename).stem
     
-    # Also check for language in the full path
-    path_str = str(epub_path).lower()
-    for lang_code in SUPPORTED_LANGUAGES.keys():
-        if f'-{lang_code}' in path_str or f'_{lang_code}' in path_str:
-            return lang_code
+    # List of all supported language codes
+    language_codes = SUPPORTED_LANGUAGES
     
-    print(f"Warning: Could not detect source language from filename: {filename}", file=sys.stderr)
-    print(f"Supported language codes: {', '.join(SUPPORTED_LANGUAGES.keys())}", file=sys.stderr)
+    # First, normalize the filename by replacing common separators
+    normalized_stem = re.sub(r'[_\s]+', '-', stem)
+    
+    # Try different patterns
+    for lang in language_codes:
+        # Pattern 1: -lang at the end
+        if re.search(rf'-{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 2: _lang at the end
+        if re.search(rf'_{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 3: .lang at the end
+        if re.search(rf'\.{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 4: space then lang at the end
+        if re.search(rf'\s+{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 5: -db-lang pattern
+        if re.search(rf'-db-{lang}(\.|$)', stem, re.IGNORECASE):
+            return lang
+        
+        # Pattern 6: -{lang} at the end of normalized stem
+        if re.search(rf'-{lang}$', normalized_stem, re.IGNORECASE):
+            return lang
+    
+    # If still not found, try splitting by common separators and check the last part
+    parts = re.split(r'[\s_\-]+', stem)
+    if parts:
+        last_part = parts[-1].lower()
+        if last_part in language_codes:
+            return last_part
+        
+        # Check if the last part is something like "db-hi" and extract the code
+        if '-' in last_part:
+            subparts = last_part.split('-')
+            if len(subparts) > 1 and subparts[-1] in language_codes:
+                return subparts[-1]
+    
     return None
 
 def extract_epub(epub_path, extract_path):
@@ -68,40 +95,35 @@ def extract_epub(epub_path, extract_path):
         return False
 
 def find_text_files(extract_path):
-    """Find all XHTML/HTML files in the extracted EPUB in order"""
+    """Find all XHTML/HTML files in the extracted EPUB"""
     text_files = []
     
+    # Common paths for content in EPUBs
     search_paths = [
-        os.path.join(extract_path, 'EPUB', 'text'),
-        os.path.join(extract_path, 'EPUB'),
-        os.path.join(extract_path, 'OEBPS', 'text'),
-        os.path.join(extract_path, 'OEBPS', 'Text'),
-        os.path.join(extract_path, 'OEBPS'),
         extract_path,
+        os.path.join(extract_path, 'EPUB'),
+        os.path.join(extract_path, 'EPUB', 'text'),
+        os.path.join(extract_path, 'OEBPS'),
+        os.path.join(extract_path, 'OEBPS', 'text'),
+        os.path.join(extract_path, 'content'),
+        os.path.join(extract_path, 'contents'),
+        os.path.join(extract_path, 'Text'),
     ]
     
     for search_path in search_paths:
         if os.path.exists(search_path):
+            # Find all .xhtml, .html, .htm files
             for ext in ['*.xhtml', '*.html', '*.htm', '*.xml']:
-                files = list(Path(search_path).glob(ext))
-                if files:
-                    text_files.extend(sorted(files))
+                text_files.extend(Path(search_path).glob(ext))
     
-    # Also look for any HTML files in root
-    root_html = list(Path(extract_path).glob('*.html')) + list(Path(extract_path).glob('*.xhtml'))
-    for f in root_html:
-        if f not in text_files:
-            text_files.append(f)
-    
-    return sorted(set(text_files))
+    return sorted(text_files)
 
-def extract_translation_pairs_from_file(file_path):
+def extract_translation_pairs_from_file(file_path, source_lang):
     """
     Extract translation pairs from a file where:
-    - English text has lang="en" attribute (or dir="ltr" lang="en")
-    - Foreign text has no lang attribute (or different lang)
-    - Structure alternates: English paragraph followed by foreign paragraph
-    Returns list of pairs with dynamic language keys
+    - English text has lang="en" attribute
+    - Source language text has no lang attribute or has source_lang
+    Returns list of pairs with keys: 'en' and source_lang
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -118,46 +140,52 @@ def extract_translation_pairs_from_file(file_path):
             p1 = all_p_tags[i]
             p2 = all_p_tags[i + 1]
             
-            # Check if p1 is English (has lang="en" or dir="ltr" lang="en")
+            p1_text = p1.get_text().strip()
+            p2_text = p2.get_text().strip()
+            
+            if not p1_text or not p2_text:
+                i += 1
+                continue
+            
+            # Check language attributes
             p1_lang = p1.get('lang', '')
-            p1_classes = p1.get('class', [])
-            p1_has_en = p1_lang == 'en' or (p1_lang and p1_lang.lower() == 'en')
-            
-            # Check if p2 is foreign (no lang attribute, or lang is not 'en')
             p2_lang = p2.get('lang', '')
-            p2_is_foreign = not p2_lang or p2_lang.lower() != 'en'
             
-            # If this looks like an EN -> Foreign pair
-            if p1_has_en and p2_is_foreign:
-                en_text = p1.get_text().strip()
-                foreign_text = p2.get_text().strip()
-                
-                if en_text and foreign_text:
-                    # Return with dynamic keys - source language will be added later
-                    pairs.append({
-                        'en': en_text,
-                        'source': foreign_text
-                    })
-                    i += 2
-                    continue
+            # Case 1: English (lang="en") followed by source language
+            if p1_lang == 'en' and (not p2_lang or p2_lang == source_lang):
+                pairs.append({
+                    'en': p1_text,
+                    source_lang: p2_text
+                })
+                i += 2
+                continue
             
-            # Also check reverse pattern (Foreign -> EN) - less common but possible
-            p1_is_foreign = not p1_lang or p1_lang.lower() != 'en'
-            p2_has_en = p2_lang == 'en' or (p2_lang and p2_lang.lower() == 'en')
+            # Case 2: Source language followed by English (lang="en")
+            elif (not p1_lang or p1_lang == source_lang) and p2_lang == 'en':
+                pairs.append({
+                    'en': p2_text,
+                    source_lang: p1_text
+                })
+                i += 2
+                continue
             
-            if p1_is_foreign and p2_has_en:
-                en_text = p2.get_text().strip()
-                foreign_text = p1.get_text().strip()
-                
-                if en_text and foreign_text:
-                    pairs.append({
-                        'en': en_text,
-                        'source': foreign_text
-                    })
-                    i += 2
-                    continue
+            # Case 3: Both have explicit language attributes
+            elif p1_lang == 'en' and p2_lang == source_lang:
+                pairs.append({
+                    'en': p1_text,
+                    source_lang: p2_text
+                })
+                i += 2
+                continue
             
-            # If no pattern matches, just move to next
+            elif p1_lang == source_lang and p2_lang == 'en':
+                pairs.append({
+                    'en': p2_text,
+                    source_lang: p1_text
+                })
+                i += 2
+                continue
+            
             i += 1
         
         return pairs
@@ -166,64 +194,7 @@ def extract_translation_pairs_from_file(file_path):
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
         return []
 
-def extract_translation_pairs_alternative(file_path):
-    """
-    Alternative extraction for cases where English and foreign are in the same p tag
-    or have different structure (like your example where they're separate but not alternating)
-    """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        soup = BeautifulSoup(content, 'html.parser')
-        pairs = []
-        
-        # Find all p tags that contain English
-        en_paragraphs = soup.find_all('p', {'lang': 'en'})
-        
-        for en_p in en_paragraphs:
-            en_text = en_p.get_text().strip()
-            if not en_text:
-                continue
-            
-            # Look for the next sibling that might be the foreign translation
-            # Check next sibling p tag
-            foreign_p = en_p.find_next_sibling('p')
-            if foreign_p:
-                foreign_lang = foreign_p.get('lang', '')
-                # If next p has no lang or different lang, consider it the translation
-                if not foreign_lang or foreign_lang.lower() != 'en':
-                    foreign_text = foreign_p.get_text().strip()
-                    if foreign_text:
-                        pairs.append({
-                            'en': en_text,
-                            'source': foreign_text
-                        })
-                        continue
-            
-            # If no sibling, maybe the foreign text is inside a span or div
-            # This handles cases like your example structure
-            parent = en_p.parent
-            if parent:
-                # Get all text after this paragraph within same parent
-                next_p = parent.find_next_sibling('p')
-                if next_p:
-                    foreign_lang = next_p.get('lang', '')
-                    if not foreign_lang or foreign_lang.lower() != 'en':
-                        foreign_text = next_p.get_text().strip()
-                        if foreign_text:
-                            pairs.append({
-                                'en': en_text,
-                                'source': foreign_text
-                            })
-        
-        return pairs
-    
-    except Exception as e:
-        print(f"Error in alternative extraction for {file_path}: {e}", file=sys.stderr)
-        return []
-
-def extract_all_pairs(text_files):
+def extract_all_pairs(text_files, source_lang):
     """Extract all translation pairs from all files in order"""
     all_pairs = []
     
@@ -236,13 +207,7 @@ def extract_all_pairs(text_files):
         
         print(f"  Processing: {filename}")
         
-        # Try main extraction method
-        pairs = extract_translation_pairs_from_file(html_file)
-        
-        # If no pairs found, try alternative method
-        if not pairs:
-            print(f"    No pairs found with main method, trying alternative...")
-            pairs = extract_translation_pairs_alternative(html_file)
+        pairs = extract_translation_pairs_from_file(html_file, source_lang)
         
         if pairs:
             print(f"    Found {len(pairs)} translation pairs")
@@ -252,7 +217,7 @@ def extract_all_pairs(text_files):
     
     return all_pairs
 
-def extract_title_from_epub(text_files):
+def extract_title_from_xhtml(text_files, source_lang):
     """Extract title from the first suitable file"""
     for html_file in text_files:
         try:
@@ -278,157 +243,183 @@ def extract_title_from_epub(text_files):
     
     return None
 
-def process_epub_to_json(epub_file, output_file=None, output_base=None):
-    """Process an EPUB file and convert to JSON with English translations"""
+def get_section_id_from_filename(filename):
+    """Extract section ID from filename"""
+    base = os.path.splitext(filename)[0]
+    
+    # Handle patterns like ch001_split_000.xhtml
+    match = re.search(r'(ch\d+)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    # Handle title_page splits
+    match = re.search(r'(title_page)_split_\d+', base)
+    if match:
+        return match.group(1)
+    
+    return base
+
+def process_epub_file(epub_file, source_lang, output_file=None, output_base=None):
+    """Process an EPUB file and convert to JSON matching epub2json.py structure"""
     epub_path = Path(epub_file)
     
     if not epub_path.exists():
         print(f"Error: EPUB file not found: {epub_file}", file=sys.stderr)
-        return None
+        return []
     
     print(f"Processing EPUB: {epub_path.name}")
-    
-    # Detect source language
-    source_lang = detect_source_language(epub_file)
-    if not source_lang:
-        print("Error: Could not detect source language from filename", file=sys.stderr)
-        print("Please ensure filename ends with language code like -ru, -ar, -zh, etc.", file=sys.stderr)
-        return None
-    
-    source_lang_name = SUPPORTED_LANGUAGES.get(source_lang, source_lang)
-    print(f"Detected source language: {source_lang} ({source_lang_name})")
     
     with tempfile.TemporaryDirectory() as temp_dir:
         # Extract EPUB
         print("Extracting EPUB...")
         if not extract_epub(epub_file, temp_dir):
             print(f"Error: Failed to extract EPUB {epub_file}", file=sys.stderr)
-            return None
+            return []
         
         # Find all text files
         text_files = find_text_files(temp_dir)
         
         if not text_files:
-            print(f"Error: No HTML/XHTML files found in EPUB", file=sys.stderr)
-            return None
+            print(f"Error: No XHTML/HTML files found in EPUB", file=sys.stderr)
+            return []
         
         print(f"Found {len(text_files)} content files to process")
+        print(f"Source language: {source_lang}")
         
-        # Extract all translation pairs
-        print("Extracting translation pairs...")
-        all_pairs_raw = extract_all_pairs(text_files)
-        print(f"Total translation pairs extracted: {len(all_pairs_raw)}")
+        # Group files by section
+        sections_dict = {}
         
-        if not all_pairs_raw:
-            print("Error: No translation pairs found in the EPUB", file=sys.stderr)
-            print("This script expects English paragraphs (lang='en') followed by foreign text paragraphs")
-            return None
+        for xhtml_file in text_files:
+            filename = xhtml_file.name
+            
+            # Skip navigation and cover files
+            if 'nav' in filename.lower() or 'cover' in filename.lower() or 'toc' in filename.lower():
+                continue
+            
+            section_id = get_section_id_from_filename(filename)
+            
+            # Extract translation pairs
+            pairs = extract_translation_pairs_from_file(xhtml_file, source_lang)
+            
+            if pairs:
+                if section_id not in sections_dict:
+                    title = extract_title_from_xhtml([xhtml_file], source_lang)
+                    
+                    sections_dict[section_id] = {
+                        'id': section_id,
+                        'filename': filename,
+                        'title': {source_lang: title} if title else None,
+                        'paragraphs': pairs
+                    }
+                else:
+                    sections_dict[section_id]['paragraphs'].extend(pairs)
         
-        # Convert to final format with dynamic language key
-        all_pairs = []
-        for pair in all_pairs_raw:
-            # Transform from {'en': 'text', 'source': 'foreign'} to {'en': 'text', source_lang: 'foreign'}
-            formatted_pair = {
-                'en': pair['en'],
-                source_lang: pair['source']
-            }
-            all_pairs.append(formatted_pair)
+        # Convert to list and sort
+        sections = []
+        for section_id in sorted(sections_dict.keys()):
+            section = sections_dict[section_id]
+            
+            # Remove duplicates
+            unique_paragraphs = []
+            seen_pairs = set()
+            
+            for para in section['paragraphs']:
+                pair_key = (para.get(source_lang, ''), para.get('en', ''))
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    unique_paragraphs.append(para)
+            
+            section['paragraphs'] = unique_paragraphs
+            sections.append(section)
         
-        # Show sample
-        print(f"\nSample translations (first 3 pairs):")
-        for i, pair in enumerate(all_pairs[:3]):
-            print(f"\n  Pair {i+1}:")
-            print(f"    EN: {pair['en'][:80]}...")
-            print(f"    {source_lang.upper()}: {pair[source_lang][:80]}...")
+        print(f"Created {len(sections)} sections with {sum(len(s['paragraphs']) for s in sections)} paragraph pairs")
         
-        # Extract title
-        title = extract_title_from_epub(text_files)
-        if not title:
-            title = epub_path.stem
-            # Clean up title by removing language suffix
-            title = re.sub(r'[-_](ru|ar|zh|hi|ko|ja|es|fr|de|it|pt|tr|vi|th|pl|uk)$', '', title)
-            title = title.replace('-', ' ').replace('_', ' ').strip()
-        
-        # Create the JSON structure
-        json_data = {
-            'metadata': {
-                'title': title,
-                'source_language': source_lang,
-                'source_language_name': source_lang_name,
-                'target_language': 'en',
-                'target_language_name': 'English',
-                'total_pairs': len(all_pairs),
-                'filename': epub_path.name
-            },
-            'translations': all_pairs
-        }
-        
-        # Determine output directory (save in source_language subfolder)
+        # Save to JSON
         if output_file:
             output_path = Path(output_file)
             output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(sections, f, ensure_ascii=False, indent=2)
+            
+            print(f"Saved JSON to {output_path}")
         elif output_base:
-            # Create source_language subdirectory
+            # Auto-generate output filename with language code in directory
+            epub_name = epub_path.stem
+            # Remove language code from the end if present to avoid duplication
+            for lang in SUPPORTED_LANGUAGES:
+                if epub_name.endswith(f'-{lang}') or epub_name.endswith(f'_{lang}'):
+                    epub_name = epub_name[:-(len(lang)+1)]
+                    break
+                # Also check for -db-lang pattern
+                db_pattern = f'-db-{lang}'
+                if db_pattern in epub_name:
+                    epub_name = epub_name.replace(db_pattern, '')
+                    break
+            
+            # Clean up the filename: replace spaces and underscores with hyphens
+            epub_name = re.sub(r'[_\s]+', '-', epub_name)
+            epub_name = re.sub(r'-+', '-', epub_name)
+            epub_name = epub_name.strip('-')
+            
+            # Save in source_language subdirectory (matches epub2json.py structure)
             output_dir = Path(output_base) / source_lang
             output_dir.mkdir(parents=True, exist_ok=True)
             
-            # Generate filename
-            epub_name = epub_path.stem
-            # Remove language suffix for cleaner filename
-            epub_name = re.sub(r'[-_](ru|ar|zh|hi|ko|ja|es|fr|de|it|pt|tr|vi|th|pl|uk)$', '', epub_name)
             json_filename = f"{epub_name}.json"
             output_path = output_dir / json_filename
-        else:
-            # Fallback to current directory
-            output_path = Path(f"{epub_path.stem}.json")
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(sections, f, ensure_ascii=False, indent=2)
+            
+            print(f"Saved JSON to {output_path}")
         
-        # Save to JSON
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=2)
-        
-        print(f"\n✅ Saved JSON to {output_path}")
-        
-        return json_data
+        return sections
 
 def main():
     parser = argparse.ArgumentParser(
         description='Convert foreign language + English translation EPUB to JSON',
         epilog='Example: epub2jsonEn.py book-ru.epub'
     )
-    parser.add_argument('epub_file', help='Path to the EPUB file (should include language code like -ru, -ar)')
+    parser.add_argument('epub_file', help='Path to the EPUB file')
     parser.add_argument('-o', '--output', help='Output JSON file path (overrides auto-detection)')
+    parser.add_argument('-l', '--lang', help='Source language code (e.g., ru, ar, zh). If not provided, detected from filename')
     parser.add_argument('--output-base', default=DEFAULT_OUTPUT_BASE, 
                        help=f'Base output directory (default: {DEFAULT_OUTPUT_BASE})')
-    parser.add_argument('--source-lang', help='Manually specify source language code (e.g., ru, ar, zh)')
     
     args = parser.parse_args()
     
-    # Override source language detection if manually specified
-    if args.source_lang:
-        # We would need to modify the function, but for simplicity,
-        # we'll let the auto-detection run and it will use the manual override
-        print(f"Note: You specified source language '{args.source_lang}'")
-        print("The script will attempt auto-detection first. Use -o to specify output path if needed.")
+    # Detect language from filename if not provided
+    source_lang = args.lang
+    if not source_lang:
+        source_lang = detect_language_from_filename(args.epub_file)
+        if not source_lang:
+            print("Error: Could not detect language from filename. Please specify with --lang", file=sys.stderr)
+            print(f"Supported languages: {', '.join(SUPPORTED_LANGUAGES)}", file=sys.stderr)
+            sys.exit(1)
     
     print(f"Processing EPUB file: {args.epub_file}")
+    print(f"Source language: {source_lang}")
     print(f"Output base directory: {args.output_base}")
     
-    result = process_epub_to_json(
+    sections = process_epub_file(
         args.epub_file, 
+        source_lang, 
         output_file=args.output,
         output_base=args.output_base if not args.output else None
     )
     
-    if result:
-        source_lang = result['metadata']['source_language']
-        print(f"\n✅ Success! Created {len(result['translations'])} translation pairs")
-        print(f"   Source: {result['metadata']['source_language_name']} ({source_lang})")
-        print(f"   Target: {result['metadata']['target_language_name']}")
-        print(f"   Title: {result['metadata']['title']}")
-        print(f"   Output format: {{'en': '...', '{source_lang}': '...'}}")
-    else:
-        print("\n❌ Failed to process EPUB", file=sys.stderr)
-        sys.exit(1)
+    # Print summary
+    total_paragraphs = sum(len(section['paragraphs']) for section in sections)
+    print(f"\nSummary:")
+    print(f"  Sections: {len(sections)}")
+    print(f"  Total paragraphs: {total_paragraphs}")
+    
+    if sections and sections[0]['paragraphs']:
+        print(f"\nSample paragraph:")
+        sample = sections[0]['paragraphs'][0]
+        print(f"  {source_lang.upper()}: {sample[source_lang][:50]}...")
+        print(f"  EN: {sample['en'][:50]}...")
 
 if __name__ == '__main__':
     main()

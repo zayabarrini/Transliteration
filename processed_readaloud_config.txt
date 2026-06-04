@@ -1,0 +1,40 @@
+ReadAloud Configuration for Multilingual EPUB
+============================================================
+
+Add these patterns to ReadAloud (Pattern/Replace mode):
+
+Language: AR
+  Pattern: ^\s*\[READ:AR\]\s*
+  Replace: 
+  Marker: [READ:AR]
+
+Language: EN
+  Pattern: ^\s*\[READ:EN\]\s*
+  Replace: 
+  Marker: [READ:EN]
+
+Language: HI
+  Pattern: ^\s*\[READ:HI\]\s*
+  Replace: 
+  Marker: [READ:HI]
+
+Language: JA
+  Pattern: ^\s*\[READ:JA\]\s*
+  Replace: 
+  Marker: [READ:JA]
+
+Language: KO
+  Pattern: ^\s*\[READ:KO\]\s*
+  Replace: 
+  Marker: [READ:KO]
+
+Language: RU
+  Pattern: ^\s*\[READ:RU\]\s*
+  Replace: 
+  Marker: [READ:RU]
+
+Language: ZH
+  Pattern: ^\s*\[READ:ZH\]\s*
+  Replace: 
+  Marker: [READ:ZH]
+
