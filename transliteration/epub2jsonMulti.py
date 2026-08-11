@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-epub2jsonOrdered.py - Convert EPUB with explicit lang attributes to clean JSON
+epub2jsonOrdered.py - Convert multilingual EPUB to clean JSON
 
-This script processes EPUBs where paragraphs have explicit lang attributes,
-grouping them into translation groups and outputting a clean JSON structure.
+This script processes EPUBs where:
+- English text has NO lang attribute (original/base text)
+- Other languages have explicit lang attributes and are translations
+- Languages available: 'en', 'de', 'ar', 'hi', 'ja', 'ko', 'zh', 'ru', etc.
 """
 
 import argparse
@@ -15,12 +17,23 @@ import tempfile
 import zipfile
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
 # Default output base directory for multilingual JSON
 DEFAULT_OUTPUT_BASE = "/home/zaya/Downloads/Zayas/zaya-monorepo/apps/signflow/static/json/ml"
+
+# The correct language order based on your merged EPUB structure
+# English (no lang attribute, original) should come first
+# Then all translations in the order they appear in the merged file
+DEFAULT_LANGUAGE_ORDER = ['en', 'de', 'ar', 'hi', 'ja', 'ko', 'zh', 'ru']
+
+# Unicode ranges for Cyrillic characters (Russian)
+CYRILLIC_RANGES = [
+    (0x0400, 0x04FF),  # Cyrillic
+    (0x0500, 0x052F),  # Cyrillic Supplement
+]
 
 def extract_epub(epub_path, extract_path):
     """Extract EPUB file to a temporary directory"""
@@ -61,10 +74,73 @@ def find_text_files(extract_path):
     
     return sorted(set(text_files))
 
-def extract_paragraph_groups(file_path) -> List[Dict[str, str]]:
+def is_cyrillic(text: str) -> bool:
+    """Check if text contains Cyrillic characters (Russian)"""
+    if not text:
+        return False
+    
+    # Count Cyrillic characters
+    cyrillic_count = 0
+    total_chars = 0
+    
+    for char in text:
+        if char.isalpha():
+            total_chars += 1
+            code_point = ord(char)
+            for start, end in CYRILLIC_RANGES:
+                if start <= code_point <= end:
+                    cyrillic_count += 1
+                    break
+    
+    # If more than 30% of alphabetic characters are Cyrillic, consider it Russian
+    if total_chars > 0:
+        return (cyrillic_count / total_chars) > 0.3
+    return False
+
+def detect_language(element) -> Optional[str]:
     """
-    Extract groups of paragraphs that form translations.
-    Each group contains paragraphs in different languages that appear together.
+    Detect the language of an element.
+    Prefers the lang attribute, but handles the case where Calibre incorrectly marks Russian as 'en'.
+    """
+    lang = element.get('lang')
+    
+    if lang:
+        # If the text contains Cyrillic and lang is 'en', it's actually Russian
+        if lang == 'en':
+            text = element.get_text().strip()
+            if is_cyrillic(text):
+                return 'ru'
+        return lang
+    
+    return None
+
+def is_base_language_element(element) -> bool:
+    """
+    Determine if an element is the base language (English).
+    Base language elements have NO lang attribute.
+    """
+    return element.get('lang') is None
+
+def is_translation_element(element) -> bool:
+    """
+    Determine if an element is a translation.
+    Translation elements have a lang attribute (or are implicitly Russian).
+    """
+    return detect_language(element) is not None
+
+def extract_text_from_element(element) -> str:
+    """Extract and clean text from an element"""
+    text = element.get_text().strip()
+    # Clean up extra whitespace, normalize spaces
+    text = ' '.join(text.split())
+    return text
+
+def extract_translation_groups(file_path) -> List[Dict[str, str]]:
+    """
+    Extract translation groups from merged EPUB structure.
+    Pattern: English (no lang) followed by translations (with lang attributes)
+    Handles multiple tag types: p, h1, h2, h3, etc.
+    Special handling: Russian paragraphs incorrectly marked as 'en' by Calibre.
     """
     groups = []
     
@@ -74,154 +150,111 @@ def extract_paragraph_groups(file_path) -> List[Dict[str, str]]:
         
         soup = BeautifulSoup(content, 'html.parser')
         
-        # Find all divs with class="indent" - these contain translation groups
-        indent_divs = soup.find_all('div', class_='indent')
+        # Find all text-bearing elements
+        all_elements = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
         
-        if indent_divs:
-            # Process each indent div as a translation group
-            for div in indent_divs:
-                group = OrderedDict()
+        i = 0
+        while i < len(all_elements):
+            current_elem = all_elements[i]
+            
+            # Check if this is a base language element (no lang attribute)
+            if is_base_language_element(current_elem):
+                base_text = extract_text_from_element(current_elem)
                 
-                # Find all paragraphs within this div
-                paragraphs = div.find_all('p')
-                
-                # Also check for headings (h2) that might be part of the group
-                headings = div.find_all(['h2', 'h3'])
-                all_elements = paragraphs + headings
-                
-                for elem in all_elements:
-                    # Get language from lang attribute
-                    lang = elem.get('lang')
+                if base_text:
+                    # Create a group starting with base language (English)
+                    group = OrderedDict()
+                    group['en'] = base_text
                     
-                    # If no lang, check parent
-                    if not lang:
-                        parent = elem.parent
-                        while parent and not lang:
-                            lang = parent.get('lang')
-                            parent = parent.parent
+                    # Look ahead for translations (elements with lang attributes)
+                    j = i + 1
+                    translation_count = 0
+                    expected_translations = 7  # de, ar, hi, ja, ko, zh, ru
                     
-                    # Check if this is a French paragraph (no lang attribute, no color style)
-                    # French paragraphs in your sample don't have lang or the color style
-                    if not lang:
-                        style = elem.get('style', '')
-                        # French paragraphs typically don't have color:#00557f
-                        if '#00557f' not in style:
-                            lang = 'fr'
+                    while j < len(all_elements) and translation_count < expected_translations:
+                        next_elem = all_elements[j]
+                        next_lang = detect_language(next_elem)
+                        
+                        # If it has a detected language, it's a translation
+                        if next_lang:
+                            text = extract_text_from_element(next_elem)
+                            if text:
+                                group[next_lang] = text
+                                translation_count += 1
+                            j += 1
+                        # If we encounter another base language element without lang, stop this group
+                        elif is_base_language_element(next_elem):
+                            break
                         else:
-                            # This is a translation with color but no lang - check parent
-                            if not lang:
-                                lang = 'unknown'
+                            # Skip any other elements
+                            j += 1
                     
-                    text = elem.get_text().strip()
-                    if text and lang != 'unknown':
-                        group[lang] = text
-                
-                # Only add if we have at least one paragraph
-                if group:
-                    # Ensure French is included if missing (sometimes French is the default)
-                    if 'fr' not in group and len(group) > 0:
-                        # Look for the first paragraph without special styling as French
-                        for elem in paragraphs + headings:
-                            style = elem.get('style', '')
-                            if '#00557f' not in style and not elem.get('lang'):
-                                text = elem.get_text().strip()
-                                if text:
-                                    group['fr'] = text
-                                    break
+                    # Add group if it has more than just the base language
+                    if len(group) > 1:
+                        groups.append(group)
                     
-                    groups.append(group)
-        else:
-            # Fallback: Look for any paragraphs with lang attributes
-            all_paragraphs = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
-            
-            current_group = OrderedDict()
-            for p in all_paragraphs:
-                lang = p.get('lang')
-                
-                # If no lang attribute, check parent
-                if not lang:
-                    parent = p.parent
-                    while parent and not lang:
-                        lang = parent.get('lang')
-                        parent = parent.parent
-                
-                # Check if it's French (no lang, no color)
-                if not lang:
-                    style = p.get('style', '')
-                    if '#00557f' not in style:
-                        lang = 'fr'
-                    else:
-                        # Skip colored paragraphs without lang
-                        continue
-                
-                text = p.get_text().strip()
-                if not text:
-                    continue
-                
-                # If we see the same language again, start a new group
-                if lang in current_group:
-                    if current_group:
-                        groups.append(current_group)
-                    current_group = OrderedDict()
-                    current_group[lang] = text
+                    # Move to next element after processing this group
+                    i = j if j > i else i + 1
                 else:
-                    current_group[lang] = text
-            
-            # Add the last group
-            if current_group:
-                groups.append(current_group)
+                    i += 1
+            else:
+                i += 1
     
     except Exception as e:
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
     
     return groups
 
-def extract_all_groups(text_files):
-    """
-    Extract all translation groups from all files.
-    """
+def extract_all_content(text_files) -> List[Dict[str, str]]:
+    """Extract all translation groups from all files"""
     all_groups = []
-    all_languages = set()
     
     for xhtml_file in text_files:
         filename = xhtml_file.name
         
         # Skip navigation, cover, toc, and boilerplate files
         skip_keywords = ['nav', 'cover', 'toc', 'titlepage', 'copy', 'copyright', 
-                        'copy', 'termes', 'index', 'bibli', 'appendice', 'notes']
+                        'termes', 'index', 'bibli', 'appendice', 'notes']
         if any(keyword in filename.lower() for keyword in skip_keywords):
             print(f"  Skipping: {filename}")
             continue
         
         print(f"  Processing: {filename}")
         
-        groups = extract_paragraph_groups(xhtml_file)
+        # Extract translation groups
+        groups = extract_translation_groups(xhtml_file)
         if groups:
             all_groups.extend(groups)
-            # Track all languages found
-            for group in groups:
-                all_languages.update(group.keys())
-            print(f"    Found {len(groups)} translation groups with languages: {', '.join(sorted(all_languages))}")
+            print(f"    Found {len(groups)} translation groups")
+            # Show sample of Russian detection
+            for group in groups[:2]:
+                if 'ru' in group:
+                    ru_text = group['ru'][:50] + "..." if len(group['ru']) > 50 else group['ru']
+                    print(f"      ✓ Russian detected: {ru_text}")
     
     return all_groups
 
-def extract_title_from_epub(text_files):
+def extract_title_from_epub(text_files) -> str:
     """Extract title from the EPUB"""
+    # Look for title in specific order
     for xhtml_file in text_files:
-        if 'title' in xhtml_file.name.lower() or 'titre' in xhtml_file.name.lower():
+        filename = xhtml_file.name
+        if 'title' in filename.lower() or 'titre' in filename.lower():
             try:
                 with open(xhtml_file, 'r', encoding='utf-8') as f:
                     content = f.read()
                 
                 soup = BeautifulSoup(content, 'html.parser')
                 
-                # Look for h1 or title
-                h1 = soup.find('h1')
-                if h1:
-                    title = h1.get_text().strip()
-                    if title:
-                        return title
+                # Look for h1 or h2 with no lang attribute (base language)
+                for heading in ['h1', 'h2']:
+                    elem = soup.find(heading)
+                    if elem and is_base_language_element(elem):
+                        title = extract_text_from_element(elem)
+                        if title:
+                            return title
                 
+                # Look for title tag
                 title_tag = soup.find('title')
                 if title_tag:
                     title = title_tag.get_text().strip()
@@ -232,15 +265,15 @@ def extract_title_from_epub(text_files):
                 continue
     
     # Try to find h1 in any file
-    for xhtml_file in text_files[:5]:
+    for xhtml_file in text_files[:10]:
         try:
             with open(xhtml_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
             soup = BeautifulSoup(content, 'html.parser')
             h1 = soup.find('h1')
-            if h1:
-                title = h1.get_text().strip()
+            if h1 and is_base_language_element(h1):
+                title = extract_text_from_element(h1)
                 if title:
                     return title
         except Exception:
@@ -248,24 +281,65 @@ def extract_title_from_epub(text_files):
     
     return "Multilingual Book"
 
-def get_language_order(groups):
+def normalize_groups(groups, target_language_order) -> List[Dict[str, str]]:
     """
-    Determine the language order from the first few groups.
-    Returns list of language codes in order of appearance.
+    Ensure all groups have all languages in the correct order.
+    Fill missing languages with empty strings.
     """
-    if not groups:
-        return []
+    normalized_groups = []
     
-    # Get the order from the first complete group
     for group in groups:
-        if len(group) > 1:
-            return list(group.keys())
+        normalized_group = OrderedDict()
+        
+        # Add languages in the target order
+        for lang in target_language_order:
+            if lang in group:
+                normalized_group[lang] = group[lang]
+            else:
+                normalized_group[lang] = ""  # Empty string for missing languages
+        
+        normalized_groups.append(normalized_group)
     
-    return []
+    return normalized_groups
 
-def process_ordered_epub(epub_file, output_file=None, output_base=None, title=None):
+def fix_alignment(groups: List[Dict[str, str]]) -> List[Dict[str, str]]:
     """
-    Process an EPUB with explicit language attributes and convert to clean JSON
+    Fix the alignment of en and ru values by shifting them up one position.
+    This handles the case where the extraction got the order wrong.
+    """
+    if len(groups) < 2:
+        return groups
+    
+    # Create a copy of the groups
+    fixed_groups = []
+    
+    # Store the first group's en and ru to use at the end
+    first_en = groups[0].get('en', '')
+    first_ru = groups[0].get('ru', '')
+    
+    # For each group except the last one, take en and ru from the next group
+    for i in range(len(groups) - 1):
+        current_group = dict(groups[i])
+        next_group = groups[i + 1]
+        
+        # Replace en and ru with values from the next group
+        current_group['en'] = next_group.get('en', '')
+        current_group['ru'] = next_group.get('ru', '')
+        
+        fixed_groups.append(OrderedDict(current_group))
+    
+    # For the last group, use the first group's en and ru
+    if len(groups) > 0:
+        last_group = dict(groups[-1])
+        last_group['en'] = first_en
+        last_group['ru'] = first_ru
+        fixed_groups.append(OrderedDict(last_group))
+    
+    return fixed_groups
+
+def process_ordered_epub(epub_file, output_file=None, output_base=None, title=None, lang_order=None):
+    """
+    Process an EPUB and convert to clean JSON
     """
     epub_path = Path(epub_file)
     
@@ -274,6 +348,15 @@ def process_ordered_epub(epub_file, output_file=None, output_base=None, title=No
         return None
     
     print(f"Processing EPUB: {epub_path.name}")
+    
+    # Parse language order if provided, otherwise use default
+    language_order = None
+    if lang_order:
+        language_order = [lang.strip() for lang in lang_order.split(',')]
+        print(f"Using provided language order: {', '.join(language_order)}")
+    else:
+        language_order = DEFAULT_LANGUAGE_ORDER
+        print(f"Using default language order: {', '.join(language_order)}")
     
     # Create temporary directory for extraction
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -294,26 +377,55 @@ def process_ordered_epub(epub_file, output_file=None, output_base=None, title=No
         
         # Extract all translation groups
         print("\nExtracting translation groups...")
-        all_groups = extract_all_groups(text_files)
+        print("  Note: Russian detection is based on Cyrillic characters (Calibre bug workaround)")
+        all_groups = extract_all_content(text_files)
         
         if not all_groups:
             print("Error: No translation groups found in EPUB", file=sys.stderr)
+            print("Make sure your EPUB has base language elements (no lang attribute) followed by translations (with lang attribute)")
             return None
         
         print(f"\nTotal translation groups extracted: {len(all_groups)}")
         
-        # Determine language order
-        language_order = get_language_order(all_groups)
-        print(f"Language order: {', '.join(language_order)}")
+        # Fix alignment of en and ru values
+        print("\nFixing alignment of en and ru values...")
+        all_groups = fix_alignment(all_groups)
+        
+        # Normalize groups to have all languages
+        print(f"\nNormalizing groups with {len(language_order)} languages...")
+        normalized_groups = normalize_groups(all_groups, language_order)
+        
+        # Count complete vs incomplete groups
+        complete_groups = 0
+        groups_with_base = 0
+        groups_with_russian = 0
+        
+        for group in normalized_groups:
+            if group.get('en', ''):
+                groups_with_base += 1
+            if group.get('ru', ''):
+                groups_with_russian += 1
+            if all(text != "" for text in group.values()):
+                complete_groups += 1
+        
+        print(f"Groups with English text: {groups_with_base}/{len(normalized_groups)}")
+        print(f"Groups with Russian text: {groups_with_russian}/{len(normalized_groups)}")
+        print(f"Complete groups (all languages present): {complete_groups}/{len(normalized_groups)}")
         
         # Show sample groups
-        if all_groups:
-            print(f"\n✅ Sample translation groups:")
-            for i, group in enumerate(all_groups[:2]):
+        if normalized_groups:
+            print(f"\n✅ Sample translation groups (after alignment fix):")
+            for i, group in enumerate(normalized_groups[:3]):
                 print(f"\n  Group {i+1}:")
-                for lang, text in list(group.items())[:4]:
+                for lang, text in list(group.items())[:5]:
                     preview = text[:60] + "..." if len(text) > 60 else text
-                    print(f"    {lang}: {preview}")
+                    status = "✓" if text else "✗"
+                    lang_display = lang
+                    if lang == 'ru':
+                        lang_display = "ru (Cyrillic detected)"
+                    print(f"    [{status}] {lang_display}: {preview if preview else '[MISSING]'}")
+                if len(group) > 5:
+                    print(f"    ... and {len(group) - 5} more languages")
         
         # Extract title if not provided
         if not title:
@@ -324,7 +436,8 @@ def process_ordered_epub(epub_file, output_file=None, output_base=None, title=No
             "id": "main",
             "filename": "all_content",
             "title": title,
-            "paragraphs": all_groups
+            "language_order": language_order,
+            "paragraphs": normalized_groups
         }]
         
         # Save to JSON
@@ -348,7 +461,7 @@ def process_ordered_epub(epub_file, output_file=None, output_base=None, title=No
             output_dir = Path(output_base)
             output_dir.mkdir(parents=True, exist_ok=True)
             
-            json_filename = f"{epub_name}.json"
+            json_filename = f"{epub_name}-clean.json"
             output_path = output_dir / json_filename
             
             with open(output_path, 'w', encoding='utf-8') as f:
@@ -359,23 +472,28 @@ def process_ordered_epub(epub_file, output_file=None, output_base=None, title=No
         return output_data
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert multilingual EPUB to clean JSON format')
+    parser = argparse.ArgumentParser(description='Convert multilingual EPUB to clean JSON')
     parser.add_argument('epub_file', help='Path to the EPUB file')
     parser.add_argument('-o', '--output', help='Output JSON file path (overrides auto-detection)')
     parser.add_argument('--output-base', default=DEFAULT_OUTPUT_BASE, 
                        help=f'Base output directory (default: {DEFAULT_OUTPUT_BASE})')
     parser.add_argument('--title', help='Book title (overrides auto-detection)')
+    parser.add_argument('--lang-order', default='en,de,ar,hi,ja,ko,zh,ru',
+                       help='Comma-separated language order (default: "en,de,ar,hi,ja,ko,zh,ru")')
     
     args = parser.parse_args()
     
     print(f"\n📚 Processing multilingual EPUB file: {args.epub_file}")
     print(f"📁 Output base directory: {args.output_base}")
+    print(f"🔍 Russian detection: Using Cyrillic character detection (Calibre bug workaround)")
+    print(f"🌐 Base language: English (no lang attribute)")
     
     result = process_ordered_epub(
         args.epub_file,
         output_file=args.output,
         output_base=args.output_base if not args.output else None,
-        title=args.title
+        title=args.title,
+        lang_order=args.lang_order
     )
     
     # Print summary
@@ -385,24 +503,24 @@ def main():
         print(f"="*60)
         print(f"  📖 File: {os.path.basename(args.epub_file)}")
         print(f"  📝 Title: {result[0]['title']}")
+        print(f"  🌐 Language order: {', '.join(result[0]['language_order'])}")
         print(f"  📦 Translation groups: {len(result[0]['paragraphs'])}")
         
-        if result[0]['paragraphs']:
-            first_group = result[0]['paragraphs'][0]
-            print(f"  🌐 Languages in first group: {', '.join(first_group.keys())}")
+        # Count complete groups
+        complete_groups = sum(1 for g in result[0]['paragraphs'] if all(text for text in g.values()))
+        print(f"  ✅ Complete groups: {complete_groups}")
+        print(f"  ⚠️  Incomplete groups: {len(result[0]['paragraphs']) - complete_groups}")
         
-        # Count total languages across all groups
-        all_langs = set()
-        for group in result[0]['paragraphs']:
-            all_langs.update(group.keys())
-        print(f"  🌐 All languages found: {', '.join(sorted(all_langs))}")
+        # Count Russian groups
+        russian_groups = sum(1 for g in result[0]['paragraphs'] if g.get('ru', ''))
+        print(f"  🇷🇺 Groups with Russian: {russian_groups}")
         
         # Show output location
         if args.output:
             print(f"  💾 Output: {args.output}")
         else:
             output_name = Path(args.epub_file).stem.replace('_', '-').replace(' ', '-')
-            print(f"  💾 Output: {args.output_base}/{output_name}.json")
+            print(f"  💾 Output: {args.output_base}/{output_name}-clean.json")
 
 if __name__ == '__main__':
     main()

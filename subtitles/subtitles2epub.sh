@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DIRECTORY="/home/zaya/Downloads/Zayas/zayascinema/Subtitles/Heated_Rivalry"
+DIRECTORY="/home/zaya/Downloads/Zayas/ZayasBooks/t/The-Hours"
 WORKING_DIR="/tmp/subtitle_processing"
 OUTPUT_MD="combined_notes.md"
 directory_name=$(basename "$DIRECTORY")
